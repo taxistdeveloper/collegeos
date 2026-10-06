@@ -20,8 +20,8 @@ function detectServerConfig()
         || preg_match('/^10\.\d+\.\d+\.\d+$/', $hostOnly)
         || preg_match('/^172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+$/', $hostOnly);
 
-    if (strpos($serverName, 'krg-ktsk.kz') !== false || strpos($hostOnly, 'krg-ktsk.kz') !== false) {
-        // ===== ПРОДАКШН — замените на свои данные =====
+    if (strpos($hostOnly, 'app.kvki.kz') !== false || strpos($hostOnly, 'kvki.kz') !== false) {
+        // ===== ПРОДАКШН app.kvki.kz — замените на свои данные =====
         $config = [
             'host' => 'localhost',
             'username' => 'YOUR_DB_USER',

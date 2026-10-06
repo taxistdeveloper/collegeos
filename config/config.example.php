@@ -13,8 +13,8 @@ define('APP_TAGLINE', 'Единый цифровой портал колледж
 define('APP_VERSION', '1.0.0');
 
 // Локально:  http://localhost/portal/
-// На сервере: https://krg-ktsk.kz/portal/
-define('BASE_URL', 'https://krg-ktsk.kz/portal/');
+// На сервере: https://app.kvki.kz/
+define('BASE_URL', 'https://app.kvki.kz/');
 
 function startSessionSafely()
 {

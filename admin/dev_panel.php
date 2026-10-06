@@ -290,7 +290,7 @@ include 'includes/admin_header.php';
                 </div>
             </div>
             <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
-                <p><strong>Сервер:</strong> krg-ktsk.kz</p>
+                <p><strong>Сервер:</strong> app.kvki.kz</p>
                 <p><strong>Локальный путь:</strong> <?php echo htmlspecialchars(dirname(__DIR__)); ?></p>
                 <p><strong>ОС:</strong> <?php echo PHP_OS; ?> 
                     <?php 
