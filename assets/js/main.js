@@ -2,6 +2,82 @@
  * Основной JavaScript файл для системы управления студентами
  */
 
+// Shared tooltips (если отдельный tooltips.js ещё не загружен)
+if (!window.PortalTooltips) {
+  (function (window, document) {
+    'use strict';
+
+    function hideTooltip(element) {
+      if (element && element._portalTooltip) {
+        element._portalTooltip.remove();
+        element._portalTooltip = null;
+      }
+    }
+
+    function showTooltip(element) {
+      var text = (element.getAttribute('data-original-title') || '').trim();
+      if (!text || element._portalTooltip) {
+        return;
+      }
+
+      var tooltip = document.createElement('div');
+      tooltip.className = 'portal-tooltip';
+      tooltip.textContent = text;
+      if (text.length > 60) {
+        tooltip.classList.add('is-wrap');
+      }
+      document.body.appendChild(tooltip);
+
+      var rect = element.getBoundingClientRect();
+      var tipWidth = tooltip.offsetWidth;
+      var tipHeight = tooltip.offsetHeight;
+      var left = rect.left + rect.width / 2 - tipWidth / 2;
+      var top = rect.top - tipHeight - 10;
+
+      left = Math.max(8, Math.min(left, window.innerWidth - tipWidth - 8));
+      if (top < 8) {
+        top = rect.bottom + 10;
+        tooltip.classList.add('is-below');
+      }
+
+      tooltip.style.left = left + 'px';
+      tooltip.style.top = top + 'px';
+      requestAnimationFrame(function () {
+        tooltip.classList.add('is-visible');
+      });
+
+      element._portalTooltip = tooltip;
+    }
+
+    function bindElement(element) {
+      if (element.dataset.portalTooltipReady === '1') {
+        return;
+      }
+
+      var originalTitle = (element.getAttribute('title') || element.getAttribute('data-original-title') || '').trim();
+      if (!originalTitle) {
+        return;
+      }
+
+      element.dataset.portalTooltipReady = '1';
+      element.setAttribute('data-original-title', originalTitle);
+      element.removeAttribute('title');
+
+      element.addEventListener('mouseenter', function () { showTooltip(this); });
+      element.addEventListener('focus', function () { showTooltip(this); });
+      element.addEventListener('mouseleave', function () { hideTooltip(this); });
+      element.addEventListener('blur', function () { hideTooltip(this); });
+    }
+
+    function init(root) {
+      var scope = root && root.querySelectorAll ? root : document;
+      scope.querySelectorAll('[title], [data-original-title]').forEach(bindElement);
+    }
+
+    window.PortalTooltips = { init: init, bind: bindElement };
+  })(window, document);
+}
+
 // Глобальные переменные
 let currentPage = 1;
 let itemsPerPage = 10;
@@ -17,17 +93,26 @@ document.addEventListener("DOMContentLoaded", function () {
  * Инициализация приложения
  */
 function initializeApp() {
-  // Инициализация tooltips
-  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl);
-  });
+  // Кастомные тултипы для title="..."
+  if (window.PortalTooltips && typeof window.PortalTooltips.init === 'function') {
+    window.PortalTooltips.init();
+  }
+
+  // Bootstrap tooltips (data-bs-toggle="tooltip")
+  if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  }
 
   // Инициализация popovers
-  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap.Popover(popoverTriggerEl);
-  });
+  if (typeof bootstrap !== 'undefined' && bootstrap.Popover) {
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl);
+    });
+  }
 
   // Обработчики событий
   setupEventListeners();

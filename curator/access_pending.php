@@ -19,7 +19,7 @@ if (!$profile) {
 }
 
 if (!empty($profile['curator_portal_access'] ?? null)) {
-    header('Location: my_students.php');
+    header('Location: dashboard.php');
     exit;
 }
 

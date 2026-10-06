@@ -6,12 +6,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     initSidebar();
     initGlobalSearch();
-    initAnimations();
-    initTooltips();
-    initFormValidation();
-    initTableEnhancements();
-    initLoadingStates();
-    initNotifications();
 });
 
 function initSidebar() {
@@ -89,6 +83,15 @@ function initAnimations() {
             if (entry.isIntersecting) {
                 entry.target.style.opacity = '1';
                 entry.target.style.transform = 'translateY(0)';
+                const clearTransform = (e) => {
+                    if (e && e.propertyName && e.propertyName !== 'transform') return;
+                    entry.target.style.transform = '';
+                    entry.target.removeEventListener('transitionend', clearTransform);
+                };
+                entry.target.addEventListener('transitionend', clearTransform);
+                // fallback if transitionend does not fire
+                setTimeout(clearTransform, 700);
+                observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
@@ -125,50 +128,12 @@ function initAnimations() {
 }
 
 /**
- * Инициализация всплывающих подсказок
+ * Инициализация всплывающих подсказок (общий модуль PortalTooltips)
  */
 function initTooltips() {
-    // Создаем кастомные тултипы для кнопок действий
-    document.querySelectorAll('[title]').forEach(element => {
-        element.addEventListener('mouseenter', function(e) {
-            const title = this.getAttribute('title');
-            this.removeAttribute('title');
-            
-            const tooltip = document.createElement('div');
-            tooltip.className = 'curator-tooltip';
-            tooltip.textContent = title;
-            tooltip.style.cssText = `
-                position: absolute;
-                background: rgba(0, 0, 0, 0.9);
-                color: white;
-                padding: 8px 12px;
-                border-radius: 6px;
-                font-size: 12px;
-                z-index: 1000;
-                pointer-events: none;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            `;
-            
-            document.body.appendChild(tooltip);
-            
-            const rect = this.getBoundingClientRect();
-            tooltip.style.left = rect.left + rect.width / 2 - tooltip.offsetWidth / 2 + 'px';
-            tooltip.style.top = rect.top - tooltip.offsetHeight - 8 + 'px';
-            
-            setTimeout(() => tooltip.style.opacity = '1', 10);
-            
-            this._tooltip = tooltip;
-        });
-        
-        element.addEventListener('mouseleave', function() {
-            if (this._tooltip) {
-                this._tooltip.remove();
-                this._tooltip = null;
-            }
-            this.setAttribute('title', this.getAttribute('data-original-title') || '');
-        });
-    });
+    if (window.PortalTooltips && typeof window.PortalTooltips.init === 'function') {
+        window.PortalTooltips.init();
+    }
 }
 
 /**
@@ -439,3 +404,18 @@ window.CuratorUI = {
     initTooltips,
     initFormValidation
 };
+
+// Кастомные select как в админке
+(function loadAdminSelect() {
+    if (window.initAdminSelects || document.querySelector('script[data-admin-select]')) {
+        return;
+    }
+    var current = document.currentScript;
+    var src = current && current.src
+        ? current.src.replace(/curator-ui\.js(\?.*)?$/, 'admin-select.js$1')
+        : 'assets/js/admin-select.js';
+    var script = document.createElement('script');
+    script.src = src;
+    script.setAttribute('data-admin-select', '1');
+    (current && current.parentNode ? current.parentNode : document.body).appendChild(script);
+})();

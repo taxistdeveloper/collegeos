@@ -1,4 +1,5 @@
 /* Основные стили для системы управления студентами */
+@import url('tooltips.css');
 
 :root {
   --primary-color: #0d6efd;

@@ -131,7 +131,7 @@
     border: 1px solid var(--cur-gray-200, #e5e9f2);
     border-radius: 14px;
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-    overflow: hidden;
+    overflow: visible;
 }
 
 .wizard-step-head {

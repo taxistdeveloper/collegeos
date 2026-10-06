@@ -1536,6 +1536,7 @@ function translateDatabaseError($error_message)
     </button>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/tooltips.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             console.log('✅ Форма редактирования студента загружена');

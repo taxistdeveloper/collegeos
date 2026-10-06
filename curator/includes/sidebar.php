@@ -21,7 +21,7 @@ $active_page = $active_pages[$current_page] ?? $current_page;
 
 <aside class="curator-sidebar" id="curatorSidebar">
     <div class="curator-sidebar-brand">
-        <a href="my_students.php" class="curator-sidebar-brand-link">
+        <a href="dashboard.php" class="curator-sidebar-brand-link">
             <div class="curator-sidebar-logo">
                 <i class="bi bi-mortarboard-fill"></i>
             </div>

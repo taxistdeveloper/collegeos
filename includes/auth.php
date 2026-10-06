@@ -370,7 +370,7 @@ function redirectByRole($role)
             header('Location: manager/dashboard.php');
             break;
         case 'curator':
-            header('Location: curator/my_students.php');
+            header('Location: curator/dashboard.php');
             break;
         case 'cos':
             header('Location: cos/dashboard.php');

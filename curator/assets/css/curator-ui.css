@@ -25,6 +25,15 @@
     --cur-radius-sm: 10px;
     --cur-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 16px rgba(15, 23, 42, 0.04);
     --cur-shadow-lg: 0 8px 30px rgba(15, 23, 42, 0.08);
+
+    /* aliases for shared admin-select.js */
+    --primary: var(--cur-primary);
+    --danger: var(--cur-danger);
+    --border-color: var(--cur-gray-200);
+    --text-primary: var(--cur-text);
+    --text-muted: var(--cur-text-muted);
+    --primary-light: var(--cur-primary-light);
+    --gray-50: var(--cur-gray-50);
 }
 
 /* ===== APP SHELL ===== */
@@ -1032,4 +1041,171 @@ a.curator-feed-item:hover {
 
 .curator-sidebar-overlay.show {
     display: block;
+}
+
+/* ========== Custom selects (admin-style) ========== */
+.curator-app .form-control,
+.curator-app .form-select {
+    min-height: 42px;
+}
+
+.curator-app .form-select {
+    cursor: pointer;
+    font-weight: 500;
+    padding-right: 2.4rem;
+}
+
+.curator-app .form-select:hover {
+    border-color: var(--cur-primary);
+}
+
+.admin-select {
+    position: relative;
+    width: 100%;
+}
+
+.admin-select select.form-select {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    opacity: 0;
+    pointer-events: none;
+    border: 0;
+}
+
+.admin-select-toggle {
+    width: 100%;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--cur-gray-200);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--cur-text);
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.3;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.admin-select:has(select.form-select-lg) .admin-select-toggle {
+    min-height: 48px;
+    font-size: 1rem;
+    padding: 0.65rem 1rem;
+}
+
+.admin-select-toggle:hover {
+    border-color: var(--cur-primary);
+    background: #fff;
+}
+
+.admin-select.is-open .admin-select-toggle,
+.admin-select-toggle:focus {
+    border-color: var(--cur-primary);
+    box-shadow: 0 0 0 3px rgba(44, 90, 242, 0.16);
+    outline: none;
+}
+
+.admin-select.is-placeholder .admin-select-label {
+    color: var(--cur-text-muted);
+    font-weight: 400;
+}
+
+.admin-select-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-select-caret {
+    color: var(--cur-text-muted);
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    transition: transform 0.15s ease;
+}
+
+.admin-select.is-open .admin-select-caret {
+    transform: rotate(180deg);
+    color: var(--cur-primary);
+}
+
+.admin-select-menu {
+    position: fixed;
+    z-index: 2000;
+    display: none;
+    background: #fff;
+    border: 1px solid var(--cur-gray-200);
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.14);
+    padding: 0.35rem;
+    max-height: 280px;
+    overflow: auto;
+}
+
+.admin-select.is-open .admin-select-menu {
+    display: block;
+}
+
+.admin-select-search {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #fff;
+    padding: 0.25rem 0.25rem 0.45rem;
+}
+
+.admin-select-search input {
+    width: 100%;
+    border: 1px solid var(--cur-gray-200);
+    border-radius: 10px;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.85rem;
+    background: var(--cur-gray-50);
+}
+
+.admin-select-search input:focus {
+    outline: none;
+    border-color: var(--cur-primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(44, 90, 242, 0.12);
+}
+
+.admin-select-option {
+    width: 100%;
+    display: block;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    padding: 0.55rem 0.8rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: var(--cur-text);
+    cursor: pointer;
+}
+
+.admin-select-option:hover,
+.admin-select-option.is-active {
+    background: var(--cur-primary-light);
+    color: var(--cur-primary);
+}
+
+.admin-select-option.is-selected {
+    background: var(--cur-primary-light);
+    color: var(--cur-primary);
+    font-weight: 600;
+}
+
+.admin-select-empty {
+    padding: 0.7rem 0.8rem;
+    color: var(--cur-text-muted);
+    font-size: 0.85rem;
 }

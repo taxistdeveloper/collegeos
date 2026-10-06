@@ -41,6 +41,7 @@ $menu_stats = $GLOBALS['admin_menu_stats'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/admin-style.css" rel="stylesheet">
+    <link href="../assets/css/tooltips.css" rel="stylesheet">
 </head>
 <body>
     <!-- Sidebar Overlay (mobile) -->
