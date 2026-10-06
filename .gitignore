@@ -1,7 +1,8 @@
-# ===== Config (пароли БД и настройки сервера) =====
+# ===== Config (пароли БД) — example-файлы коммитятся =====
 config/config.php
 config/database.php
 config/server_config.php
+!config/*.example.php
 
 # ===== Portal runtime =====
 logs/*.log
