@@ -191,9 +191,8 @@ $rolePickerIcons = [
             <div class="login-form-wrap">
                 <div class="login-form-header">
                     <div class="login-mark">
-                        <i class="bi bi-mortarboard-fill"></i>
+                        <img src="kvki-logo.png" alt="Қарағанды жоғары инжиниринг колледжі" class="login-logo">
                     </div>
-                    <h1><?php echo htmlspecialchars(APP_SHORT_NAME); ?></h1>
                     <p>Введите логин и пароль для входа</p>
                 </div>
 
@@ -270,7 +269,11 @@ $rolePickerIcons = [
                     <p class="login-credit-text">
                         <span class="login-credit-label">Разработчик</span>
                         <span class="login-credit-sep" aria-hidden="true"></span>
-                        <span class="login-credit-name">SHOTAYEV</span>
+                        <a href="https://www.instagram.com/zshotaeff/"
+                           class="login-credit-name"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           title="Instagram · @zshotaeff">SHOTAYEV</a>
                         <span class="login-credit-sep" aria-hidden="true"></span>
                         <span class="login-credit-org">КВКИ</span>
                     </p>
