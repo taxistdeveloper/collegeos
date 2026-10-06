@@ -126,6 +126,43 @@ if ($stmt) {
 
 $page_title = 'Отчёты группы «' . $group_info['name'] . '»';
 $page_subtitle = $group_info['code'] . ' · ' . $group_info['course'];
+
+$stats = array_merge([
+    'total' => 0,
+    'active' => 0,
+    'academic_leave' => 0,
+    'graduated' => 0,
+    'male' => 0,
+    'female' => 0,
+], $stats ?? []);
+$social_stats = array_merge([
+    'orphans' => 0,
+    'without_care' => 0,
+    'disabled' => 0,
+    'social_assistance' => 0,
+    'large_family' => 0,
+], $social_stats ?? []);
+$meal_stats = array_merge([
+    'hot_meal' => 0,
+    'free_hot_meal' => 0,
+    'buffet_meal' => 0,
+    'free_buffet_meal' => 0,
+], $meal_stats ?? []);
+$activity_stats = array_merge([
+    'youth_committee' => 0,
+    'student_parliament' => 0,
+    'jas_sarbaz' => 0,
+    'paid_practice' => 0,
+], $activity_stats ?? []);
+$quota_stats = $quota_stats ?? [];
+
+$total = (int)$stats['total'];
+$pct = static function ($value) use ($total) {
+    if ($total <= 0) {
+        return 0;
+    }
+    return round(((int)$value / $total) * 100, 1);
+};
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -138,6 +175,7 @@ $page_subtitle = $group_info['code'] . ' · ' . $group_info['course'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
     <link href="assets/css/curator-ui.css" rel="stylesheet">
+    <link href="assets/css/group-reports.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="curator-app">
@@ -146,293 +184,273 @@ $page_subtitle = $group_info['code'] . ' · ' . $group_info['course'];
     <div class="curator-main">
         <?php include 'includes/header.php'; ?>
         <div class="curator-content">
+            <div class="gr-page curator-animate-fadeInUp">
 
-            <div class="curator-section-header curator-animate-fadeInUp mb-3">
-                <div class="curator-action-buttons">
-                    <?php if (count($curator_groups) > 1): ?>
-                        <select class="form-select form-select-sm" style="width: auto; min-width: 180px;"
-                                onchange="if (this.value) window.location.href='group_reports.php?id=' + this.value;"
-                                aria-label="Выбор группы">
-                            <?php foreach ($curator_groups as $g): ?>
-                                <option value="<?php echo (int)$g['id']; ?>" <?php echo (int)$g['id'] === $group_id ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($g['name']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    <?php endif; ?>
-                    <a href="my_groups.php" class="btn btn-outline-secondary btn-sm">
-                        <i class="bi bi-collection me-1"></i>Мои группы
-                    </a>
-                    <a href="group_details.php?id=<?php echo $group_id; ?>" class="btn btn-outline-primary btn-sm">
-                        <i class="bi bi-info-circle me-1"></i>Подробности
-                    </a>
-                    <a href="group_students.php?id=<?php echo $group_id; ?>" class="btn btn-primary btn-sm">
-                        <i class="bi bi-people me-1"></i>Студенты
-                    </a>
-                </div>
-            </div>
-
-                <!-- Информация о группе -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <h6 class="text-primary">Группа</h6>
-                                <p><strong><?php echo htmlspecialchars($group_info['name']); ?></strong></p>
-                                <p><code><?php echo htmlspecialchars($group_info['code']); ?></code></p>
-                            </div>
-                            <div class="col-md-3">
-                                <h6 class="text-primary">Специальность</h6>
-                                <p><?php echo htmlspecialchars($group_info['specialty']); ?></p>
-                                <p><?php echo htmlspecialchars($group_info['qualification']); ?></p>
-                            </div>
-                            <div class="col-md-3">
-                                <h6 class="text-primary">Обучение</h6>
-                                <p><span class="badge bg-info"><?php echo htmlspecialchars($group_info['course']); ?></span></p>
-                                <p><?php echo htmlspecialchars($group_info['language']); ?> • <?php echo htmlspecialchars($group_info['study_form']); ?></p>
-                            </div>
-                            <div class="col-md-3">
-                                <h6 class="text-primary">Куратор</h6>
-                                <p><?php echo $group_info['curator_first_name'] ? htmlspecialchars($group_info['curator_first_name'] . ' ' . $group_info['curator_last_name']) : 'Не назначен'; ?></p>
-                            </div>
-                        </div>
+                <div class="gr-toolbar">
+                    <div class="gr-toolbar-actions">
+                        <?php if (count($curator_groups) > 1): ?>
+                            <select class="form-select form-select-sm"
+                                    onchange="if (this.value) window.location.href='group_reports.php?id=' + this.value;"
+                                    aria-label="Выбор группы">
+                                <?php foreach ($curator_groups as $g): ?>
+                                    <option value="<?php echo (int)$g['id']; ?>" <?php echo (int)$g['id'] === $group_id ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($g['name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        <?php endif; ?>
+                    </div>
+                    <div class="gr-toolbar-actions">
+                        <a href="my_groups.php" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-collection me-1"></i>Мои группы
+                        </a>
+                        <a href="group_details.php?id=<?php echo $group_id; ?>" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-info-circle me-1"></i>Подробности
+                        </a>
+                        <a href="group_students.php?id=<?php echo $group_id; ?>" class="btn btn-primary btn-sm">
+                            <i class="bi bi-people me-1"></i>Студенты
+                        </a>
                     </div>
                 </div>
 
-                <div class="row">
-                    <!-- Общая статистика -->
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-bar-chart-fill me-2"></i>
-                                    Общая статистика
-                                </h5>
+                <div class="gr-hero">
+                    <div>
+                        <h2 class="gr-hero-title"><i class="bi bi-graph-up-arrow me-2"></i>Отчёт по группе</h2>
+                        <p class="gr-hero-sub">
+                            Сводка по составу, социальным категориям, питанию и внеучебной активности.
+                            Данные обновляются по текущим студентам группы.
+                        </p>
+                    </div>
+                    <div class="gr-hero-meta">
+                        <div class="gr-meta-item">
+                            <span class="gr-meta-label">Группа</span>
+                            <div class="gr-meta-value"><?php echo htmlspecialchars($group_info['name']); ?> · <?php echo htmlspecialchars($group_info['code']); ?></div>
+                        </div>
+                        <div class="gr-meta-item">
+                            <span class="gr-meta-label">Курс / форма</span>
+                            <div class="gr-meta-value"><?php echo htmlspecialchars($group_info['course']); ?> · <?php echo htmlspecialchars($group_info['language']); ?> · <?php echo htmlspecialchars($group_info['study_form']); ?></div>
+                        </div>
+                        <div class="gr-meta-item">
+                            <span class="gr-meta-label">Специальность</span>
+                            <div class="gr-meta-value"><?php echo htmlspecialchars($group_info['specialty']); ?></div>
+                        </div>
+                        <div class="gr-meta-item">
+                            <span class="gr-meta-label">Куратор</span>
+                            <div class="gr-meta-value">
+                                <?php echo !empty($group_info['curator_first_name'])
+                                    ? htmlspecialchars(trim(($group_info['curator_first_name'] ?? '') . ' ' . ($group_info['curator_last_name'] ?? '')))
+                                    : 'Не назначен'; ?>
                             </div>
-                            <div class="card-body">
-                                <canvas id="generalChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gr-kpi-grid">
+                    <div class="gr-kpi gr-kpi-total">
+                        <div class="gr-kpi-label">Всего студентов</div>
+                        <div class="gr-kpi-value"><?php echo (int)$stats['total']; ?></div>
+                        <span class="gr-kpi-pct">100%</span>
+                    </div>
+                    <div class="gr-kpi gr-kpi-active">
+                        <div class="gr-kpi-label">Активные</div>
+                        <div class="gr-kpi-value"><?php echo (int)$stats['active']; ?></div>
+                        <span class="gr-kpi-pct"><?php echo $pct($stats['active']); ?>%</span>
+                    </div>
+                    <div class="gr-kpi gr-kpi-leave">
+                        <div class="gr-kpi-label">Академ. отпуск</div>
+                        <div class="gr-kpi-value"><?php echo (int)$stats['academic_leave']; ?></div>
+                        <span class="gr-kpi-pct"><?php echo $pct($stats['academic_leave']); ?>%</span>
+                    </div>
+                    <div class="gr-kpi gr-kpi-grad">
+                        <div class="gr-kpi-label">Выпускники</div>
+                        <div class="gr-kpi-value"><?php echo (int)$stats['graduated']; ?></div>
+                        <span class="gr-kpi-pct"><?php echo $pct($stats['graduated']); ?>%</span>
+                    </div>
+                </div>
+
+                <div class="gr-grid">
+                    <div class="gr-panel">
+                        <div class="gr-panel-head">
+                            <span class="gr-panel-icon"><i class="bi bi-bar-chart-fill"></i></span>
+                            <h3 class="gr-panel-title">Состав группы</h3>
+                        </div>
+                        <div class="gr-panel-body">
+                            <div class="gr-chart-wrap">
+                                <canvas id="generalChart"></canvas>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Статистика по полу -->
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-pie-chart-fill me-2"></i>
-                                    Распределение по полу
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="genderChart" width="400" height="200"></canvas>
+                    <div class="gr-panel">
+                        <div class="gr-panel-head">
+                            <span class="gr-panel-icon"><i class="bi bi-pie-chart-fill"></i></span>
+                            <h3 class="gr-panel-title">По полу</h3>
+                        </div>
+                        <div class="gr-panel-body">
+                            <div class="gr-chart-wrap">
+                                <canvas id="genderChart"></canvas>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Социальные категории -->
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-people-fill me-2"></i>
-                                    Социальные категории
-                                </h5>
+                    <div class="gr-panel">
+                        <div class="gr-panel-head">
+                            <span class="gr-panel-icon"><i class="bi bi-heart-fill"></i></span>
+                            <h3 class="gr-panel-title">Социальные категории</h3>
+                        </div>
+                        <div class="gr-panel-body">
+                            <div class="gr-metric-grid">
+                                <?php
+                                $social_items = [
+                                    ['label' => 'Дети-сироты', 'value' => $social_stats['orphans'], 'class' => 'is-warn'],
+                                    ['label' => 'Без попечения', 'value' => $social_stats['without_care'], 'class' => 'is-info'],
+                                    ['label' => 'С инвалидностью', 'value' => $social_stats['disabled'], 'class' => 'is-danger'],
+                                    ['label' => 'Соц. помощь', 'value' => $social_stats['social_assistance'], 'class' => 'is-success'],
+                                    ['label' => 'Многодетная семья', 'value' => $social_stats['large_family'], 'class' => ''],
+                                ];
+                                foreach ($social_items as $item):
+                                    $p = $pct($item['value']);
+                                ?>
+                                    <div class="gr-metric <?php echo $item['class']; ?>">
+                                        <div class="gr-metric-top">
+                                            <span class="gr-metric-name"><?php echo htmlspecialchars($item['label']); ?></span>
+                                            <span class="gr-metric-val"><?php echo (int)$item['value']; ?></span>
+                                        </div>
+                                        <div class="gr-metric-bar"><span style="width: <?php echo min(100, $p); ?>%"></span></div>
+                                    </div>
+                                <?php endforeach; ?>
                             </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-6 mb-3">
-                                        <div class="text-center">
-                                            <h4 class="text-warning"><?php echo $social_stats['orphans']; ?></h4>
-                                            <small class="text-muted">Дети-сироты</small>
+                        </div>
+                    </div>
+
+                    <div class="gr-panel">
+                        <div class="gr-panel-head">
+                            <span class="gr-panel-icon"><i class="bi bi-cup-hot-fill"></i></span>
+                            <h3 class="gr-panel-title">Охват питанием</h3>
+                        </div>
+                        <div class="gr-panel-body">
+                            <div class="gr-metric-grid">
+                                <?php
+                                $meal_items = [
+                                    ['label' => 'Горячее питание', 'value' => $meal_stats['hot_meal'], 'class' => ''],
+                                    ['label' => 'Бесплатное горячее', 'value' => $meal_stats['free_hot_meal'], 'class' => 'is-success'],
+                                    ['label' => 'Буфетное питание', 'value' => $meal_stats['buffet_meal'], 'class' => 'is-info'],
+                                    ['label' => 'Бесплатный буфет', 'value' => $meal_stats['free_buffet_meal'], 'class' => 'is-warn'],
+                                ];
+                                foreach ($meal_items as $item):
+                                    $p = $pct($item['value']);
+                                ?>
+                                    <div class="gr-metric <?php echo $item['class']; ?>">
+                                        <div class="gr-metric-top">
+                                            <span class="gr-metric-name"><?php echo htmlspecialchars($item['label']); ?></span>
+                                            <span class="gr-metric-val"><?php echo (int)$item['value']; ?></span>
                                         </div>
+                                        <div class="gr-metric-bar"><span style="width: <?php echo min(100, $p); ?>%"></span></div>
                                     </div>
-                                    <div class="col-6 mb-3">
-                                        <div class="text-center">
-                                            <h4 class="text-info"><?php echo $social_stats['without_care']; ?></h4>
-                                            <small class="text-muted">Без попечения</small>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gr-panel">
+                        <div class="gr-panel-head">
+                            <span class="gr-panel-icon"><i class="bi bi-activity"></i></span>
+                            <h3 class="gr-panel-title">Внеучебная деятельность</h3>
+                        </div>
+                        <div class="gr-panel-body">
+                            <div class="gr-metric-grid">
+                                <?php
+                                $activity_items = [
+                                    ['label' => 'Молодёжный комитет', 'value' => $activity_stats['youth_committee'], 'class' => ''],
+                                    ['label' => 'Студ. парламент', 'value' => $activity_stats['student_parliament'], 'class' => 'is-success'],
+                                    ['label' => 'Жас Сарбаз', 'value' => $activity_stats['jas_sarbaz'], 'class' => 'is-info'],
+                                    ['label' => 'Оплачиваемая практика', 'value' => $activity_stats['paid_practice'], 'class' => 'is-warn'],
+                                ];
+                                foreach ($activity_items as $item):
+                                    $p = $pct($item['value']);
+                                ?>
+                                    <div class="gr-metric <?php echo $item['class']; ?>">
+                                        <div class="gr-metric-top">
+                                            <span class="gr-metric-name"><?php echo htmlspecialchars($item['label']); ?></span>
+                                            <span class="gr-metric-val"><?php echo (int)$item['value']; ?></span>
                                         </div>
+                                        <div class="gr-metric-bar"><span style="width: <?php echo min(100, $p); ?>%"></span></div>
                                     </div>
-                                    <div class="col-6 mb-3">
-                                        <div class="text-center">
-                                            <h4 class="text-danger"><?php echo $social_stats['disabled']; ?></h4>
-                                            <small class="text-muted">С инвалидностью</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                        <div class="text-center">
-                                            <h4 class="text-success"><?php echo $social_stats['social_assistance']; ?></h4>
-                                            <small class="text-muted">Соц. помощь</small>
-                                        </div>
-                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gr-panel">
+                        <div class="gr-panel-head">
+                            <span class="gr-panel-icon"><i class="bi bi-award-fill"></i></span>
+                            <h3 class="gr-panel-title">Квоты при поступлении</h3>
+                        </div>
+                        <div class="gr-panel-body">
+                            <?php if (empty($quota_stats)): ?>
+                                <div class="gr-empty">
+                                    <i class="bi bi-inbox"></i>
+                                    Нет данных по квотам
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Питание -->
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-cup-hot-fill me-2"></i>
-                                    Охват питанием
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-6 mb-3">
-                                        <div class="text-center">
-                                            <h4 class="text-primary"><?php echo $meal_stats['hot_meal']; ?></h4>
-                                            <small class="text-muted">Горячее питание</small>
+                            <?php else: ?>
+                                <div class="gr-quota-list">
+                                    <?php foreach ($quota_stats as $quota): ?>
+                                        <div class="gr-quota-item">
+                                            <span class="gr-quota-name"><?php echo htmlspecialchars($quota['quota_category']); ?></span>
+                                            <span class="gr-quota-count"><?php echo (int)$quota['count']; ?></span>
                                         </div>
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                        <div class="text-center">
-                                            <h4 class="text-success"><?php echo $meal_stats['free_hot_meal']; ?></h4>
-                                            <small class="text-muted">Бесплатное горячее</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                        <div class="text-center">
-                                            <h4 class="text-info"><?php echo $meal_stats['buffet_meal']; ?></h4>
-                                            <small class="text-muted">Буфетное питание</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                        <div class="text-center">
-                                            <h4 class="text-warning"><?php echo $meal_stats['free_buffet_meal']; ?></h4>
-                                            <small class="text-muted">Бесплатное буфетное</small>
-                                        </div>
-                                    </div>
+                                    <?php endforeach; ?>
                                 </div>
-                            </div>
+                            <?php endif; ?>
                         </div>
                     </div>
 
-                    <!-- Внеучебная деятельность -->
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-activity me-2"></i>
-                                    Внеучебная деятельность
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-6 mb-3">
-                                        <div class="text-center">
-                                            <h4 class="text-primary"><?php echo $activity_stats['youth_committee']; ?></h4>
-                                            <small class="text-muted">Молодежный комитет</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                        <div class="text-center">
-                                            <h4 class="text-success"><?php echo $activity_stats['student_parliament']; ?></h4>
-                                            <small class="text-muted">Студ. парламент</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                        <div class="text-center">
-                                            <h4 class="text-info"><?php echo $activity_stats['jas_sarbaz']; ?></h4>
-                                            <small class="text-muted">"Жас Сарбаз"</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                        <div class="text-center">
-                                            <h4 class="text-warning"><?php echo $activity_stats['paid_practice']; ?></h4>
-                                            <small class="text-muted">Оплачиваемая практика</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="gr-panel gr-panel-full">
+                        <div class="gr-panel-head">
+                            <span class="gr-panel-icon"><i class="bi bi-table"></i></span>
+                            <h3 class="gr-panel-title">Сводная таблица</h3>
                         </div>
-                    </div>
-
-                    <!-- Квоты при поступлении -->
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-award-fill me-2"></i>
-                                    Квоты при поступлении
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <?php if (empty($quota_stats)): ?>
-                                    <p class="text-muted">Нет студентов с квотами</p>
-                                <?php else: ?>
-                                    <div class="list-group list-group-flush">
-                                        <?php foreach ($quota_stats as $quota): ?>
-                                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span><?php echo htmlspecialchars($quota['quota_category']); ?></span>
-                                                <span class="badge bg-primary"><?php echo $quota['count']; ?></span>
-                                            </div>
+                        <div class="gr-panel-body" style="padding: 0;">
+                            <div class="table-responsive">
+                                <table class="gr-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Показатель</th>
+                                            <th>Кол-во</th>
+                                            <th>Доля</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $summary_rows = [
+                                            ['Всего студентов', $stats['total'], 100],
+                                            ['Активные', $stats['active'], $pct($stats['active'])],
+                                            ['В академическом отпуске', $stats['academic_leave'], $pct($stats['academic_leave'])],
+                                            ['Выпускники', $stats['graduated'], $pct($stats['graduated'])],
+                                            ['Мужчины', $stats['male'], $pct($stats['male'])],
+                                            ['Женщины', $stats['female'], $pct($stats['female'])],
+                                        ];
+                                        foreach ($summary_rows as $row):
+                                        ?>
+                                            <tr>
+                                                <td class="gr-table-name"><?php echo htmlspecialchars($row[0]); ?></td>
+                                                <td class="gr-table-num"><?php echo (int)$row[1]; ?></td>
+                                                <td class="gr-table-pct">
+                                                    <div class="gr-inline-bar">
+                                                        <div class="gr-inline-bar-track"><span style="width: <?php echo min(100, (float)$row[2]); ?>%"></span></div>
+                                                        <span class="gr-inline-bar-label"><?php echo $row[2]; ?>%</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         <?php endforeach; ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Сводная таблица -->
-                    <div class="col-12 mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-table me-2"></i>
-                                    Сводная таблица
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Показатель</th>
-                                                <th>Количество</th>
-                                                <th>Процент</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Всего студентов</td>
-                                                <td><?php echo $stats['total']; ?></td>
-                                                <td>100%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Активных студентов</td>
-                                                <td><?php echo $stats['active']; ?></td>
-                                                <td><?php echo $stats['total'] > 0 ? round(($stats['active'] / $stats['total']) * 100, 1) : 0; ?>%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>В академическом отпуске</td>
-                                                <td><?php echo $stats['academic_leave']; ?></td>
-                                                <td><?php echo $stats['total'] > 0 ? round(($stats['academic_leave'] / $stats['total']) * 100, 1) : 0; ?>%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Выпускников</td>
-                                                <td><?php echo $stats['graduated']; ?></td>
-                                                <td><?php echo $stats['total'] > 0 ? round(($stats['graduated'] / $stats['total']) * 100, 1) : 0; ?>%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Мужчин</td>
-                                                <td><?php echo $stats['male']; ?></td>
-                                                <td><?php echo $stats['total'] > 0 ? round(($stats['male'] / $stats['total']) * 100, 1) : 0; ?>%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Женщин</td>
-                                                <td><?php echo $stats['female']; ?></td>
-                                                <td><?php echo $stats['total'] > 0 ? round(($stats['female'] / $stats['total']) * 100, 1) : 0; ?>%</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
+
+            </div>
         </div>
     </div>
 </div>
@@ -441,43 +459,46 @@ $page_subtitle = $group_info['code'] . ' · ' . $group_info['course'];
     <script src="../assets/js/main.js"></script>
     <script src="assets/js/curator-ui.js"></script>
     <script>
-        // График общей статистики
+        const chartDefaults = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            }
+        };
+
         const generalCtx = document.getElementById('generalChart').getContext('2d');
         new Chart(generalCtx, {
             type: 'bar',
             data: {
-                labels: ['Активные', 'В академ. отпуске', 'Выпускники'],
+                labels: ['Активные', 'Академ. отпуск', 'Выпускники'],
                 datasets: [{
-                    label: 'Количество студентов',
                     data: [
-                        <?php echo $stats['active']; ?>,
-                        <?php echo $stats['academic_leave']; ?>,
-                        <?php echo $stats['graduated']; ?>
+                        <?php echo (int)$stats['active']; ?>,
+                        <?php echo (int)$stats['academic_leave']; ?>,
+                        <?php echo (int)$stats['graduated']; ?>
                     ],
-                    backgroundColor: [
-                        'rgba(40, 167, 69, 0.8)',
-                        'rgba(255, 193, 7, 0.8)',
-                        'rgba(23, 162, 184, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgba(40, 167, 69, 1)',
-                        'rgba(255, 193, 7, 1)',
-                        'rgba(23, 162, 184, 1)'
-                    ],
-                    borderWidth: 1
+                    backgroundColor: ['#10b981', '#f59e0b', '#06b6d4'],
+                    borderRadius: 8,
+                    maxBarThickness: 48
                 }]
             },
             options: {
-                responsive: true,
+                ...chartDefaults,
                 scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 12, weight: '600' }, color: '#64748b' }
+                    },
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: { precision: 0, color: '#94a3b8' },
+                        grid: { color: '#f1f3f9' }
                     }
                 }
             }
         });
 
-        // График распределения по полу
         const genderCtx = document.getElementById('genderChart').getContext('2d');
         new Chart(genderCtx, {
             type: 'doughnut',
@@ -485,25 +506,28 @@ $page_subtitle = $group_info['code'] . ' · ' . $group_info['course'];
                 labels: ['Мужчины', 'Женщины'],
                 datasets: [{
                     data: [
-                        <?php echo $stats['male']; ?>,
-                        <?php echo $stats['female']; ?>
+                        <?php echo (int)$stats['male']; ?>,
+                        <?php echo (int)$stats['female']; ?>
                     ],
-                    backgroundColor: [
-                        'rgba(54, 162, 235, 0.8)',
-                        'rgba(255, 99, 132, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 99, 132, 1)'
-                    ],
-                    borderWidth: 1
+                    backgroundColor: ['#2c5af2', '#f472b6'],
+                    borderWidth: 0,
+                    hoverOffset: 4
                 }]
             },
             options: {
-                responsive: true,
+                ...chartDefaults,
+                cutout: '62%',
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            font: { size: 12, weight: '600' },
+                            color: '#475569'
+                        }
                     }
                 }
             }
