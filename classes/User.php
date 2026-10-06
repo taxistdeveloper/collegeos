@@ -516,6 +516,100 @@ class User {
         return ['success' => false, 'error' => 'Не удалось отправить заявку'];
     }
 
+    /**
+     * Заявка на восстановление пароля (ФИО + телефон → уведомление администратору).
+     */
+    public function submitPasswordResetRequest($data) {
+        $this->ensureAdminNotificationsTable();
+
+        $last_name = trim($data['last_name'] ?? '');
+        $first_name = trim($data['first_name'] ?? '');
+        $middle_name = trim($data['middle_name'] ?? '');
+        $phone = trim($data['phone'] ?? '');
+
+        if ($last_name === '' || $first_name === '' || $phone === '') {
+            return ['success' => false, 'error' => 'Заполните фамилию, имя и номер телефона'];
+        }
+
+        $full_name = trim("$last_name $first_name $middle_name");
+        $phone_digits = preg_replace('/\D+/', '', $phone);
+
+        if ($phone_digits === '' || strlen($phone_digits) < 10) {
+            return ['success' => false, 'error' => 'Укажите корректный номер телефона'];
+        }
+
+        $check = $this->db->prepare(
+            "SELECT id FROM admin_notifications
+             WHERE type = 'password_reset'
+             AND message LIKE ?
+             AND created_at > DATE_SUB(NOW(), INTERVAL 24 HOUR)
+             LIMIT 1"
+        );
+        $phone_pattern = '%' . $phone_digits . '%';
+        $check->bind_param('s', $phone_pattern);
+        $check->execute();
+        if ($check->get_result()->fetch_assoc()) {
+            return [
+                'success' => true,
+                'status' => 'duplicate',
+                'message' => 'Заявка с этим номером уже отправлена за последние 24 часа. Ожидайте ответа администратора.',
+            ];
+        }
+
+        $matched_user = null;
+        $users = $this->db->prepare(
+            "SELECT id, login, first_name, last_name, middle_name, phone
+             FROM users
+             WHERE last_name = ? AND first_name = ?
+             LIMIT 20"
+        );
+        $users->bind_param('ss', $last_name, $first_name);
+        $users->execute();
+        $candidates = $users->get_result()->fetch_all(MYSQLI_ASSOC);
+        foreach ($candidates as $candidate) {
+            $candidate_phone = preg_replace('/\D+/', '', (string)($candidate['phone'] ?? ''));
+            $same_middle = $middle_name === ''
+                || mb_strtolower(trim((string)($candidate['middle_name'] ?? '')), 'UTF-8')
+                    === mb_strtolower($middle_name, 'UTF-8');
+            if ($same_middle && $candidate_phone !== '' && (
+                $candidate_phone === $phone_digits
+                || substr($candidate_phone, -10) === substr($phone_digits, -10)
+            )) {
+                $matched_user = $candidate;
+                break;
+            }
+        }
+
+        $title = 'Заявка на восстановление пароля';
+        $message = "ФИО: {$full_name}\nТелефон: {$phone}";
+        if ($matched_user) {
+            $message .= "\nНайден пользователь: логин «{$matched_user['login']}» (ID {$matched_user['id']})";
+            $curator_id = (int)$matched_user['id'];
+            $stmt = $this->db->prepare(
+                "INSERT INTO admin_notifications (type, title, message, curator_id, curator_name)
+                 VALUES ('password_reset', ?, ?, ?, ?)"
+            );
+            $stmt->bind_param('ssis', $title, $message, $curator_id, $full_name);
+        } else {
+            $message .= "\nПользователь в базе по ФИО/телефону не найден автоматически.";
+            $stmt = $this->db->prepare(
+                "INSERT INTO admin_notifications (type, title, message, curator_name)
+                 VALUES ('password_reset', ?, ?, ?)"
+            );
+            $stmt->bind_param('sss', $title, $message, $full_name);
+        }
+
+        if ($stmt->execute()) {
+            return [
+                'success' => true,
+                'status' => 'submitted',
+                'message' => 'Заявка отправлена. Администратор свяжется с вами и поможет восстановить пароль.',
+            ];
+        }
+
+        return ['success' => false, 'error' => 'Не удалось отправить заявку. Попробуйте позже.'];
+    }
+
     private function notifyAdminAccessRequest($title, $message, $curator_id = null, $curator_name = null) {
         $this->ensureAdminNotificationsTable();
         $stmt = $this->db->prepare(

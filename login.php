@@ -172,6 +172,7 @@ $rolePickerIcons = [
 ?>
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -183,6 +184,7 @@ $rolePickerIcons = [
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="assets/css/login.css" rel="stylesheet">
 </head>
+
 <body class="login-page">
     <div class="login-shell">
         <main class="login-panel">
@@ -208,13 +210,13 @@ $rolePickerIcons = [
                         <div class="login-input-wrap">
                             <i class="bi bi-person input-icon"></i>
                             <input type="text"
-                                   id="login"
-                                   name="login"
-                                   value="<?php echo htmlspecialchars($_POST['login'] ?? ''); ?>"
-                                   placeholder="Ваш логин"
-                                   required
-                                   autofocus
-                                   autocomplete="username">
+                                id="login"
+                                name="login"
+                                value="<?php echo htmlspecialchars($_POST['login'] ?? ''); ?>"
+                                placeholder="Ваш логин"
+                                required
+                                autofocus
+                                autocomplete="username">
                         </div>
                     </div>
 
@@ -223,11 +225,11 @@ $rolePickerIcons = [
                         <div class="login-input-wrap">
                             <i class="bi bi-lock input-icon"></i>
                             <input type="password"
-                                   id="password"
-                                   name="password"
-                                   placeholder="Ваш пароль"
-                                   required
-                                   autocomplete="current-password">
+                                id="password"
+                                name="password"
+                                placeholder="Ваш пароль"
+                                required
+                                autocomplete="current-password">
                             <button type="button" class="login-toggle-pwd" id="togglePassword" aria-label="Показать пароль">
                                 <i class="bi bi-eye"></i>
                             </button>
@@ -246,88 +248,101 @@ $rolePickerIcons = [
                 </form>
 
                 <div class="login-links">
+                    <a href="forgot_password.php" class="login-link">
+                        <i class="bi bi-unlock"></i>
+                        Восстановить пароль
+                    </a>
                     <a href="request_access.php" class="login-link">
                         <i class="bi bi-send"></i>
                         Запросить доступ
                     </a>
                     <?php if ($apkAvailable): ?>
-                    <a href="downloads/download.php" class="login-link login-link--apk">
-                        <i class="bi bi-phone"></i>
-                        Приложение Android
-                        <span class="login-link-meta"><?php echo $apkSizeMb; ?> МБ · <?php echo htmlspecialchars($apkUpdated); ?></span>
-                    </a>
+                        <a href="downloads/download.php" class="login-link login-link--apk">
+                            <i class="bi bi-phone"></i>
+                            Приложение Android
+                            <span class="login-link-meta"><?php echo $apkSizeMb; ?> МБ · <?php echo htmlspecialchars($apkUpdated); ?></span>
+                        </a>
                     <?php endif; ?>
                 </div>
 
-                <p class="login-credit">Разработка · SHOTAYEV · КТСК</p>
+                <footer class="login-credit">
+                    <span class="login-credit-line" aria-hidden="true"></span>
+                    <p class="login-credit-text">
+                        <span class="login-credit-label">Разработчик</span>
+                        <span class="login-credit-sep" aria-hidden="true"></span>
+                        <span class="login-credit-name">SHOTAYEV</span>
+                        <span class="login-credit-sep" aria-hidden="true"></span>
+                        <span class="login-credit-org">КВКИ</span>
+                    </p>
+                </footer>
             </div>
         </main>
     </div>
 
     <?php if ($showRolePicker && !empty($rolePickerOptions)): ?>
-    <div class="modal fade" id="rolePickModal" tabindex="-1" aria-labelledby="rolePickModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content login-role-modal">
-                <div class="modal-header border-0 pb-0">
-                    <div>
-                        <h2 class="modal-title fs-5" id="rolePickModalLabel">Выберите роль</h2>
-                        <p class="login-role-modal-sub mb-0">
-                            Учётная запись <strong><?php echo htmlspecialchars($rolePickerUserName); ?></strong> — укажите, куда войти.
-                        </p>
-                    </div>
-                </div>
-                <div class="modal-body pt-3">
-                    <?php if ($error): ?>
-                        <div class="login-alert mb-3" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                            <span><?php echo htmlspecialchars($error); ?></span>
+        <div class="modal fade" id="rolePickModal" tabindex="-1" aria-labelledby="rolePickModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content login-role-modal">
+                    <div class="modal-header border-0 pb-0">
+                        <div>
+                            <h2 class="modal-title fs-5" id="rolePickModalLabel">Выберите роль</h2>
+                            <p class="login-role-modal-sub mb-0">
+                                Учётная запись <strong><?php echo htmlspecialchars($rolePickerUserName); ?></strong> — укажите, куда войти.
+                            </p>
                         </div>
-                    <?php endif; ?>
-                    <form method="POST" id="rolePickForm" class="login-role-picker-form">
-                        <input type="hidden" name="action" value="select_role">
-                        <fieldset class="login-role-picker">
-                            <legend class="visually-hidden">Роль для входа</legend>
-                            <?php foreach ($rolePickerOptions as $idx => $opt): ?>
-                                <?php
-                                $icon = $rolePickerIcons[$opt['name']] ?? 'person-circle';
-                                $inputId = 'login_role_' . preg_replace('/[^a-z0-9_]/', '', $opt['name']);
-                                ?>
-                                <label class="login-role-option" for="<?php echo htmlspecialchars($inputId); ?>">
-                                    <input type="radio"
-                                           name="login_role"
-                                           id="<?php echo htmlspecialchars($inputId); ?>"
-                                           value="<?php echo htmlspecialchars($opt['name']); ?>"
-                                           <?php echo $idx === 0 ? 'required checked' : ''; ?>>
-                                    <span class="login-role-option-icon"><i class="bi bi-<?php echo htmlspecialchars($icon); ?>"></i></span>
-                                    <span class="login-role-option-text">
-                                        <strong><?php echo htmlspecialchars($opt['label']); ?></strong>
-                                    </span>
-                                    <span class="login-role-option-check"><i class="bi bi-check-lg"></i></span>
-                                </label>
-                            <?php endforeach; ?>
-                        </fieldset>
-                        <button type="submit" class="login-submit" id="rolePickBtn">
-                            <i class="bi bi-box-arrow-in-right"></i>
-                            <span>Продолжить</span>
-                        </button>
-                    </form>
-                </div>
-                <div class="modal-footer border-0 pt-0 justify-content-center">
-                    <form method="POST" class="login-role-cancel m-0">
-                        <input type="hidden" name="action" value="cancel_role_pick">
-                        <button type="submit" class="login-role-back">
-                            <i class="bi bi-arrow-left"></i> Другой логин
-                        </button>
-                    </form>
+                    </div>
+                    <div class="modal-body pt-3">
+                        <?php if ($error): ?>
+                            <div class="login-alert mb-3" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <span><?php echo htmlspecialchars($error); ?></span>
+                            </div>
+                        <?php endif; ?>
+                        <form method="POST" id="rolePickForm" class="login-role-picker-form">
+                            <input type="hidden" name="action" value="select_role">
+                            <fieldset class="login-role-picker">
+                                <legend class="visually-hidden">Роль для входа</legend>
+                                <?php foreach ($rolePickerOptions as $idx => $opt): ?>
+                                    <?php
+                                    $icon = $rolePickerIcons[$opt['name']] ?? 'person-circle';
+                                    $inputId = 'login_role_' . preg_replace('/[^a-z0-9_]/', '', $opt['name']);
+                                    ?>
+                                    <label class="login-role-option" for="<?php echo htmlspecialchars($inputId); ?>">
+                                        <input type="radio"
+                                            name="login_role"
+                                            id="<?php echo htmlspecialchars($inputId); ?>"
+                                            value="<?php echo htmlspecialchars($opt['name']); ?>"
+                                            <?php echo $idx === 0 ? 'required checked' : ''; ?>>
+                                        <span class="login-role-option-icon"><i class="bi bi-<?php echo htmlspecialchars($icon); ?>"></i></span>
+                                        <span class="login-role-option-text">
+                                            <strong><?php echo htmlspecialchars($opt['label']); ?></strong>
+                                        </span>
+                                        <span class="login-role-option-check"><i class="bi bi-check-lg"></i></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </fieldset>
+                            <button type="submit" class="login-submit" id="rolePickBtn">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                                <span>Продолжить</span>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 justify-content-center">
+                        <form method="POST" class="login-role-cancel m-0">
+                            <input type="hidden" name="action" value="cancel_role_pick">
+                            <button type="submit" class="login-role-back">
+                                <i class="bi bi-arrow-left"></i> Другой логин
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     <?php endif; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        (function () {
+        (function() {
             const STORAGE_KEY = 'portal_login_remember';
             const loginInput = document.getElementById('login');
             const passwordInput = document.getElementById('password');
@@ -347,9 +362,10 @@ $rolePickerIcons = [
                         rememberInput.checked = true;
                     }
                 }
-            } catch (e) { /* ignore */ }
+            } catch (e) {
+                /* ignore */ }
 
-            document.getElementById('togglePassword')?.addEventListener('click', function () {
+            document.getElementById('togglePassword')?.addEventListener('click', function() {
                 const icon = this.querySelector('i');
                 if (passwordInput.type === 'password') {
                     passwordInput.type = 'text';
@@ -362,7 +378,7 @@ $rolePickerIcons = [
                 }
             });
 
-            form?.addEventListener('submit', function () {
+            form?.addEventListener('submit', function() {
                 try {
                     if (rememberInput.checked) {
                         localStorage.setItem(STORAGE_KEY, JSON.stringify({
@@ -372,14 +388,15 @@ $rolePickerIcons = [
                     } else {
                         localStorage.removeItem(STORAGE_KEY);
                     }
-                } catch (e) { /* ignore */ }
+                } catch (e) {
+                    /* ignore */ }
 
                 const btn = document.getElementById('submitBtn');
                 btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span><span>Вход...</span>';
                 btn.disabled = true;
             });
 
-            document.getElementById('rolePickForm')?.addEventListener('submit', function () {
+            document.getElementById('rolePickForm')?.addEventListener('submit', function() {
                 const btn = document.getElementById('rolePickBtn');
                 if (btn) {
                     btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span><span>Переход...</span>';
@@ -395,4 +412,5 @@ $rolePickerIcons = [
         })();
     </script>
 </body>
+
 </html>

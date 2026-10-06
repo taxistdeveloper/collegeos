@@ -205,7 +205,7 @@ include 'includes/admin_header.php';
                                 <strong>${escapeHtml(notification.title)}</strong>
                                 ${!isRead ? '<span class="badge badge-danger badge-new">Новое</span>' : ''}
                             </div>
-                            <p style="margin: 0 0 0.5rem 0; color: var(--text-primary);">${escapeHtml(notification.message)}</p>
+                            <p style="margin: 0 0 0.5rem 0; color: var(--text-primary); white-space: pre-wrap;">${escapeHtml(notification.message)}</p>
                             <div class="notification-meta">
                                 <i class="bi bi-clock me-1"></i>${timeAgo}
                                 ${notification.curator_name ? `<span class="ms-3"><i class="bi bi-person me-1"></i>${escapeHtml(notification.curator_name)}</span>` : ''}
