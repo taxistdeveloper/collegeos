@@ -1,0 +1,165 @@
+/* Group reports — manager */
+
+.gr-charts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.gr-chart-card {
+    background: #fff;
+    border: 1px solid var(--mgr-gray-200);
+    border-radius: var(--mgr-radius);
+    box-shadow: var(--mgr-shadow);
+    padding: 1rem 1.15rem 1.25rem;
+    min-width: 0;
+}
+
+.gr-chart-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--mgr-text);
+    margin: 0 0 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.gr-chart-title i {
+    color: var(--mgr-primary);
+}
+
+.gr-chart-wrap {
+    position: relative;
+    height: 240px;
+}
+
+.gr-social-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+}
+
+.gr-social-card {
+    background: var(--mgr-gray-50);
+    border: 1px solid var(--mgr-gray-200);
+    border-radius: var(--mgr-radius-sm);
+    padding: 1rem;
+    text-align: center;
+}
+
+.gr-social-card i {
+    font-size: 1.4rem;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.gr-social-card .num {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--mgr-text);
+    line-height: 1.1;
+}
+
+.gr-social-card .label {
+    font-size: 0.78rem;
+    color: var(--mgr-gray-500);
+    font-weight: 600;
+    margin-top: 0.25rem;
+}
+
+.gr-table-wrap {
+    margin: 0 -1.25rem;
+}
+
+.gr-table-wrap .manager-table-container {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.gr-flags {
+    display: inline-flex;
+    gap: 0.35rem;
+    align-items: center;
+}
+
+.gr-name-link {
+    color: var(--mgr-text);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.gr-name-link:hover {
+    color: var(--mgr-primary);
+    text-decoration: underline;
+}
+
+.gr-hidden {
+    display: none !important;
+}
+
+.gr-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.gr-breakdown-row {
+    display: grid;
+    grid-template-columns: minmax(100px, 140px) 1fr auto;
+    gap: 0.65rem;
+    align-items: center;
+    font-size: 0.875rem;
+}
+
+.gr-breakdown-row .name {
+    color: var(--mgr-gray-600);
+    font-weight: 500;
+}
+
+.gr-breakdown-row .val {
+    font-weight: 700;
+    color: var(--mgr-text);
+    min-width: 2rem;
+    text-align: right;
+}
+
+.gr-bar {
+    height: 8px;
+    background: var(--mgr-gray-100);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.gr-bar > span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--mgr-primary);
+}
+
+@media (max-width: 900px) {
+    .gr-charts {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media print {
+    .vs-toolbar,
+    .vs-actions,
+    .vs-breadcrumb,
+    .vs-tabs .nav-tabs {
+        display: none !important;
+    }
+
+    .vs-tabs .tab-pane {
+        display: block !important;
+        opacity: 1 !important;
+        page-break-inside: avoid;
+    }
+
+    .gr-chart-wrap {
+        height: 200px;
+    }
+}
