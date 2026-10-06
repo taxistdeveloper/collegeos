@@ -412,10 +412,9 @@ function getMenuByRole($role)
             ['name' => 'Аналитика', 'url' => 'director/analytics.php', 'icon' => 'bar-chart-fill']
         ],
         'manager' => [
-            ['name' => 'Дашборд', 'url' => 'manager/dashboard.php', 'icon' => 'speedometer2'],
-            ['name' => 'Студенты', 'url' => 'students.php', 'icon' => 'mortarboard-fill'],
+            ['name' => 'Дашборд', 'url' => 'dashboard.php', 'icon' => 'speedometer2'],
+            ['name' => 'Студенты', 'url' => 'students.php', 'icon' => 'people-fill'],
             ['name' => 'Группы', 'url' => 'groups.php', 'icon' => 'collection-fill'],
-            ['name' => 'Добавить студента', 'url' => 'add_student.php', 'icon' => 'person-plus-fill']
         ],
         'curator' => [
             ['name' => 'Дашборд', 'url' => 'dashboard.php', 'icon' => 'speedometer2'],

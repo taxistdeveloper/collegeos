@@ -162,8 +162,18 @@ $dynamic_values_map = is_array($student_dynamic_values) ? $student_dynamic_value
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/manager-ui.css" rel="stylesheet">
 
     <style>
+        body.manager-app .magazine-layout {
+            max-width: none;
+            margin: 0;
+            padding: 0;
+        }
+        body.manager-app .content-area {
+            padding: 0;
+        }
+
         /* ============================================
            ПЕРЕМЕННЫЕ ЦВЕТОВ И СТИЛЕЙ
            Спокойная, образовательная палитра
@@ -1135,15 +1145,20 @@ $dynamic_values_map = is_array($student_dynamic_values) ? $student_dynamic_value
     </style>
 </head>
 
-<body id="top">
+<body class="manager-app" id="top">
+<div class="manager-shell">
+    <?php
+    $page_title = trim(($student['last_name'] ?? '') . ' ' . ($student['first_name'] ?? '') . ' ' . ($student['middle_name'] ?? ''));
+    $page_subtitle = 'Профиль студента';
+    include 'includes/sidebar.php';
+    ?>
+    <div class="manager-main">
+        <?php include 'includes/header.php'; ?>
+        <div class="manager-content">
     <div class="magazine-layout">
-
-
-        <!-- Основной контент страницы -->
         <main class="content-area" role="main" aria-label="Профиль студента">
 
-            <!-- Breadcrumb - навигационная цепочка для понимания текущего местоположения -->
-            <nav class="breadcrumb-nav" aria-label="Навигация">
+            <nav class="breadcrumb-nav no-print" aria-label="Навигация">
                 <ol>
                     <li>
                         <a href="dashboard.php">
@@ -1956,11 +1971,14 @@ $dynamic_values_map = is_array($student_dynamic_values) ? $student_dynamic_value
             </footer>
         </main>
     </div>
-
+        </div>
+    </div>
+</div>
 
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/tooltips.js"></script>
+    <script src="assets/js/manager-ui.js"></script>
 
     <!-- ============================================
          ИНТЕРАКТИВНОСТЬ И ФУНКЦИОНАЛЬНОСТЬ

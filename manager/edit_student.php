@@ -288,7 +288,7 @@ function translateDatabaseError($error_message)
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
-    <link href="assets/css/curator-ui.css" rel="stylesheet">
+    <link href="assets/css/manager-ui.css" rel="stylesheet">
 
     <style>
         :root {
@@ -902,45 +902,29 @@ function translateDatabaseError($error_message)
     </style>
 </head>
 
-<body>
-    <div class="container-fluid">
-        <div class="sb-layout">
-            <!-- Сайдбар -->
-            <?php include 'includes/sidebar.php'; ?>
-
-            <!-- Основной контент -->
-            <main class="sb-content" role="main">
+<body class="manager-app">
+<div class="manager-shell">
+    <?php
+    $page_title = 'Редактирование';
+    $page_subtitle = trim(($student['last_name'] ?? '') . ' ' . ($student['first_name'] ?? '') . ' ' . ($student['middle_name'] ?? ''));
+    include 'includes/sidebar.php';
+    ?>
+    <div class="manager-main">
+        <?php include 'includes/header.php'; ?>
+        <div class="manager-content">
                 <div class="form-container">
-                    <!-- Hero Header -->
-                    <div class="edit-hero">
-                        <div class="hero-content">
-                            <div class="hero-info">
-                                <h1>Редактировать студента</h1>
-                                <div class="hero-meta">
-                                    <span class="meta-badge">
-                                        <i class="bi bi-person me-1"></i>
-                                        <?php echo htmlspecialchars($student['first_name'] . ' ' . $student['middle_name']); ?>
-                                    </span>
-                                    <span class="meta-badge">
-                                        <i class="bi bi-credit-card me-1"></i>
-                                        ИИН: <?php echo htmlspecialchars($student['iin']); ?>
-                                    </span>
-                                    <span class="meta-badge">
-                                        <i class="bi bi-people me-1"></i>
-                                        ID: <?php echo $student['id']; ?>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="hero-actions">
-                                <a href="view_student.php?id=<?php echo $student['id']; ?>" class="btn-hero btn-secondary-hero">
-                                    <i class="bi bi-eye"></i>
-                                    Просмотр
-                                </a>
-                                <a href="students.php" class="btn-hero btn-primary-hero">
-                                    <i class="bi bi-arrow-left"></i>
-                                    К списку
-                                </a>
-                            </div>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 no-print">
+                        <div class="manager-action-buttons">
+                            <a href="view_student.php?id=<?php echo (int)$student['id']; ?>" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye me-1"></i>Просмотр
+                            </a>
+                            <a href="students.php" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-arrow-left me-1"></i>К списку
+                            </a>
+                        </div>
+                        <div class="text-muted small">
+                            ИИН: <?php echo htmlspecialchars($student['iin'] ?? ''); ?>
+                            · ID: <?php echo (int)$student['id']; ?>
                         </div>
                     </div>
 
@@ -1525,18 +1509,19 @@ function translateDatabaseError($error_message)
                         </div>
                     </form>
                 </div>
-            </main>
         </div>
     </div>
+</div>
 
     <!-- ПЛАВАЮЩАЯ КНОПКА СОХРАНЕНИЯ -->
     <button type="button" class="floating-save-btn" id="floating-save" onclick="document.getElementById('edit-student-form').submit();">
         <i class="bi bi-check-circle me-2"></i>
-        💾 Сохранить
+        Сохранить
     </button>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/tooltips.js"></script>
+    <script src="assets/js/manager-ui.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             console.log('✅ Форма редактирования студента загружена');

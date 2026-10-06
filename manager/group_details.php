@@ -134,314 +134,32 @@ if ($group_info['curator_id']) {
 
 // Получение недавней активности (если есть логи)
 $recent_activity = []; // Можно расширить в будущем для логирования действий
+
+$page_title = 'Группа: ' . ($group_info['name'] ?? '');
+$page_subtitle = 'Информация о группе и студентах';
+$document_title = $page_title;
+include 'includes/layout_start.php';
 ?>
-<!DOCTYPE html>
-<html lang="ru">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Детали группы <?php echo htmlspecialchars($group_info['name']); ?> - <?php echo APP_NAME; ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="../assets/css/style.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
-
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #10b981;
-            --accent-color: #f59e0b;
-            --danger-color: #ef4444;
-            --dark-bg: #1e293b;
-            --light-bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-primary: #0f172a;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        body {
-            background: var(--light-bg);
-            font-family: 'Poppins', sans-serif;
-            color: var(--text-primary);
-        }
-
-        .navbar-simple {
-            background: var(--card-bg) !important;
-            box-shadow: var(--shadow-md);
-            border-bottom: 3px solid var(--primary-color);
-        }
-
-        .navbar-dark .navbar-brand,
-        .navbar-dark .nav-link {
-            color: var(--text-primary) !important;
-        }
-
-        .navbar-dark .navbar-brand {
-            font-weight: 700;
-            color: var(--primary-color) !important;
-        }
-
-        .nav-link {
-            border-radius: 8px;
-            padding: 0.6rem 1.2rem !important;
-            margin: 0 0.2rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link:hover {
-            background: var(--light-bg);
-            color: var(--primary-color) !important;
-        }
-
-        .nav-link.active {
-            background: var(--primary-color) !important;
-            color: white !important;
-        }
-
-        .page-header {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow-md);
-            border-left: 6px solid var(--primary-color);
-        }
-
-        .card {
-            border-radius: 16px;
-            border: none;
-            box-shadow: var(--shadow-md);
-            background: var(--card-bg);
-        }
-
-        .card-header {
-            background: var(--light-bg);
-            border-bottom: 2px solid var(--border-color);
-            border-radius: 16px 16px 0 0 !important;
-            padding: 1.25rem;
-        }
-
-        .stat-box {
-            text-align: center;
-            padding: 1.5rem;
-            border-radius: 16px;
-            background: var(--card-bg);
-            border-top: 4px solid var(--primary-color);
-            box-shadow: var(--shadow-md);
-            transition: all 0.3s ease;
-        }
-
-        .stat-box:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .table {
-            margin: 0;
-        }
-
-        .table thead {
-            background: var(--dark-bg);
-            color: white;
-        }
-
-        .table thead th {
-            border: none;
-            padding: 1rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-        }
-
-        .table tbody tr {
-            transition: all 0.2s ease;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .table tbody tr:hover {
-            background: var(--light-bg);
-            box-shadow: inset 4px 0 0 var(--primary-color);
-        }
-
-        .badge {
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-        }
-
-        .badge.bg-primary {
-            background: var(--primary-color) !important;
-        }
-
-        .badge.bg-success {
-            background: var(--secondary-color) !important;
-        }
-
-        .badge.bg-warning {
-            background: var(--accent-color) !important;
-            color: white !important;
-        }
-
-        .badge.bg-danger {
-            background: var(--danger-color) !important;
-        }
-
-        .btn-primary {
-            background: var(--primary-color) !important;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background: #1d4ed8 !important;
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-2px);
-        }
-
-        .btn-outline-primary,
-        .btn-outline-success,
-        .btn-outline-info {
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-outline-primary {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .btn-outline-primary:hover {
-            background: var(--primary-color) !important;
-            color: white !important;
-        }
-
-        .btn-outline-success {
-            border-color: var(--secondary-color);
-            color: var(--secondary-color);
-        }
-
-        .btn-outline-success:hover {
-            background: var(--secondary-color) !important;
-            color: white !important;
-        }
-
-        .btn-outline-info {
-            border-color: #0ea5e9;
-            color: #0ea5e9;
-        }
-
-        .btn-outline-info:hover {
-            background: #0ea5e9 !important;
-            color: white !important;
-        }
-
-        .dropdown-menu {
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-color);
-            padding: 0.5rem;
-        }
-
-        .dropdown-item {
-            border-radius: 8px;
-            margin: 0.2rem 0;
-            padding: 0.7rem 1rem;
-            transition: all 0.2s ease;
-        }
-
-        .dropdown-item:hover {
-            background: var(--light-bg);
-            color: var(--primary-color);
-        }
-
-        .text-muted {
-            color: var(--text-secondary) !important;
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Навигация -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-simple">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand" href="dashboard.php">
-                <i class="bi bi-person-gear me-2"></i>
-                Панель менеджера
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="groups.php">
-                            <i class="bi bi-collection-fill me-1"></i>Группы
-                        </a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle me-1"></i><?php echo $current_user['name']; ?>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person me-2"></i>Профиль</a></li>
-                            <li><a class="dropdown-item" href="settings.php"><i class="bi bi-gear me-2"></i>Настройки</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="../logout.php"><i class="bi bi-box-arrow-right me-2"></i>Выход</a></li>
-                        </ul>
-                    </li>
-                </ul>
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 no-print">
+            <div class="text-muted small">
+                <code><?php echo htmlspecialchars($group_info['code'] ?? ''); ?></code>
+                · <?php echo htmlspecialchars($group_info['specialty'] ?? ''); ?>
+                · <?php echo htmlspecialchars($group_info['course'] ?? ''); ?>
             </div>
-        </div>
-    </nav>
-
-    <div class="container-fluid px-4 py-4">
-        <!-- Page Header -->
-        <div class="page-header">
-            <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <div>
-                    <h1 class="h4 mb-1">
-                        <i class="bi bi-collection text-primary me-2"></i>
-                        Детали группы "<?php echo htmlspecialchars($group_info['name']); ?>"
-                    </h1>
-                    <p class="text-muted mb-0">
-                        <small>
-                            <code><?php echo htmlspecialchars($group_info['code']); ?></code> •
-                            <?php echo htmlspecialchars($group_info['specialty']); ?> •
-                            <?php echo htmlspecialchars($group_info['course']); ?>
-                        </small>
-                    </p>
-                </div>
-                <div class="d-flex gap-2 mt-3 mt-md-0 flex-wrap">
-                    <a href="group_reports.php?id=<?php echo $group_id; ?>" class="btn btn-success btn-sm">
-                        <i class="bi bi-graph-up me-1"></i>Отчеты
-                    </a>
-                    <a href="students.php?group=<?php echo $group_id; ?>" class="btn btn-info btn-sm">
-                        <i class="bi bi-people me-1"></i>Студенты
-                    </a>
-                    <button class="btn btn-primary btn-sm" onclick="window.print()">
-                        <i class="bi bi-printer me-1"></i>Печать
-                    </button>
-                    <a href="groups.php" class="btn btn-secondary btn-sm">
-                        <i class="bi bi-arrow-left me-1"></i>Назад
-                    </a>
-                </div>
+            <div class="manager-action-buttons">
+                <a href="group_reports.php?id=<?php echo $group_id; ?>" class="btn btn-success btn-sm">
+                    <i class="bi bi-graph-up me-1"></i>Отчёты
+                </a>
+                <a href="students.php?group=<?php echo $group_id; ?>" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-people me-1"></i>Студенты
+                </a>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="window.print()">
+                    <i class="bi bi-printer me-1"></i>Печать
+                </button>
+                <a href="groups.php" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i>Назад
+                </a>
             </div>
         </div>
 
@@ -895,22 +613,8 @@ $recent_activity = []; // Можно расширить в будущем для
                 </div>
             </div>
         </div>
-    </div>
-    </div>
-    </div>
 
-    <!-- Footer -->
-    <footer class="mt-4 pb-4">
-        <div class="container-fluid px-4">
-            <div class="text-center text-muted">
-                <small>&copy; 2024 <?php echo APP_NAME; ?>. Все права защищены.</small>
-            </div>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/js/main.js"></script>
-    <script>
+<script>
         function scrollToMinors() {
             const minorsSection = document.querySelector('.card:has(.bi-calendar-minus)');
             if (minorsSection) {
@@ -962,6 +666,4 @@ $recent_activity = []; // Можно расширить в будущем для
             document.body.removeChild(link);
         }
     </script>
-</body>
-
-</html>
+<?php include 'includes/layout_end.php'; ?>
