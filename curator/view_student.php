@@ -202,6 +202,7 @@ $status_label = getStudentStatusLabel($student_status);
 <html lang="ru" data-density="compact">
 <head>
     <meta charset="UTF-8">
+    <?php appFaviconTags(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Профиль студента <?php echo vs_h($full_name); ?>">
     <title>Студент: <?php echo vs_h($full_name); ?> - <?php echo vs_h(APP_NAME); ?></title>

@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <?php appFaviconTags(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Восстановление пароля — <?php echo htmlspecialchars(APP_NAME); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="login-form-wrap">
                 <div class="login-form-header">
                     <div class="login-mark">
-                        <i class="bi bi-unlock-fill"></i>
+                        <img src="<?php echo htmlspecialchars(appLogoUrl()); ?>" alt="<?php echo htmlspecialchars(APP_LOGO_ALT); ?>" class="login-logo">
                     </div>
                     <h1>Восстановить пароль</h1>
                     <p>Укажите ФИО и телефон — заявка уйдёт администратору</p>

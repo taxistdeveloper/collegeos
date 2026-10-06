@@ -19,7 +19,7 @@ $role_label = $role_labels[$role] ?? 'Учебная часть';
     <div class="curator-sidebar-brand">
         <a href="dashboard.php" class="curator-sidebar-brand-link">
             <div class="curator-sidebar-logo">
-                <i class="bi bi-mortarboard-fill"></i>
+                <img src="<?php echo htmlspecialchars(appLogoUrl()); ?>" alt="<?php echo htmlspecialchars(APP_LOGO_ALT); ?>">
             </div>
             <div class="curator-sidebar-brand-text">
                 <div class="curator-sidebar-brand-name"><?php echo htmlspecialchars(APP_SHORT_NAME); ?></div>

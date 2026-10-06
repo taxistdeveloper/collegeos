@@ -86,6 +86,7 @@ $page_subtitle = 'Группа: ' . ($student['group_name'] ?? '—') . ' · И�
 
 <head>
     <meta charset="UTF-8">
+    <?php appFaviconTags(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Профиль студента <?php echo htmlspecialchars($student['first_name'] . ' ' . $student['middle_name']); ?>">
     <title>Студент: <?php echo htmlspecialchars($student['first_name'] . ' ' . $student['middle_name']); ?> - <?php echo APP_NAME; ?></title>

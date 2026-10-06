@@ -15,6 +15,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <?php appFaviconTags(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($page_title); ?> — <?php echo htmlspecialchars(APP_NAME); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -26,7 +27,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <div class="dept-shell">
     <aside class="dept-sidebar">
         <div class="dept-brand">
-            <div class="dept-brand-icon"><i class="bi bi-building"></i></div>
+            <div class="dept-brand-icon">
+                <img src="<?php echo htmlspecialchars(appLogoUrl()); ?>" alt="<?php echo htmlspecialchars(APP_LOGO_ALT); ?>">
+            </div>
             <div>
                 <div class="dept-brand-name"><?php echo htmlspecialchars(APP_SHORT_NAME); ?></div>
                 <div class="dept-brand-sub">Заведующий отделением</div>

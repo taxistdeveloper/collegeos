@@ -28,6 +28,26 @@ body {
   font-size: 1.25rem;
 }
 
+.app-nav-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.app-nav-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
 .navbar-nav .nav-link {
   font-weight: 500;
   transition: var(--transition);

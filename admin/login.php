@@ -52,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <?php appFaviconTags(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход в админ-панель — <?php echo htmlspecialchars(APP_NAME); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -66,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="admin-login-form-wrap">
                 <header class="admin-login-form-header">
                     <div class="admin-login-mark">
-                        <i class="bi bi-shield-lock-fill" aria-hidden="true"></i>
+                        <img src="<?php echo htmlspecialchars(appLogoUrl()); ?>" alt="<?php echo htmlspecialchars(APP_LOGO_ALT); ?>" class="admin-login-logo">
                     </div>
                     <h1>Админ-панель</h1>
                     <p>Только для учётных записей администратора</p>

@@ -101,16 +101,24 @@ body.curator-app {
 }
 
 .curator-sidebar-logo {
-    width: 40px;
-    height: 40px;
-    background: var(--cur-primary);
+    width: 44px;
+    height: 44px;
+    background: #fff;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    font-size: 1.25rem;
     flex-shrink: 0;
+    padding: 5px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.curator-sidebar-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
 
 .curator-sidebar-brand-text {

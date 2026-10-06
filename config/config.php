@@ -9,6 +9,8 @@ define('APP_NAME', 'Цифровой колледж КВКИ');
 define('APP_SHORT_NAME', 'КВКИ');
 define('APP_TAGLINE', 'Единый цифровой портал колледжа');
 define('APP_VERSION', '1.0.0');
+define('APP_LOGO', 'assets/img/kvki-logo.png');
+define('APP_LOGO_ALT', 'Қарағанды жоғары инжиниринг колледжі');
 
 // BASE_URL по хосту (локально / продакшн)
 $host = preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost');
@@ -38,6 +40,21 @@ require_once __DIR__ . '/../classes/AdminLog.php';
 AdminLog::register();
 
 // Функции-помощники
+function appLogoUrl()
+{
+    return rtrim(BASE_URL, '/') . '/' . ltrim(APP_LOGO, '/');
+}
+
+function appFaviconTags()
+{
+    $base = rtrim(BASE_URL, '/');
+    $v = defined('APP_VERSION') ? APP_VERSION : '1';
+    echo '<link rel="icon" type="image/png" sizes="32x32" href="' . htmlspecialchars($base . '/assets/img/favicon-32.png?v=' . $v) . '">' . "\n";
+    echo '    <link rel="icon" type="image/png" sizes="16x16" href="' . htmlspecialchars($base . '/assets/img/favicon-16.png?v=' . $v) . '">' . "\n";
+    echo '    <link rel="apple-touch-icon" href="' . htmlspecialchars($base . '/assets/img/apple-touch-icon.png?v=' . $v) . '">' . "\n";
+    echo '    <link rel="shortcut icon" href="' . htmlspecialchars($base . '/assets/img/favicon.png?v=' . $v) . '">' . "\n";
+}
+
 function sanitize($data)
 {
     if ($data === null) {

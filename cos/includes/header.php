@@ -9,6 +9,7 @@ $page_title = $page_title ?? 'ЦОС';
 
 <head>
     <meta charset="UTF-8">
+    <?php appFaviconTags(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($page_title); ?> — <?php echo APP_NAME; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,8 +20,11 @@ $page_title = $page_title ?? 'ЦОС';
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
         <div class="container-fluid">
-            <a class="navbar-brand" href="dashboard.php">
-                <i class="bi bi-building me-2"></i>ЦОС
+            <a class="navbar-brand d-flex align-items-center gap-2" href="dashboard.php">
+                <span class="app-nav-logo">
+                    <img src="<?php echo htmlspecialchars(appLogoUrl()); ?>" alt="<?php echo htmlspecialchars(APP_LOGO_ALT); ?>">
+                </span>
+                <span>ЦОС</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#cosNav">
                 <span class="navbar-toggler-icon"></span>

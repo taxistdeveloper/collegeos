@@ -173,6 +173,7 @@ sort($course_filter_options, SORT_NATURAL);
 
 <head>
     <meta charset="UTF-8">
+    <?php appFaviconTags(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Отчеты директора — <?php echo APP_NAME; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -226,8 +227,25 @@ sort($course_filter_options, SORT_NATURAL);
             letter-spacing: -0.02em;
         }
 
-        .dir-nav .navbar-brand i {
-            color: var(--dir-primary);
+        .dir-nav-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid var(--dir-border);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+            flex-shrink: 0;
+        }
+
+        .dir-nav-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
         }
 
         .dir-user {
@@ -690,8 +708,11 @@ sort($course_filter_options, SORT_NATURAL);
 <body>
     <nav class="navbar navbar-expand-lg dir-nav">
         <div class="container-fluid px-3 px-lg-4">
-            <a class="navbar-brand" href="dashboard.php">
-                <i class="bi bi-briefcase me-2"></i>Панель директора
+            <a class="navbar-brand d-flex align-items-center gap-2" href="dashboard.php">
+                <span class="dir-nav-logo">
+                    <img src="<?php echo htmlspecialchars(appLogoUrl()); ?>" alt="<?php echo htmlspecialchars(APP_LOGO_ALT); ?>">
+                </span>
+                <span>Панель директора</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dirNav">
                 <span class="navbar-toggler-icon"></span>

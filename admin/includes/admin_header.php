@@ -36,6 +36,7 @@ $menu_stats = $GLOBALS['admin_menu_stats'];
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <?php appFaviconTags(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($page_title); ?> - <?php echo htmlspecialchars(APP_NAME); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
@@ -52,7 +53,7 @@ $menu_stats = $GLOBALS['admin_menu_stats'];
         <div class="sidebar-header">
             <a href="index.php" class="sidebar-logo">
                 <div class="sidebar-logo-icon">
-                    <i class="bi bi-shield-lock-fill"></i>
+                    <img src="<?php echo htmlspecialchars(appLogoUrl()); ?>" alt="<?php echo htmlspecialchars(APP_LOGO_ALT); ?>">
                 </div>
                 <div class="sidebar-logo-text">
                     <div class="sidebar-logo-name"><?php echo htmlspecialchars(APP_SHORT_NAME); ?></div>

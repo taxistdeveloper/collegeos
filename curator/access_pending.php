@@ -43,6 +43,7 @@ $requested_at = $profile['curator_access_requested_at'] ?? null;
 
 <head>
     <meta charset="UTF-8">
+    <?php appFaviconTags(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Доступ к порталу — <?php echo APP_NAME; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -77,7 +78,7 @@ $requested_at = $profile['curator_access_requested_at'] ?? null;
         <div class="card card-pending">
             <div class="card-body p-4 p-md-5">
                 <div class="text-center mb-4">
-                    <i class="bi bi-shield-lock text-primary" style="font-size: 2.5rem;"></i>
+                    <img src="<?php echo htmlspecialchars(appLogoUrl()); ?>" alt="<?php echo htmlspecialchars(APP_LOGO_ALT); ?>" style="width: 96px; height: 96px; object-fit: contain; border-radius: 16px; background: #fff; padding: 0.65rem; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);">
                     <h1 class="h4 mt-3 mb-2">Доступ к порталу куратора</h1>
                     <p class="text-muted text-start small mb-0">
                         Вы успешно вошли в систему под ролью <strong>«Куратор»</strong> — она не меняется.

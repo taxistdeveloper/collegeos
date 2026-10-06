@@ -24,7 +24,7 @@ $active_page = $active_pages[$current_page] ?? $current_page;
     <div class="manager-sidebar-brand">
         <a href="dashboard.php" class="manager-sidebar-brand-link">
             <div class="manager-sidebar-logo">
-                <i class="bi bi-briefcase-fill"></i>
+                <img src="<?php echo htmlspecialchars(appLogoUrl()); ?>" alt="<?php echo htmlspecialchars(APP_LOGO_ALT); ?>">
             </div>
             <div class="manager-sidebar-brand-text">
                 <div class="manager-sidebar-brand-name"><?php echo htmlspecialchars(APP_SHORT_NAME); ?></div>

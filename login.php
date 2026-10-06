@@ -175,6 +175,7 @@ $rolePickerIcons = [
 
 <head>
     <meta charset="UTF-8">
+    <?php appFaviconTags(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход — <?php echo htmlspecialchars(APP_NAME); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -191,7 +192,7 @@ $rolePickerIcons = [
             <div class="login-form-wrap">
                 <div class="login-form-header">
                     <div class="login-mark">
-                        <img src="kvki-logo.png" alt="Қарағанды жоғары инжиниринг колледжі" class="login-logo">
+                        <img src="<?php echo htmlspecialchars(appLogoUrl()); ?>" alt="<?php echo htmlspecialchars(APP_LOGO_ALT); ?>" class="login-logo">
                     </div>
                     <p>Введите логин и пароль для входа</p>
                 </div>
