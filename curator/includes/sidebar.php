@@ -47,7 +47,14 @@ $active_page = $active_pages[$current_page] ?? $current_page;
 
     <div class="curator-sidebar-footer">
         <div class="curator-sidebar-card">
-            <div class="curator-sidebar-card-title"><?php echo htmlspecialchars($current_user['name']); ?></div>
+            <?php
+            $sidebar_user_name = $current_user['name']
+                ?? trim(($current_user['first_name'] ?? '') . ' ' . ($current_user['last_name'] ?? ''));
+            if ($sidebar_user_name === '') {
+                $sidebar_user_name = 'Куратор';
+            }
+            ?>
+            <div class="curator-sidebar-card-title"><?php echo htmlspecialchars($sidebar_user_name); ?></div>
             <div class="curator-sidebar-card-text">Куратор</div>
             <a href="../logout.php" class="btn btn-primary btn-sm">
                 <i class="bi bi-box-arrow-right me-1"></i>Выход

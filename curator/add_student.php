@@ -22,6 +22,8 @@ $activityLog = new ActivityLog();
 $current_user_session = getCurrentUser();
 // Получаем полную информацию о пользователе из базы данных
 $current_user = $user->getUserById($current_user_session['id']);
+$current_user['name'] = $current_user_session['name']
+    ?: trim(($current_user['first_name'] ?? '') . ' ' . ($current_user['last_name'] ?? ''));
 
 // Получение групп куратора
 $curator_groups = $group->getGroupsByCurator($current_user['id']);
