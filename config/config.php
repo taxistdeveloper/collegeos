@@ -2,16 +2,15 @@
 
 /**
  * Основные настройки приложения
- * Скопируйте в config.php и укажите свой BASE_URL
- *
- *   cp config.example.php config.php
  */
 
+// Настройки приложения
 define('APP_NAME', 'Цифровой колледж КВКИ');
 define('APP_SHORT_NAME', 'КВКИ');
 define('APP_TAGLINE', 'Единый цифровой портал колледжа');
 define('APP_VERSION', '1.0.0');
 
+// BASE_URL по хосту (локально / продакшн)
 $host = preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost');
 if (strpos($host, 'app.kvki.kz') !== false || strpos($host, 'kvki.kz') !== false) {
     define('BASE_URL', 'https://app.kvki.kz/');
@@ -19,21 +18,26 @@ if (strpos($host, 'app.kvki.kz') !== false || strpos($host, 'kvki.kz') !== false
     define('BASE_URL', 'http://localhost/portal/');
 }
 
+// Безопасная функция для запуска сессии
 function startSessionSafely()
 {
     if (session_status() === PHP_SESSION_NONE) {
+        // Настройки сессии устанавливаются только перед запуском
         ini_set('session.cookie_httponly', 1);
         ini_set('session.use_only_cookies', 1);
         session_start();
     }
 }
 
+// Запускаем сессию безопасно
 startSessionSafely();
 
+// Подключение к базе данных
 require_once __DIR__ . '/database.php';
 require_once __DIR__ . '/../classes/AdminLog.php';
 AdminLog::register();
 
+// Функции-помощники
 function sanitize($data)
 {
     if ($data === null) {
@@ -59,6 +63,8 @@ function isLoggedIn()
         return false;
     }
 
+    // Дополнительная проверка статуса пользователя в базе данных
+    // Проверяем, что функция getDB доступна (база данных инициализирована)
     if (!function_exists('getDB')) {
         return isset($_SESSION['user_logged_in']);
     }

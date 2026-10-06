@@ -1,8 +1,7 @@
-# ===== Config (пароли БД) — example-файлы коммитятся =====
-config/config.php
-config/database.php
+# ===== Config: в git только пароли БД =====
+# config.php и database.php коммитятся (без секретов)
 config/server_config.php
-!config/*.example.php
+config/*.local.php
 
 # ===== Portal runtime =====
 logs/*.log
@@ -20,7 +19,6 @@ deploy.sh
 .env
 .env.*
 !.env.example
-config/*.local.php
 
 # ===== Local exports / dumps =====
 *.csv
