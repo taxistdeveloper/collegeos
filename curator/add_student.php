@@ -2054,6 +2054,42 @@ $page_subtitle = '';
         // Данные о группах для автозаполнения
         const groupsData = <?php echo json_encode($curator_groups); ?>;
 
+        function setSelectValue(fieldId, value) {
+            const field = document.getElementById(fieldId);
+            if (!field || value === undefined || value === null || value === '') {
+                return false;
+            }
+
+            let next = String(value).trim();
+
+            // Normalize course like "1" / 1 → "1 курс"
+            if (fieldId === 'course' && /^\d+$/.test(next)) {
+                next = next + ' курс';
+            }
+
+            field.value = next;
+
+            // If value still not applied, try case-insensitive / partial match
+            if (field.value !== next) {
+                const options = Array.from(field.options);
+                const found = options.find(function (opt) {
+                    return opt.value === next
+                        || opt.value.toLowerCase() === next.toLowerCase()
+                        || opt.text.trim().toLowerCase() === next.toLowerCase()
+                        || opt.value.toLowerCase().indexOf(next.toLowerCase()) === 0;
+                });
+                if (found) {
+                    field.value = found.value;
+                }
+            }
+
+            field.dispatchEvent(new Event('change', { bubbles: true }));
+            if (typeof syncAllAdminSelects === 'function') {
+                syncAllAdminSelects();
+            }
+            return field.value !== '';
+        }
+
         // Автозаполнение полей группы при выборе
         document.getElementById('group_id').addEventListener('change', function() {
             const selectedGroupId = this.value;
@@ -2063,21 +2099,13 @@ $page_subtitle = '';
 
                 if (selectedGroup) {
                     // Автозаполняем поля на основе данных группы
-                    if (selectedGroup.course) {
-                        document.getElementById('course').value = selectedGroup.course;
-                    }
-
-                    if (selectedGroup.language) {
-                        document.getElementById('language').value = selectedGroup.language;
-                    }
-
-                    if (selectedGroup.study_form) {
-                        document.getElementById('study_form').value = selectedGroup.study_form;
-                    }
-
-                    if (selectedGroup.study_duration) {
-                        document.getElementById('study_duration').value = selectedGroup.study_duration;
-                    }
+                    setSelectValue('course', selectedGroup.course);
+                    setSelectValue('language', selectedGroup.language);
+                    setSelectValue('study_form', selectedGroup.study_form);
+                    setSelectValue('study_duration', selectedGroup.study_duration);
+                    setSelectValue('arrival_from', selectedGroup.arrival_from);
+                    setSelectValue('education_type', selectedGroup.education_type);
+                    setSelectValue('residence_type', selectedGroup.residence_type);
 
                     if (selectedGroup.specialty) {
                         document.getElementById('specialty').value = selectedGroup.specialty;
@@ -2108,7 +2136,7 @@ $page_subtitle = '';
 
 
                     // Обновляем индикаторы статуса для автозаполненных полей
-                    const autoFilledFields = ['course', 'language', 'study_form', 'study_duration', 'specialty', 'course_start_date', 'course_end_date', 'arrival_date', 'enrollment_order_number'];
+                    const autoFilledFields = ['course', 'language', 'study_form', 'study_duration', 'specialty', 'course_start_date', 'course_end_date', 'arrival_date', 'enrollment_order_number', 'arrival_from', 'education_type', 'residence_type'];
                     autoFilledFields.forEach(fieldId => {
                         validateField(fieldId);
                     });
@@ -2125,7 +2153,7 @@ $page_subtitle = '';
                 clearGroupFields();
 
                 // Обновляем индикаторы статуса для очищенных полей
-                const clearedFields = ['course', 'language', 'study_form', 'study_duration', 'specialty', 'course_start_date', 'course_end_date', 'arrival_date', 'enrollment_order_number'];
+                const clearedFields = ['course', 'language', 'study_form', 'study_duration', 'specialty', 'course_start_date', 'course_end_date', 'arrival_date', 'enrollment_order_number', 'arrival_from', 'education_type', 'residence_type'];
                 clearedFields.forEach(fieldId => {
                     validateField(fieldId);
                 });
@@ -2355,10 +2383,12 @@ $page_subtitle = '';
 
         // Функция для очистки полей группы
         function clearGroupFields() {
-            document.getElementById('course').value = '';
-            document.getElementById('language').value = '';
-            document.getElementById('study_form').value = '';
-            document.getElementById('study_duration').value = '';
+            ['course', 'language', 'study_form', 'study_duration', 'arrival_from', 'education_type', 'residence_type'].forEach(function (id) {
+                const field = document.getElementById(id);
+                if (!field) return;
+                field.value = '';
+                field.dispatchEvent(new Event('change', { bubbles: true }));
+            });
             document.getElementById('specialty').value = '';
             document.getElementById('group_code').value = '';
             document.getElementById('course_start_date').value = '';

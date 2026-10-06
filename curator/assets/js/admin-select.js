@@ -202,6 +202,38 @@
             toggle.style.borderColor = 'var(--danger)';
         });
 
+        // Keep label in sync when value is set programmatically (without change event)
+        (function bindValueSync(el) {
+            var valueDesc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+            if (valueDesc && valueDesc.set) {
+                Object.defineProperty(el, 'value', {
+                    configurable: true,
+                    enumerable: true,
+                    get: function () {
+                        return valueDesc.get.call(this);
+                    },
+                    set: function (next) {
+                        valueDesc.set.call(this, next);
+                        syncLabel();
+                    }
+                });
+            }
+            var indexDesc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'selectedIndex');
+            if (indexDesc && indexDesc.set) {
+                Object.defineProperty(el, 'selectedIndex', {
+                    configurable: true,
+                    enumerable: true,
+                    get: function () {
+                        return indexDesc.get.call(this);
+                    },
+                    set: function (next) {
+                        indexDesc.set.call(this, next);
+                        syncLabel();
+                    }
+                });
+            }
+        })(select);
+
         wrap._closeAdminSelect = closeMenu;
         wrap._syncAdminSelect = syncLabel;
         syncLabel();
