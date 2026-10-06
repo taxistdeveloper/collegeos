@@ -1,0 +1,45 @@
+<?php
+if (!isset($current_user)) {
+    throw new Exception('$current_user не определен');
+}
+
+$page_title = $page_title ?? 'Панель куратора';
+$page_subtitle = $page_subtitle ?? '';
+
+$name_parts = preg_split('/\s+/', trim($current_user['name'] ?? ''), 2);
+$initials = '';
+if (!empty($name_parts[0])) {
+    $initials .= mb_strtoupper(mb_substr($name_parts[0], 0, 1));
+}
+if (!empty($name_parts[1])) {
+    $initials .= mb_strtoupper(mb_substr($name_parts[1], 0, 1));
+}
+if ($initials === '') {
+    $initials = 'К';
+}
+?>
+
+<header class="curator-header">
+    <div class="curator-header-left d-flex align-items-center gap-2">
+        <button type="button" class="curator-header-menu-btn" id="curatorSidebarToggle" aria-label="Меню">
+            <i class="bi bi-list"></i>
+        </button>
+        <div>
+            <h1 class="curator-header-title"><?php echo htmlspecialchars($page_title); ?></h1>
+            <?php if ($page_subtitle): ?>
+                <p class="curator-header-subtitle"><?php echo htmlspecialchars($page_subtitle); ?></p>
+            <?php endif; ?>
+        </div>
+    </div>
+    <div class="curator-header-right">
+        <?php if (empty($hide_header_search)): ?>
+        <div class="curator-header-search">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" id="curatorGlobalSearch" placeholder="Найти студента..." autocomplete="off">
+        </div>
+        <?php endif; ?>
+        <div class="curator-header-avatar" title="<?php echo htmlspecialchars($current_user['name']); ?>">
+            <?php echo htmlspecialchars($initials); ?>
+        </div>
+    </div>
+</header>

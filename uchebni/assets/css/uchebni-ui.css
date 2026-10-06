@@ -1,0 +1,770 @@
+/* Учебная часть — дополнительные стили */
+
+.uchebni-welcome-card {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+}
+
+.uchebni-schedule-grid {
+    display: grid;
+    grid-template-columns: 80px repeat(6, 1fr);
+    gap: 2px;
+    font-size: 0.8rem;
+}
+
+.uchebni-schedule-grid--5days {
+    grid-template-columns: 100px repeat(5, 1fr);
+}
+
+.uchebni-schedule-grid .grid-header {
+    background: #f1f5f9;
+    padding: 8px 4px;
+    text-align: center;
+    font-weight: 600;
+    border-radius: 4px;
+}
+
+.uchebni-schedule-grid .grid-pair {
+    background: #f8fafc;
+    padding: 8px 4px;
+    text-align: center;
+    font-weight: 500;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.uchebni-schedule-cell {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 6px;
+    min-height: 72px;
+}
+
+.uchebni-schedule-cell.has-lesson {
+    background: #eff6ff;
+    border-color: #93c5fd;
+}
+
+.uchebni-schedule-cell.is-disabled {
+    background: #f8fafc;
+    opacity: 0.55;
+}
+
+.uchebni-schedule-cell.is-curator.has-lesson {
+    background: #fff7ed;
+    border-color: #fdba74;
+}
+
+.uchebni-room-select {
+    font-size: 0.68rem;
+    padding: 0.1rem 0.25rem;
+    min-height: 1.5rem;
+    line-height: 1.2;
+}
+.uchebni-room-select.is-unassigned {
+    border-color: #f59e0b;
+    background: #fffbeb;
+    color: #92400e;
+}
+.uchebni-room-form {
+    max-width: 100%;
+}
+.uchebni-slot-check {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+}
+.uchebni-slot-check .form-check-input {
+    margin: 0;
+    width: 0.9rem;
+    height: 0.9rem;
+}
+
+.uchebni-schedule-cell .lesson-time {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    margin-bottom: 2px;
+}
+
+.grid-pair--curator {
+    background: #fff7ed !important;
+    color: #9a3412;
+}
+
+.uchebni-schedule-cell .lesson-subject {
+    font-weight: 600;
+    color: #1e40af;
+    line-height: 1.2;
+}
+
+.uchebni-schedule-cell .lesson-meta {
+    color: #64748b;
+    font-size: 0.7rem;
+    margin-top: 2px;
+}
+
+.uchebni-conflict-badge {
+    font-size: 0.7rem;
+}
+
+.uchebni-analytics-card .metric-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.uchebni-progress-thin {
+    height: 6px;
+}
+
+@media (max-width: 992px) {
+    .uchebni-schedule-grid {
+        display: block;
+    }
+    .uchebni-schedule-grid .grid-day-block {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Поиск + выпадающий список (группы, дисциплины) */
+.uchebni-combobox {
+    position: relative;
+    min-width: 280px;
+    max-width: 420px;
+}
+
+.uchebni-combobox.is-open .uchebni-combobox-toggle {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.uchebni-combobox-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.55rem 0.85rem;
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.5rem;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.uchebni-combobox-toggle:hover {
+    border-color: #adb5bd;
+}
+
+.uchebni-combobox-toggle .uchebni-combobox-icon {
+    color: #64748b;
+    font-size: 1.1rem;
+}
+
+.uchebni-combobox-toggle .uchebni-combobox-label {
+    flex: 1;
+    min-width: 0;
+}
+
+.uchebni-combobox-toggle .uchebni-combobox-title {
+    font-weight: 600;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.uchebni-combobox-toggle .uchebni-combobox-meta {
+    font-size: 0.78rem;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.uchebni-combobox-toggle .uchebni-combobox-caret {
+    color: #94a3b8;
+}
+
+.uchebni-combobox-panel {
+    position: absolute;
+    z-index: 1050;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.65rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+    overflow: hidden;
+}
+
+.uchebni-combobox-panel.d-none {
+    display: none !important;
+}
+
+.uchebni-combobox-search {
+    padding: 0.65rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.uchebni-combobox-search .input-group-text {
+    background: #f8fafc;
+    border-right: 0;
+}
+
+.uchebni-combobox-search .form-control {
+    border-left: 0;
+    background: #f8fafc;
+}
+
+.uchebni-combobox-search .form-control:focus {
+    background: #fff;
+    box-shadow: none;
+}
+
+.uchebni-combobox-list {
+    max-height: 280px;
+    overflow: auto;
+    padding: 0.35rem;
+}
+
+.uchebni-combobox-item {
+    display: block;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    padding: 0.55rem 0.7rem;
+    border-radius: 0.45rem;
+    cursor: pointer;
+}
+
+.uchebni-combobox-item:hover,
+.uchebni-combobox-item.is-active {
+    background: #eff6ff;
+}
+
+.uchebni-combobox-item.is-selected {
+    background: #dbeafe;
+}
+
+.uchebni-combobox-item .item-title {
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.uchebni-combobox-item .item-meta {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin-top: 0.1rem;
+}
+
+.uchebni-combobox-empty {
+    padding: 1rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.uchebni-combobox--modal {
+    max-width: none;
+    min-width: 0;
+}
+
+.uchebni-combobox--modal .uchebni-combobox-panel {
+    z-index: 1060;
+}
+
+.modal .uchebni-combobox.is-open {
+    z-index: 1;
+}
+
+/* Преподаватель из Word, которого ещё нет в базе */
+.uchebni-pending-teacher {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    padding: 0.35rem 0.55rem;
+    border-radius: 6px;
+    background: #fff7ed;
+    border: 1px solid #fdba74;
+    max-width: 100%;
+}
+
+.uchebni-pending-teacher__fio {
+    color: #9a3412;
+    font-weight: 600;
+}
+
+.uchebni-pending-teacher__hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #c2410c;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.uchebni-pending-teacher__hint .bi {
+    font-size: 0.75rem;
+}
+
+/* Календарь дня */
+.uchebni-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.uchebni-cal-wd {
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #64748b;
+    padding: 4px 0;
+}
+
+.uchebni-cal-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    text-decoration: none;
+    color: inherit;
+    font-size: 0.85rem;
+    padding: 4px 2px;
+}
+
+a.uchebni-cal-day:hover {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.uchebni-cal-day.is-empty {
+    visibility: hidden;
+}
+
+.uchebni-cal-day.is-weekend {
+    color: #94a3b8;
+    background: #f8fafc;
+}
+
+.uchebni-cal-day.is-today .cal-num {
+    font-weight: 700;
+    color: #1d4ed8;
+}
+
+.uchebni-cal-day.is-selected {
+    background: #dbeafe;
+    border-color: #3b82f6;
+}
+
+.uchebni-cal-day .cal-dot {
+    font-size: 0.65rem;
+    color: #2563eb;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.uchebni-cal-day .cal-dot--sub {
+    color: #c2410c;
+}
+
+.uchebni-cal-day.has-substitution-day {
+    background: #fff7ed;
+}
+
+.uchebni-day-lesson .lesson-subject {
+    font-weight: 600;
+    color: #1e40af;
+}
+
+.uchebni-day-lesson .lesson-meta {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.uchebni-schedule-cell.has-substitution,
+.lesson-with-sub {
+    background: #fff7ed;
+}
+
+.uchebni-schedule-cell.has-substitution {
+    border-color: #fdba74;
+}
+
+.grid-header-date {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.lesson-sub-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #c2410c;
+    background: #ffedd5;
+    border: 1px solid #fdba74;
+    border-radius: 4px;
+    padding: 0 0.35rem;
+    margin-left: 0.25rem;
+    vertical-align: middle;
+}
+
+.lesson-sub-orig {
+    font-size: 0.68rem;
+    color: #b45309;
+}
+
+.lesson-sub-reason {
+    font-size: 0.75rem;
+    color: #9a3412;
+    margin-top: 0.2rem;
+}
+
+.uchebni-hours-input {
+    width: 4.5rem;
+    margin: 0 auto;
+}
+
+.uchebni-workload-table th,
+.uchebni-workload-table td {
+    vertical-align: middle;
+}
+
+.uchebni-occupancy-table .uchebni-occ-cell {
+    position: relative;
+    width: 2.2rem;
+    height: 2.2rem;
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.uchebni-occ-cell.is-occupied {
+    background: repeating-linear-gradient(
+        -45deg,
+        #e2e8f0,
+        #e2e8f0 3px,
+        #cbd5e1 3px,
+        #cbd5e1 6px
+    );
+}
+
+.uchebni-occ-cell.has-lesson {
+    background: repeating-linear-gradient(
+        -45deg,
+        #bfdbfe,
+        #bfdbfe 3px,
+        #93c5fd 3px,
+        #93c5fd 6px
+    );
+}
+
+.uchebni-occ-cell.is-busy:not(.has-lesson) {
+    background: repeating-linear-gradient(
+        -45deg,
+        #fecaca,
+        #fecaca 3px,
+        #fca5a5 3px,
+        #fca5a5 6px
+    );
+}
+
+.uchebni-occ-toggle {
+    display: inline;
+}
+
+.uchebni-daily-hours th,
+.uchebni-daily-hours td {
+    min-width: 1.75rem;
+    font-size: 0.8rem;
+}
+
+.uchebni-weekend-col {
+    background: #f1f5f9 !important;
+    color: #94a3b8;
+}
+
+.uchebni-weekend-wave {
+    opacity: 0.45;
+}
+
+/* Excel-like: верх числитель / низ знаменатель */
+.uchebni-pair-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 2px;
+}
+
+.uchebni-pair-half {
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 3px 4px;
+    min-height: 2.2rem;
+    background: #fff;
+}
+
+.uchebni-pair-half--num {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background: #f8fafc;
+}
+
+.uchebni-pair-half--den {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    background: #f1f5f9;
+}
+
+.uchebni-pair-half--merged {
+    background: #eff6ff;
+    border-color: #93c5fd;
+}
+
+.uchebni-pair-half.is-dim {
+    opacity: 0.4;
+}
+
+.uchebni-pair-half.is-active-week {
+    box-shadow: inset 2px 0 0 #2563eb;
+}
+
+.uchebni-half-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #64748b;
+    margin-bottom: 2px;
+}
+
+.uchebni-half-empty {
+    color: #cbd5e1;
+    font-size: 0.75rem;
+}
+
+.uchebni-half-lesson .lesson-subject {
+    font-size: 0.72rem;
+}
+
+.uchebni-half-lesson .lesson-meta {
+    font-size: 0.65rem;
+}
+
+.uchebni-schedule-cell {
+    min-height: 96px;
+}
+
+/* ===== Редактируемая сетка часов (преподаватель) ===== */
+.day-picker-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 2px 2px 8px;
+}
+
+.day-picker {
+    display: flex;
+    gap: 8px;
+    min-width: max-content;
+}
+
+.day-chip {
+    width: 58px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    border-radius: 14px;
+    padding: 9px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: 0.15s ease;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.day-chip:hover {
+    border-color: #93c5fd;
+    transform: translateY(-1px);
+}
+
+.day-chip.active {
+    border-color: transparent;
+    background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+    color: #fff;
+    box-shadow: 0 10px 18px -8px rgba(29, 78, 216, 0.55);
+}
+
+.day-chip.today:not(.active) {
+    border-color: #2563eb;
+}
+
+.day-chip.num:not(.active) {
+    background: #f0f9ff;
+}
+
+.day-chip.den:not(.active) {
+    background: #fff7ed;
+}
+
+.day-chip.practice:not(.active) {
+    background: #fef3c7;
+}
+
+.dc-dow {
+    font-size: 0.68rem;
+    text-transform: lowercase;
+    opacity: 0.8;
+    font-weight: 700;
+}
+
+.dc-day {
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.dc-mark {
+    font-size: 0.65rem;
+    font-weight: 700;
+    opacity: 0.85;
+}
+
+.day-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 0.95rem 1.15rem;
+}
+
+.day-hero-hint {
+    color: #64748b;
+    font-size: 0.8rem;
+}
+
+.subject-day-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.subject-day-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 14px 16px;
+}
+
+.subject-day-card.is-sub {
+    border-color: #93c5fd;
+}
+
+.subject-day-card .entity-color {
+    width: 6px;
+    min-height: 42px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    align-self: stretch;
+}
+
+.sdc-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+}
+
+.sdc-title {
+    font-weight: 750;
+    line-height: 1.3;
+}
+
+.sdc-subj {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin-top: 3px;
+    line-height: 1.3;
+}
+
+.sdc-sub {
+    font-size: 0.78rem;
+    color: #2563eb;
+    font-weight: 700;
+    margin-top: 3px;
+}
+
+.sdc-meta {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+.sdc-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.sdc-now {
+    min-width: 44px;
+    text-align: right;
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: #047857;
+}
+
+.subject-day-card:not(.has-h) .sdc-now {
+    color: #94a3b8;
+}
+
+.sdc-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.sdc-actions .btn {
+    min-width: 40px;
+    font-weight: 800;
+}
+
+@media (max-width: 576px) {
+    .day-hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .subject-day-card {
+        flex-wrap: wrap;
+    }
+
+    .sdc-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

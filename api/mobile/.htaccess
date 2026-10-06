@@ -1,0 +1,4 @@
+RewriteEngine On
+# Apache/MAMP часто не передаёт Authorization в PHP — пробрасываем вручную
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

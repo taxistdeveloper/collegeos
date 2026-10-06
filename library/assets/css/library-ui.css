@@ -1,0 +1,81 @@
+/* Библиотека — дополнения к curator-ui */
+
+.library-student-search-wrap {
+    position: relative;
+}
+
+.library-student-search-results {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 4px);
+    z-index: 1050;
+    max-height: 240px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid var(--cur-gray-200);
+    border-radius: var(--cur-radius-sm);
+    box-shadow: var(--cur-shadow-lg);
+}
+
+.library-student-search-results .list-group-item {
+    border: none;
+    border-bottom: 1px solid var(--cur-gray-100);
+    padding: 0.65rem 0.85rem;
+    cursor: pointer;
+}
+
+.library-student-search-results .list-group-item:last-child {
+    border-bottom: none;
+}
+
+.library-student-search-results .list-group-item:hover {
+    background: var(--cur-primary-light);
+}
+
+.library-nav-tabs {
+    border-bottom: 1px solid var(--cur-gray-200);
+    margin-bottom: 1.25rem;
+    gap: 0.25rem;
+}
+
+.library-nav-tabs .nav-link {
+    border: none;
+    border-radius: var(--cur-radius-sm) var(--cur-radius-sm) 0 0;
+    color: var(--cur-text-muted);
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.65rem 1rem;
+}
+
+.library-nav-tabs .nav-link:hover {
+    color: var(--cur-primary);
+    background: var(--cur-primary-light);
+}
+
+.library-nav-tabs .nav-link.active {
+    color: var(--cur-primary);
+    background: #fff;
+    border-bottom: 2px solid var(--cur-primary);
+}
+
+.library-welcome-card {
+    background: linear-gradient(135deg, var(--cur-primary) 0%, var(--cur-primary-dark) 100%);
+    color: #fff;
+    border: none;
+    border-radius: var(--cur-radius);
+    box-shadow: var(--cur-shadow-lg);
+}
+
+.library-welcome-card .text-muted {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.library-welcome-card .btn-light {
+    font-weight: 600;
+}
+
+.library-quick-links .btn {
+    border-radius: var(--cur-radius-sm);
+    font-weight: 600;
+}

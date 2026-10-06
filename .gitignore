@@ -1,0 +1,73 @@
+# ===== Config (пароли БД и настройки сервера) =====
+config/config.php
+config/database.php
+config/server_config.php
+
+# ===== Portal runtime =====
+logs/*.log
+!logs/.htaccess
+sync.enabled
+sync-silent.bat
+sync-silent.sh
+deploy.bat
+deploy.sh
+*.ftpconfig
+.ftpconfig
+.vscode/sftp.json
+
+# ===== Secrets =====
+.env
+.env.*
+!.env.example
+config/*.local.php
+
+# ===== Local exports / dumps =====
+*.csv
+*.xlsx
+*.xls
+*.sql
+*.sql.gz
+*.dump
+
+# ===== Archives / backups =====
+*.zip
+*.rar
+*.7z
+*.bak
+*.old
+*.orig
+*~
+
+# ===== Temp / cache =====
+*.tmp
+*.temp
+*.cache
+tmp/
+temp/
+cache/
+uploads/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# ===== IDE / editors =====
+.idea/
+.vscode/
+*.swp
+*.swo
+.project
+.settings/
+*.code-workspace
+
+# ===== PHP / tooling =====
+/vendor/
+/node_modules/
+composer.lock
+package-lock.json
+.phpunit.result.cache
+.php-cs-fixer.cache
+.phpstan.cache

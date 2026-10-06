@@ -1,0 +1,403 @@
+/* Add Student — step wizard */
+
+.student-form-wizard {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.wizard-sidebar {
+    position: sticky;
+    top: 5.5rem;
+    background: #fff;
+    border: 1px solid var(--cur-gray-200, #e5e9f2);
+    border-radius: 14px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.wizard-sidebar-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--cur-gray-500, #64748b);
+    margin-bottom: 0.75rem;
+    padding: 0 0.5rem;
+}
+
+.wizard-nav-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    padding: 0.65rem 0.75rem;
+    border-radius: 10px;
+    margin-bottom: 0.25rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.wizard-nav-item:hover {
+    background: var(--cur-gray-100, #f1f3f9);
+}
+
+.wizard-nav-item.active {
+    background: var(--cur-primary-light, #eef2ff);
+}
+
+.wizard-nav-item.done .wizard-nav-num {
+    background: var(--cur-success, #10b981);
+    color: #fff;
+}
+
+.wizard-nav-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--cur-gray-200, #e5e9f2);
+    color: var(--cur-gray-600, #475569);
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.wizard-nav-item.active .wizard-nav-num {
+    background: var(--cur-primary, #2c5af2);
+    color: #fff;
+}
+
+.wizard-nav-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--cur-text, #1a1d26);
+    line-height: 1.2;
+}
+
+.wizard-nav-sub {
+    font-size: 0.7rem;
+    color: var(--cur-gray-500, #64748b);
+    margin-top: 2px;
+}
+
+.wizard-main {
+    min-width: 0;
+    padding-bottom: 1rem;
+}
+
+.wizard-intro {
+    background: linear-gradient(135deg, #eef2ff 0%, #f8f9fc 100%);
+    border: 1px solid #c7d2fe;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.wizard-intro h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 0.35rem;
+}
+
+.wizard-intro p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--cur-gray-600, #475569);
+}
+
+.wizard-step {
+    display: none;
+}
+
+.wizard-step.active {
+    display: block;
+    animation: wizardFadeIn 0.25s ease;
+}
+
+@keyframes wizardFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.wizard-step-card {
+    background: #fff;
+    border: 1px solid var(--cur-gray-200, #e5e9f2);
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+}
+
+.wizard-step-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--cur-gray-100, #f1f3f9);
+    background: var(--cur-gray-50, #f8f9fc);
+}
+
+.wizard-step-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--cur-primary-light, #eef2ff);
+    color: var(--cur-primary, #2c5af2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.wizard-step-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--cur-text, #1a1d26);
+}
+
+.wizard-step-desc {
+    font-size: 0.8rem;
+    color: var(--cur-gray-500, #64748b);
+    margin: 0.15rem 0 0;
+}
+
+.wizard-step-badge {
+    margin-left: auto;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    background: var(--cur-gray-200, #e5e9f2);
+    color: var(--cur-gray-600, #475569);
+    white-space: nowrap;
+}
+
+.wizard-step-badge.complete {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.wizard-step-body {
+    padding: 1.5rem;
+}
+
+.wizard-step-body .form-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--cur-gray-700, #334155);
+    margin-bottom: 0.35rem;
+}
+
+.wizard-step-body .form-control,
+.wizard-step-body .form-select {
+    border-radius: 10px;
+    border-color: var(--cur-gray-200, #e5e9f2);
+    font-size: 0.875rem;
+    padding: 0.55rem 0.85rem;
+}
+
+.wizard-step-body .form-control:focus,
+.wizard-step-body .form-select:focus {
+    border-color: var(--cur-primary, #2c5af2);
+    box-shadow: 0 0 0 3px rgba(44, 90, 242, 0.12);
+}
+
+.wizard-step-body .form-text {
+    font-size: 0.75rem;
+}
+
+.wizard-subsection {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--cur-gray-200, #e5e9f2);
+}
+
+.wizard-subsection-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--cur-gray-500, #64748b);
+    margin-bottom: 1rem;
+}
+
+.wizard-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: #fff;
+    border: 1px solid var(--cur-gray-200, #e5e9f2);
+    border-radius: 14px;
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.06);
+}
+
+.wizard-footer-progress {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--cur-gray-500, #64748b);
+}
+
+.wizard-footer-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+.wizard-footer .btn {
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.55rem 1.25rem;
+}
+
+.wizard-top-progress {
+    height: 4px;
+    background: var(--cur-gray-200, #e5e9f2);
+    border-radius: 999px;
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+}
+
+.wizard-top-progress-bar {
+    height: 100%;
+    background: var(--cur-primary, #2c5af2);
+    border-radius: 999px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+/* Hide old accordions chrome */
+.student-form-wizard .accordion-button,
+.student-form-wizard .accordion-header {
+    display: none !important;
+}
+
+.student-form-wizard .accordion-collapse {
+    display: block !important;
+    height: auto !important;
+}
+
+.student-form-wizard .accordion-item {
+    border: none;
+    margin: 0;
+    background: transparent;
+}
+
+.student-form-wizard .accordion-body {
+    padding: 0;
+}
+
+.student-form-wizard .accordion {
+    margin-bottom: 0;
+}
+
+/* Field validation */
+.student-form-wizard .form-label.required-field::after {
+    content: " *";
+    color: #ef4444;
+}
+
+.student-form-wizard .is-invalid {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+}
+
+.student-form-wizard .field-status {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    z-index: 5;
+}
+
+.student-form-wizard .field-status.valid { color: #10b981; }
+.student-form-wizard .field-status.invalid { color: #ef4444; }
+
+.student-form-wizard .form-group {
+    position: relative;
+}
+
+.student-form-wizard .form-group .form-control,
+.student-form-wizard .form-group .form-select {
+    padding-right: 2.25rem;
+}
+
+.student-form-wizard .field-hint {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: none;
+}
+
+.student-form-wizard .field-hint.invalid {
+    color: #ef4444;
+    display: block;
+}
+
+.student-form-wizard .field-hint.valid {
+    color: #10b981;
+    display: block;
+}
+
+.student-form-wizard .iin-search-btn {
+    border-radius: 0 10px 10px 0;
+}
+
+@media (max-width: 992px) {
+    .student-form-wizard {
+        grid-template-columns: 1fr;
+    }
+
+    .wizard-sidebar {
+        position: static;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0.5rem;
+        padding: 0.75rem;
+    }
+
+    .wizard-sidebar-title {
+        display: none;
+    }
+
+    .wizard-nav-item {
+        flex-direction: column;
+        align-items: center;
+        min-width: 72px;
+        padding: 0.5rem;
+        text-align: center;
+    }
+
+    .wizard-nav-sub {
+        display: none;
+    }
+
+    .wizard-nav-label {
+        font-size: 0.65rem;
+    }
+
+    .wizard-footer {
+        flex-wrap: wrap;
+    }
+
+    .wizard-footer-progress {
+        width: 100%;
+        text-align: center;
+        order: -1;
+    }
+}

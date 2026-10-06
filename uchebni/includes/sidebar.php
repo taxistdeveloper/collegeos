@@ -1,0 +1,54 @@
+<?php
+if (!isset($current_user)) {
+    $current_user = getCurrentUser();
+}
+
+$current_page = basename($_SERVER['PHP_SELF']);
+$role = $current_user['role'] ?? '';
+$menu_items = getMenuByRole($role);
+$active_page = $current_page;
+
+$role_labels = [
+    'methodist' => 'Учебная часть',
+    'teacher' => 'Преподаватель',
+];
+$role_label = $role_labels[$role] ?? 'Учебная часть';
+?>
+
+<aside class="curator-sidebar" id="curatorSidebar">
+    <div class="curator-sidebar-brand">
+        <a href="dashboard.php" class="curator-sidebar-brand-link">
+            <div class="curator-sidebar-logo">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <div class="curator-sidebar-brand-text">
+                <div class="curator-sidebar-brand-name"><?php echo htmlspecialchars(APP_SHORT_NAME); ?></div>
+                <div class="curator-sidebar-brand-sub"><?php echo htmlspecialchars($role_label); ?></div>
+            </div>
+        </a>
+    </div>
+
+    <nav class="curator-sidebar-nav">
+        <?php foreach ($menu_items as $menu_item):
+            $item_page = basename($menu_item['url']);
+            $is_active = ($active_page === $item_page);
+        ?>
+            <a href="<?php echo htmlspecialchars($menu_item['url']); ?>"
+               class="nav-link<?php echo $is_active ? ' active' : ''; ?>">
+                <i class="bi bi-<?php echo htmlspecialchars($menu_item['icon']); ?>"></i>
+                <span><?php echo htmlspecialchars($menu_item['name']); ?></span>
+            </a>
+        <?php endforeach; ?>
+    </nav>
+
+    <div class="curator-sidebar-footer">
+        <div class="curator-sidebar-card">
+            <div class="curator-sidebar-card-title"><?php echo htmlspecialchars($current_user['name']); ?></div>
+            <div class="curator-sidebar-card-text"><?php echo htmlspecialchars($role_label); ?> · <?php echo date('d.m.Y'); ?></div>
+            <a href="../logout.php" class="btn btn-primary btn-sm">
+                <i class="bi bi-box-arrow-right me-1"></i>Выход
+            </a>
+        </div>
+    </div>
+</aside>
+<div class="curator-sidebar-overlay" id="curatorSidebarOverlay"></div>
