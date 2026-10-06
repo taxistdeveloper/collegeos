@@ -14,8 +14,13 @@ $current_user = getCurrentUser();
 
 // Получение ID группы из параметра
 $group_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$curator_groups = $group->getGroupsByCurator($current_user['id']);
 
 if (!$group_id) {
+    if (!empty($curator_groups)) {
+        header('Location: group_reports.php?id=' . (int)$curator_groups[0]['id']);
+        exit;
+    }
     header('Location: my_groups.php');
     exit;
 }
@@ -143,6 +148,17 @@ $page_subtitle = $group_info['code'] . ' · ' . $group_info['course'];
 
             <div class="curator-section-header curator-animate-fadeInUp mb-3">
                 <div class="curator-action-buttons">
+                    <?php if (count($curator_groups) > 1): ?>
+                        <select class="form-select form-select-sm" style="width: auto; min-width: 180px;"
+                                onchange="if (this.value) window.location.href='group_reports.php?id=' + this.value;"
+                                aria-label="Выбор группы">
+                            <?php foreach ($curator_groups as $g): ?>
+                                <option value="<?php echo (int)$g['id']; ?>" <?php echo (int)$g['id'] === $group_id ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($g['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    <?php endif; ?>
                     <a href="my_groups.php" class="btn btn-outline-secondary btn-sm">
                         <i class="bi bi-collection me-1"></i>Мои группы
                     </a>

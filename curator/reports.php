@@ -114,7 +114,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 $languages_stats = $result->fetch_all(MYSQLI_ASSOC);
 
-$page_title = 'Отчёты';
+$page_title = 'Отчёты группы';
 $page_subtitle = '';
 ?>
 <!DOCTYPE html>

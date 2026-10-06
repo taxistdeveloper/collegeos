@@ -231,7 +231,7 @@ $course_options = array_keys($course_options);
                                                         <i class="bi bi-eye"></i>
                                                     </a>
                                                     <a href="group_reports.php?id=<?php echo $group_item['id']; ?>" 
-                                                       class="btn btn-outline-success" title="Отчеты">
+                                                       class="btn btn-outline-success" title="Отчёты группы">
                                                         <i class="bi bi-graph-up"></i>
                                                     </a>
                                                     <button type="button" class="btn btn-outline-info btn-archive-group"

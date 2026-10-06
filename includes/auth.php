@@ -420,10 +420,9 @@ function getMenuByRole($role)
         'curator' => [
             ['name' => 'Дашборд', 'url' => 'dashboard.php', 'icon' => 'speedometer2'],
             ['name' => 'Мои группы', 'url' => 'my_groups.php', 'icon' => 'collection-fill'],
-            ['name' => 'Мои студенты', 'url' => 'my_students.php', 'icon' => 'mortarboard-fill'],
             ['name' => 'Выпускники', 'url' => 'graduates.php', 'icon' => 'archive-fill'],
             ['name' => 'Добавить студента', 'url' => 'add_student.php', 'icon' => 'person-plus-fill'],
-            ['name' => 'Отчеты', 'url' => 'reports.php', 'icon' => 'graph-up']
+            ['name' => 'Отчёты группы', 'url' => 'group_reports.php', 'icon' => 'graph-up']
         ],
         'cos' => [
             ['name' => 'Главная', 'url' => 'dashboard.php', 'icon' => 'house-fill'],
