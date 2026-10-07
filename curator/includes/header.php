@@ -38,6 +38,7 @@ if ($initials === '') {
             <input type="text" id="curatorGlobalSearch" placeholder="Найти студента..." autocomplete="off">
         </div>
         <?php endif; ?>
+        <?php appThemeToggle(); ?>
         <div class="curator-header-avatar" title="<?php echo htmlspecialchars($current_user['name']); ?>">
             <?php echo htmlspecialchars($initials); ?>
         </div>

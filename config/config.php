@@ -55,6 +55,35 @@ function appFaviconTags()
     echo '    <link rel="shortcut icon" href="' . htmlspecialchars($base . '/assets/img/favicon.png?v=' . $v) . '">' . "\n";
 }
 
+/** Inline FOUC-safe theme bootstrap — call early in <head> */
+function appThemeInitScript()
+{
+    echo '<script>(function(){try{var k="portal-theme",p=localStorage.getItem(k)||"system",m=window.matchMedia("(prefers-color-scheme: dark)"),d=p==="dark"||(p!=="light"&&m.matches);document.documentElement.setAttribute("data-theme",d?"dark":"light");document.documentElement.setAttribute("data-bs-theme",d?"dark":"light");document.documentElement.setAttribute("data-theme-pref",p);}catch(e){}})();</script>' . "\n";
+}
+
+function appThemeStylesheet()
+{
+    $base = rtrim(BASE_URL, '/');
+    $v = defined('APP_VERSION') ? APP_VERSION : '1';
+    echo '<link href="' . htmlspecialchars($base . '/assets/css/theme.css?v=' . $v) . '" rel="stylesheet">' . "\n";
+}
+
+function appThemeScript()
+{
+    $base = rtrim(BASE_URL, '/');
+    $v = defined('APP_VERSION') ? APP_VERSION : '1';
+    echo '<script src="' . htmlspecialchars($base . '/assets/js/theme.js?v=' . $v) . '" defer></script>' . "\n";
+}
+
+function appThemeToggle($extraClass = '')
+{
+    $class = trim('theme-toggle ' . $extraClass);
+    echo '<button type="button" class="' . htmlspecialchars($class) . '" data-theme-toggle aria-label="Переключить тему" title="Светлая / тёмная тема">'
+        . '<i class="bi bi-moon-stars-fill theme-icon-moon" aria-hidden="true"></i>'
+        . '<i class="bi bi-sun-fill theme-icon-sun" aria-hidden="true"></i>'
+        . '</button>';
+}
+
 function sanitize($data)
 {
     if ($data === null) {

@@ -174,12 +174,14 @@ sort($course_filter_options, SORT_NATURAL);
 <head>
     <meta charset="UTF-8">
     <?php appFaviconTags(); ?>
+    <?php appThemeInitScript(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Отчеты директора — <?php echo APP_NAME; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
+    <?php appThemeStylesheet(); ?>
     <style>
         :root {
             --dir-bg: #f1f5f9;
@@ -213,7 +215,7 @@ sort($course_filter_options, SORT_NATURAL);
         }
 
         .dir-nav {
-            background: rgba(255, 255, 255, 0.92);
+            background: color-mix(in srgb, var(--dir-surface) 92%, transparent);
             border-bottom: 1px solid var(--dir-border);
             backdrop-filter: blur(10px);
             position: sticky;
@@ -727,6 +729,7 @@ sort($course_filter_options, SORT_NATURAL);
                         <?php echo mb_strtoupper(mb_substr($user_name !== '' ? $user_name : 'Д', 0, 1)); ?>
                     </div>
                 </div>
+                <?php appThemeToggle(); ?>
                 <a class="btn btn-logout" href="../logout.php">
                     <i class="bi bi-box-arrow-right me-1"></i>Выход
                 </a>
@@ -1193,6 +1196,7 @@ sort($course_filter_options, SORT_NATURAL);
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <?php appThemeScript(); ?>
     <script src="../assets/js/tooltips.js"></script>
     <script>
         function expandAllGroups() {

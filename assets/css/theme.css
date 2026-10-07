@@ -1,0 +1,376 @@
+/* Portal dark theme — driven by html[data-theme="dark"] */
+
+/* ===== Toggle control ===== */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--border-color, #e5e9f2);
+    border-radius: 12px;
+    background: var(--card-bg, var(--mgr-surface, var(--cur-surface, #fff)));
+    color: var(--text-primary, var(--mgr-text, var(--cur-text, #1a1d26)));
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+    border-color: var(--primary, #2c5af2);
+    color: var(--primary, #2c5af2);
+    transform: translateY(-1px);
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--primary, #2c5af2);
+    outline-offset: 2px;
+}
+
+.theme-toggle .theme-icon-sun {
+    display: none;
+}
+
+html[data-theme="dark"] .theme-toggle .theme-icon-moon {
+    display: none;
+}
+
+html[data-theme="dark"] .theme-toggle .theme-icon-sun {
+    display: inline-block;
+}
+
+.theme-toggle.theme-toggle--light {
+    border-color: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.theme-toggle.theme-toggle--light:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.55);
+    color: #fff;
+}
+
+.theme-toggle.theme-toggle--login {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 5;
+}
+
+/* ===== Legacy / Bootstrap surfaces ===== */
+html[data-theme="dark"] {
+    --primary-color: #5b8cff;
+    --secondary-color: #94a3b8;
+    --light-color: #1e2430;
+    --dark-color: #e8eaef;
+    color-scheme: dark;
+}
+
+html[data-theme="dark"] body {
+    background-color: #0f1218;
+    color: #e8eaef;
+}
+
+html[data-theme="dark"] body.bg-light {
+    background-color: #0f1218 !important;
+}
+
+html[data-theme="dark"] .card {
+    background-color: #1a1f2a;
+    color: #e8eaef;
+}
+
+html[data-theme="dark"] .card-header {
+    background-color: #222836;
+    border-bottom-color: #2e3648;
+}
+
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .form-select {
+    background-color: #222836;
+    border-color: #3a4458;
+    color: #e8eaef;
+}
+
+html[data-theme="dark"] .form-control:focus,
+html[data-theme="dark"] .form-select:focus {
+    background-color: #222836;
+    color: #e8eaef;
+}
+
+html[data-theme="dark"] .form-control::placeholder {
+    color: #8494a7;
+}
+
+html[data-theme="dark"] .table {
+    color: #e8eaef;
+    --bs-table-bg: transparent;
+    --bs-table-color: #e8eaef;
+    --bs-table-border-color: #2e3648;
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.03);
+    --bs-table-hover-bg: rgba(91, 140, 255, 0.08);
+}
+
+html[data-theme="dark"] .table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme="dark"] .modal-content {
+    background-color: #1a1f2a;
+    color: #e8eaef;
+}
+
+html[data-theme="dark"] .modal-header,
+html[data-theme="dark"] .modal-footer {
+    border-color: #2e3648;
+}
+
+html[data-theme="dark"] .dropdown-menu {
+    background-color: #1a1f2a;
+    border-color: #2e3648;
+}
+
+html[data-theme="dark"] .dropdown-item {
+    color: #e8eaef;
+}
+
+html[data-theme="dark"] .dropdown-item:hover,
+html[data-theme="dark"] .dropdown-item:focus {
+    background-color: #222836;
+    color: #fff;
+}
+
+html[data-theme="dark"] .list-group-item {
+    background-color: #1a1f2a;
+    border-color: #2e3648;
+    color: #e8eaef;
+}
+
+html[data-theme="dark"] .text-muted {
+    color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] .border,
+html[data-theme="dark"] .border-top,
+html[data-theme="dark"] .border-bottom {
+    border-color: #2e3648 !important;
+}
+
+/* ===== Manager ===== */
+html[data-theme="dark"] {
+    --mgr-primary: #5b8cff;
+    --mgr-primary-dark: #3d6fe0;
+    --mgr-primary-light: rgba(91, 140, 255, 0.16);
+    --mgr-gray-50: #151922;
+    --mgr-gray-100: #1a1f2a;
+    --mgr-gray-200: #2e3648;
+    --mgr-gray-300: #3a4458;
+    --mgr-gray-400: #7b8aa0;
+    --mgr-gray-500: #94a3b8;
+    --mgr-gray-600: #b6c0cf;
+    --mgr-gray-700: #d1d9e6;
+    --mgr-gray-800: #e8eaef;
+    --mgr-text: #e8eaef;
+    --mgr-text-muted: #94a3b8;
+    --mgr-bg: #0f1218;
+    --mgr-surface: #1a1f2a;
+    --mgr-shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0, 0, 0, 0.25);
+    --mgr-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
+
+    --primary: var(--mgr-primary);
+    --border-color: var(--mgr-gray-200);
+    --text-primary: var(--mgr-text);
+    --text-muted: var(--mgr-text-muted);
+    --primary-light: var(--mgr-primary-light);
+    --gray-50: var(--mgr-gray-50);
+}
+
+html[data-theme="dark"] .manager-badge.badge-warning,
+html[data-theme="dark"] .manager-feed-item-birthday {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+/* ===== Curator / Library / Uchebni ===== */
+html[data-theme="dark"] {
+    --cur-primary: #5b8cff;
+    --cur-primary-dark: #3d6fe0;
+    --cur-primary-light: rgba(91, 140, 255, 0.16);
+    --cur-gray-50: #151922;
+    --cur-gray-100: #1a1f2a;
+    --cur-gray-200: #2e3648;
+    --cur-gray-300: #3a4458;
+    --cur-gray-400: #7b8aa0;
+    --cur-gray-500: #94a3b8;
+    --cur-gray-600: #b6c0cf;
+    --cur-gray-700: #d1d9e6;
+    --cur-gray-800: #e8eaef;
+    --cur-text: #e8eaef;
+    --cur-text-muted: #94a3b8;
+    --cur-bg: #0f1218;
+    --cur-surface: #1a1f2a;
+    --cur-shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0, 0, 0, 0.25);
+    --cur-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] body.curator-app {
+    --primary: var(--cur-primary);
+    --border-color: var(--cur-gray-200);
+    --text-primary: var(--cur-text);
+    --text-muted: var(--cur-text-muted);
+    --primary-light: var(--cur-primary-light);
+    --gray-50: var(--cur-gray-50);
+}
+
+html[data-theme="dark"] .curator-badge.badge-warning,
+html[data-theme="dark"] .curator-feed-item-birthday {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+/* ===== Department ===== */
+html[data-theme="dark"] {
+    --dept-bg: #0f1218;
+    --dept-card: #1a1f2a;
+    --dept-text: #e8eaef;
+    --dept-muted: #94a3b8;
+    --dept-border: #2e3648;
+    --dept-accent-soft: rgba(91, 140, 255, 0.16);
+}
+
+html[data-theme="dark"] .dept-header {
+    background: var(--dept-card);
+    border-color: var(--dept-border);
+}
+
+html[data-theme="dark"] .dept-card,
+html[data-theme="dark"] .dept-panel,
+html[data-theme="dark"] .dept-stat {
+    background: var(--dept-card);
+    border-color: var(--dept-border);
+    color: var(--dept-text);
+}
+
+/* ===== Admin ===== */
+html[data-theme="dark"] {
+    --sidebar-bg: #151922;
+    --sidebar-hover: #1f2533;
+    --sidebar-text: #b6c0cf;
+    --content-bg: #0f1218;
+    --card-bg: #1a1f2a;
+    --header-bg: #151922;
+    --text-primary: #e8eaef;
+    --text-secondary: #94a3b8;
+    --text-muted: #7b8aa0;
+    --border-color: #2e3648;
+    --gray-50: #151922;
+    --gray-100: #1a1f2a;
+    --gray-200: #2e3648;
+    --primary: #5b8cff;
+    --primary-dark: #3d6fe0;
+    --primary-light: rgba(91, 140, 255, 0.16);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0, 0, 0, 0.25);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+
+html[data-theme="dark"] .admin-header .header-btn {
+    border-color: var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-primary);
+}
+
+/* ===== Login ===== */
+html[data-theme="dark"] {
+    --login-bg: #0f1218;
+    --login-surface: #1a1f2a;
+    --login-text: #e8eaef;
+    --login-muted: #94a3b8;
+    --login-border: #2e3648;
+    --login-primary: #5b8cff;
+    --login-primary-dark: #3d6fe0;
+
+    --admin-login-bg: #0f1218;
+    --admin-login-surface: #1a1f2a;
+    --admin-login-text: #e8eaef;
+    --admin-login-muted: #94a3b8;
+    --admin-login-border: #2e3648;
+    --admin-login-primary: #5b8cff;
+    --admin-login-primary-dark: #3d6fe0;
+}
+
+html[data-theme="dark"] body.login-page,
+html[data-theme="dark"] body.admin-login-page {
+    background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(91, 140, 255, 0.18), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(14, 165, 233, 0.1), transparent 50%),
+        linear-gradient(180deg, #12161f 0%, var(--login-bg, #0f1218) 100%);
+}
+
+/* ===== Director inline tokens (when present) ===== */
+html[data-theme="dark"] {
+    --dir-bg: #0f1218;
+    --dir-surface: #1a1f2a;
+    --dir-card: #1a1f2a;
+    --dir-text: #e8eaef;
+    --dir-muted: #94a3b8;
+    --dir-border: #2e3648;
+    --dir-primary: #5b8cff;
+    --dir-primary-soft: rgba(91, 140, 255, 0.16);
+    --dir-shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+html[data-theme="dark"] .header-btn:hover,
+html[data-theme="dark"] .header-profile:hover,
+html[data-theme="dark"] .sidebar-toggle:hover,
+html[data-theme="dark"] .btn-outline,
+html[data-theme="dark"] .quick-action-btn:hover,
+html[data-theme="dark"] .admin-select-toggle,
+html[data-theme="dark"] .admin-select-toggle:hover,
+html[data-theme="dark"] .admin-select-dropdown,
+html[data-theme="dark"] .admin-select-search,
+html[data-theme="dark"] .admin-select-search input:focus {
+    background: var(--card-bg);
+}
+
+html[data-theme="dark"] .dir-nav {
+    background: rgba(26, 31, 42, 0.94);
+}
+
+/* Add-student wizard: keep form controls aligned with card surface */
+html[data-theme="dark"] .wizard-step-body .form-control,
+html[data-theme="dark"] .wizard-step-body .form-select,
+html[data-theme="dark"] .wizard-step-body textarea.form-control {
+    background-color: var(--cur-gray-50, #151922);
+    border-color: var(--cur-gray-200, #2e3648);
+    color: var(--cur-text, #e8eaef);
+}
+
+html[data-theme="dark"] .wizard-step-body .form-control:focus,
+html[data-theme="dark"] .wizard-step-body .form-select:focus {
+    background-color: var(--cur-gray-50, #151922);
+    color: var(--cur-text, #e8eaef);
+}
+
+html[data-theme="dark"] .wizard-footer {
+    background: rgba(26, 31, 42, 0.96);
+    box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme="dark"] .wizard-step-badge.complete {
+    background: rgba(16, 185, 129, 0.18);
+    color: #34d399;
+}
+
+html[data-theme="dark"] body.login-page,
+html[data-theme="dark"] body.admin-login-page {
+    position: relative;
+}
+
+body.login-page,
+body.admin-login-page {
+    position: relative;
+}

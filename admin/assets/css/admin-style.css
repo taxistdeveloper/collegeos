@@ -1,4 +1,4 @@
-/* Admin Panel — MedTariff-aligned redesign */
+/* Admin Panel вЂ” MedTariff-aligned redesign */
 
 :root {
     --sidebar-width: 268px;
@@ -373,7 +373,7 @@ body {
 }
 
 .header-btn:hover {
-    background: #fff;
+    background: var(--card-bg);
     color: var(--primary);
     border-color: var(--primary);
 }
@@ -406,7 +406,7 @@ body {
 }
 
 .header-profile:hover {
-    background: #fff;
+    background: var(--card-bg);
     border-color: var(--primary);
 }
 
@@ -542,12 +542,12 @@ body {
 }
 
 .welcome-banner .page-actions .btn:hover {
-    background: #fff;
+    background: var(--card-bg);
     color: var(--primary);
 }
 
 .welcome-banner .page-actions .btn-primary {
-    background: #fff;
+    background: var(--card-bg);
     color: var(--primary);
     border-color: #fff;
 }
@@ -866,7 +866,7 @@ body {
 }
 
 .btn-outline {
-    background: #fff;
+    background: var(--card-bg);
     border: 1px solid var(--border-color);
     color: var(--text-secondary);
 }
@@ -963,7 +963,7 @@ body {
 
 .quick-action-btn:hover {
     border-color: var(--primary);
-    background: #fff;
+    background: var(--card-bg);
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
     color: var(--text-primary);
@@ -1024,7 +1024,7 @@ body {
     border-radius: var(--radius);
     padding: 0.6rem 0.85rem;
     font-size: 0.9rem;
-    background: #fff;
+    background: var(--card-bg);
     transition: var(--transition);
 }
 
@@ -1115,7 +1115,7 @@ body {
 }
 
 .modal-close:hover {
-    background: #fff;
+    background: var(--card-bg);
     color: var(--danger);
 }
 
@@ -1246,7 +1246,7 @@ body {
 }
 
 .sidebar-toggle:hover {
-    background: #fff;
+    background: var(--card-bg);
     color: var(--primary);
 }
 
@@ -1445,7 +1445,7 @@ body {
     padding: 0.55rem 0.9rem;
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    background: #fff;
+    background: var(--card-bg);
     color: var(--text-primary);
     font-size: 0.9rem;
     font-weight: 500;
@@ -1457,7 +1457,7 @@ body {
 
 .admin-select-toggle:hover {
     border-color: var(--primary);
-    background: #fff;
+    background: var(--card-bg);
 }
 
 .admin-select.is-open .admin-select-toggle,
@@ -1496,7 +1496,7 @@ body {
     position: fixed;
     z-index: 2000;
     display: none;
-    background: #fff;
+    background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 14px;
     box-shadow: 0 16px 40px rgba(15, 23, 42, 0.14);
@@ -1513,7 +1513,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 1;
-    background: #fff;
+    background: var(--card-bg);
     padding: 0.25rem 0.25rem 0.45rem;
 }
 
@@ -1529,7 +1529,7 @@ body {
 .admin-select-search input:focus {
     outline: none;
     border-color: var(--primary);
-    background: #fff;
+    background: var(--card-bg);
     box-shadow: 0 0 0 3px rgba(44, 90, 242, 0.12);
 }
 

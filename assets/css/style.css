@@ -271,43 +271,7 @@ body {
   }
 }
 
-/* Темная тема (опционально) */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --light-color: #343a40;
-    --dark-color: #f8f9fa;
-  }
-
-  body {
-    background-color: #212529;
-    color: #f8f9fa;
-  }
-
-  .card {
-    background-color: #343a40;
-    color: #f8f9fa;
-  }
-
-  .card-header {
-    background-color: #495057;
-    border-bottom-color: #6c757d;
-  }
-
-  .form-control,
-  .form-select {
-    background-color: #495057;
-    border-color: #6c757d;
-    color: #f8f9fa;
-  }
-
-  .table {
-    color: #f8f9fa;
-  }
-
-  .table tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
-}
+/* Темная тема: см. assets/css/theme.css (html[data-theme="dark"]) */
 
 /* Утилиты */
 .text-truncate-2 {

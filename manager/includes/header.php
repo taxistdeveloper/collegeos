@@ -38,6 +38,7 @@ if ($initials === '') {
             <input type="text" id="managerGlobalSearch" placeholder="Найти студента..." autocomplete="off">
         </div>
         <?php endif; ?>
+        <?php appThemeToggle(); ?>
         <div class="manager-header-avatar" title="<?php echo htmlspecialchars($current_user['name'] ?? ''); ?>">
             <?php echo htmlspecialchars($initials); ?>
         </div>

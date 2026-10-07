@@ -87,6 +87,7 @@ $page_subtitle = 'Группа: ' . ($student['group_name'] ?? '—') . ' · И�
 <head>
     <meta charset="UTF-8">
     <?php appFaviconTags(); ?>
+    <?php appThemeInitScript(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Профиль студента <?php echo htmlspecialchars($student['first_name'] . ' ' . $student['middle_name']); ?>">
     <title>Студент: <?php echo htmlspecialchars($student['first_name'] . ' ' . $student['middle_name']); ?> - <?php echo APP_NAME; ?></title>
@@ -96,6 +97,7 @@ $page_subtitle = 'Группа: ' . ($student['group_name'] ?? '—') . ' · И�
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
     <link href="assets/css/curator-ui.css" rel="stylesheet">
+    <?php appThemeStylesheet(); ?>
 
     <style>
         :root {
@@ -1062,6 +1064,7 @@ $page_subtitle = 'Группа: ' . ($student['group_name'] ?? '—') . ' · И�
 </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <?php appThemeScript(); ?>
     <script src="../assets/js/main.js"></script>
     <script src="assets/js/curator-ui.js"></script>
     <script>

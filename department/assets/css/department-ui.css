@@ -116,6 +116,10 @@
 
 .dept-header {
     margin-bottom: 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
 }
 
 .dept-title {
@@ -195,7 +199,7 @@
     padding-left: 2.35rem;
     border-radius: 10px;
     border-color: var(--dept-border);
-    background: #fff;
+    background: var(--dept-card);
 }
 
 .dept-search input:focus {
@@ -207,7 +211,7 @@
     border: 1px solid var(--dept-border);
     border-radius: 12px;
     overflow: hidden;
-    background: #fff;
+    background: var(--dept-card);
 }
 
 .dept-picker-search {
@@ -217,7 +221,7 @@
 }
 
 .dept-picker-search .input-group-text {
-    background: #fff;
+    background: var(--dept-card);
     border-right: 0;
     color: var(--dept-muted);
 }
@@ -371,7 +375,7 @@
     min-width: 200px;
     position: sticky;
     left: 0;
-    background: #fff;
+    background: var(--dept-card);
     z-index: 1;
 }
 

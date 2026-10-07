@@ -40,6 +40,7 @@
     --mgr-text: #1a1d26;
     --mgr-text-muted: #64748b;
     --mgr-bg: #f4f6fb;
+    --mgr-surface: #ffffff;
     --mgr-sidebar-width: 260px;
     --mgr-radius: 14px;
     --mgr-radius-sm: 10px;
@@ -99,7 +100,7 @@ body.manager-app {
     left: 0;
     width: var(--mgr-sidebar-width);
     height: 100vh;
-    background: #fff;
+    background: var(--mgr-surface);
     border-right: 1px solid var(--mgr-gray-200);
     display: flex;
     flex-direction: column;
@@ -252,7 +253,7 @@ body.manager-app {
 
 /* ===== TOP HEADER ===== */
 .manager-header {
-    background: #fff;
+    background: var(--mgr-surface);
     border-bottom: 1px solid var(--mgr-gray-200);
     padding: 1rem 2rem;
     display: flex;
@@ -314,7 +315,7 @@ body.manager-app {
     outline: none;
     border-color: var(--mgr-primary);
     box-shadow: 0 0 0 3px rgba(44, 90, 242, 0.12);
-    background: #fff;
+    background: var(--mgr-surface);
 }
 
 .manager-header-search .search-icon {
@@ -354,7 +355,7 @@ body.manager-app {
 
 /* ===== PAGE SECTIONS ===== */
 .manager-section {
-    background: #fff;
+    background: var(--mgr-surface);
     border: 1px solid var(--mgr-gray-200);
     border-radius: var(--mgr-radius);
     box-shadow: var(--mgr-shadow);
@@ -416,7 +417,7 @@ body.manager-app {
 }
 
 .manager-stat-card {
-    background: #fff;
+    background: var(--mgr-surface);
     border: 1px solid var(--mgr-gray-200);
     border-radius: var(--mgr-radius);
     padding: 1.25rem 1.5rem;
@@ -543,7 +544,7 @@ a.manager-stat-card {
 
 /* ===== FILTERS ===== */
 .manager-filters {
-    background: #fff;
+    background: var(--mgr-surface);
     border: 1px solid var(--mgr-gray-200);
     border-radius: var(--mgr-radius);
     padding: 1.25rem;
@@ -589,7 +590,7 @@ a.manager-stat-card {
     outline: none;
     border-color: var(--mgr-primary);
     box-shadow: 0 0 0 3px rgba(44, 90, 242, 0.1);
-    background: #fff;
+    background: var(--mgr-surface);
 }
 
 .manager-search-box {
@@ -613,7 +614,7 @@ a.manager-stat-card {
 
 /* ===== TABLES ===== */
 .manager-table-container {
-    background: #fff;
+    background: var(--mgr-surface);
     border: 1px solid var(--mgr-gray-200);
     border-radius: var(--mgr-radius);
     padding: 0;
@@ -677,7 +678,7 @@ a.manager-stat-card {
     align-items: center;
     justify-content: center;
     border: 1px solid var(--mgr-gray-200);
-    background: #fff;
+    background: var(--mgr-surface);
     font-size: 0.85rem;
 }
 
@@ -726,7 +727,7 @@ a.manager-stat-card {
 
 /* ===== FORMS ===== */
 .manager-form-container {
-    background: #fff;
+    background: var(--mgr-surface);
     border: 1px solid var(--mgr-gray-200);
     border-radius: var(--mgr-radius);
     padding: 1.5rem;
@@ -793,7 +794,7 @@ a.manager-stat-card {
 .manager-empty-state {
     text-align: center;
     padding: 4rem 2rem;
-    background: #fff;
+    background: var(--mgr-surface);
     border: 1px solid var(--mgr-gray-200);
     border-radius: var(--mgr-radius);
     box-shadow: var(--mgr-shadow);
@@ -837,7 +838,7 @@ a.manager-stat-card {
 
 /* ===== НАҚЫЛ СӨЗДЕР ===== */
 .manager-quote {
-    background: #fff;
+    background: var(--mgr-surface);
     border: 1px solid var(--mgr-gray-200);
     border-radius: var(--mgr-radius);
     box-shadow: var(--mgr-shadow);
@@ -881,7 +882,7 @@ a.manager-stat-card {
 }
 
 .manager-feed-card {
-    background: #fff;
+    background: var(--mgr-surface);
     border: 1px solid var(--mgr-gray-200);
     border-radius: var(--mgr-radius);
     box-shadow: var(--mgr-shadow);
@@ -1113,7 +1114,7 @@ a.manager-feed-item:hover {
     padding: 0.55rem 0.9rem;
     border: 1px solid var(--mgr-gray-200);
     border-radius: 12px;
-    background: #fff;
+    background: var(--mgr-surface);
     color: var(--mgr-text);
     font-size: 0.9rem;
     font-weight: 500;
@@ -1131,7 +1132,7 @@ a.manager-feed-item:hover {
 
 .admin-select-toggle:hover {
     border-color: var(--mgr-primary);
-    background: #fff;
+    background: var(--mgr-surface);
 }
 
 .admin-select.is-open .admin-select-toggle,
@@ -1170,7 +1171,7 @@ a.manager-feed-item:hover {
     position: fixed;
     z-index: 2000;
     display: none;
-    background: #fff;
+    background: var(--mgr-surface);
     border: 1px solid var(--mgr-gray-200);
     border-radius: 14px;
     box-shadow: 0 16px 40px rgba(15, 23, 42, 0.14);
@@ -1187,7 +1188,7 @@ a.manager-feed-item:hover {
     position: sticky;
     top: 0;
     z-index: 1;
-    background: #fff;
+    background: var(--mgr-surface);
     padding: 0.25rem 0.25rem 0.45rem;
 }
 
@@ -1203,7 +1204,7 @@ a.manager-feed-item:hover {
 .admin-select-search input:focus {
     outline: none;
     border-color: var(--mgr-primary);
-    background: #fff;
+    background: var(--mgr-surface);
     box-shadow: 0 0 0 3px rgba(44, 90, 242, 0.12);
 }
 

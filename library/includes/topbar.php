@@ -36,6 +36,7 @@ if ($initials === '') {
             <i class="bi bi-search search-icon"></i>
             <input type="text" id="curatorGlobalSearch" placeholder="Поиск..." autocomplete="off">
         </div>
+        <?php appThemeToggle(); ?>
         <div class="curator-header-avatar" title="<?php echo htmlspecialchars($current_user['name']); ?>">
             <?php echo htmlspecialchars($initials); ?>
         </div>

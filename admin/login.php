@@ -53,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <?php appFaviconTags(); ?>
+    <?php appThemeInitScript(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход в админ-панель — <?php echo htmlspecialchars(APP_NAME); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,8 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="assets/css/admin-login.css" rel="stylesheet">
+    <?php appThemeStylesheet(); ?>
 </head>
 <body class="admin-login-page">
+    <?php appThemeToggle('theme-toggle--login'); ?>
     <div class="admin-login-shell">
         <main class="admin-login-panel">
             <div class="admin-login-form-wrap">
@@ -133,6 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </main>
     </div>
 
+    <?php appThemeScript(); ?>
     <script>
         (function () {
             const STORAGE_KEY = 'admin_login_remember';

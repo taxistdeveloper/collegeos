@@ -203,6 +203,7 @@ $status_label = getStudentStatusLabel($student_status);
 <head>
     <meta charset="UTF-8">
     <?php appFaviconTags(); ?>
+    <?php appThemeInitScript(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Профиль студента <?php echo vs_h($full_name); ?>">
     <title>Студент: <?php echo vs_h($full_name); ?> - <?php echo vs_h(APP_NAME); ?></title>
@@ -210,6 +211,7 @@ $status_label = getStudentStatusLabel($student_status);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
     <link href="assets/css/curator-ui.css" rel="stylesheet">
+    <?php appThemeStylesheet(); ?>
     <link href="assets/css/view-student.css" rel="stylesheet">
 </head>
 <body class="curator-app">
@@ -584,6 +586,7 @@ $status_label = getStudentStatusLabel($student_status);
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <?php appThemeScript(); ?>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="../assets/js/main.js"></script>
 <script src="assets/js/curator-ui.js"></script>

@@ -12,6 +12,7 @@ $page_subtitle = $page_subtitle ?? '';
 <head>
     <meta charset="UTF-8">
     <?php appFaviconTags(); ?>
+    <?php appThemeInitScript(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($page_title); ?> — <?php echo APP_NAME; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,6 +20,7 @@ $page_subtitle = $page_subtitle ?? '';
     <link href="../assets/css/style.css" rel="stylesheet">
     <link href="../curator/assets/css/curator-ui.css" rel="stylesheet">
     <link href="assets/css/uchebni-ui.css" rel="stylesheet">
+    <?php appThemeStylesheet(); ?>
     <?php if (!empty($extra_css) && is_array($extra_css)): ?>
         <?php foreach ($extra_css as $cssHref): ?>
             <link href="<?php echo htmlspecialchars($cssHref); ?>" rel="stylesheet">

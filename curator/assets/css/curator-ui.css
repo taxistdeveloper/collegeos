@@ -20,6 +20,7 @@
     --cur-text: #1a1d26;
     --cur-text-muted: #64748b;
     --cur-bg: #f4f6fb;
+    --cur-surface: #ffffff;
     --cur-sidebar-width: 260px;
     --cur-radius: 14px;
     --cur-radius-sm: 10px;
@@ -79,7 +80,7 @@ body.curator-app {
     left: 0;
     width: var(--cur-sidebar-width);
     height: 100vh;
-    background: #fff;
+    background: var(--cur-surface);
     border-right: 1px solid var(--cur-gray-200);
     display: flex;
     flex-direction: column;
@@ -232,7 +233,7 @@ body.curator-app {
 
 /* ===== TOP HEADER ===== */
 .curator-header {
-    background: #fff;
+    background: var(--cur-surface);
     border-bottom: 1px solid var(--cur-gray-200);
     padding: 1rem 2rem;
     display: flex;
@@ -294,7 +295,7 @@ body.curator-app {
     outline: none;
     border-color: var(--cur-primary);
     box-shadow: 0 0 0 3px rgba(44, 90, 242, 0.12);
-    background: #fff;
+    background: var(--cur-surface);
 }
 
 .curator-header-search .search-icon {
@@ -334,7 +335,7 @@ body.curator-app {
 
 /* ===== PAGE SECTIONS ===== */
 .curator-section {
-    background: #fff;
+    background: var(--cur-surface);
     border: 1px solid var(--cur-gray-200);
     border-radius: var(--cur-radius);
     box-shadow: var(--cur-shadow);
@@ -396,7 +397,7 @@ body.curator-app {
 }
 
 .curator-stat-card {
-    background: #fff;
+    background: var(--cur-surface);
     border: 1px solid var(--cur-gray-200);
     border-radius: var(--cur-radius);
     padding: 1.25rem 1.5rem;
@@ -523,7 +524,7 @@ a.curator-stat-card {
 
 /* ===== FILTERS ===== */
 .curator-filters {
-    background: #fff;
+    background: var(--cur-surface);
     border: 1px solid var(--cur-gray-200);
     border-radius: var(--cur-radius);
     padding: 1.25rem;
@@ -569,7 +570,7 @@ a.curator-stat-card {
     outline: none;
     border-color: var(--cur-primary);
     box-shadow: 0 0 0 3px rgba(44, 90, 242, 0.1);
-    background: #fff;
+    background: var(--cur-surface);
 }
 
 .curator-search-box {
@@ -593,7 +594,7 @@ a.curator-stat-card {
 
 /* ===== TABLES ===== */
 .curator-table-container {
-    background: #fff;
+    background: var(--cur-surface);
     border: 1px solid var(--cur-gray-200);
     border-radius: var(--cur-radius);
     padding: 0;
@@ -657,7 +658,7 @@ a.curator-stat-card {
     align-items: center;
     justify-content: center;
     border: 1px solid var(--cur-gray-200);
-    background: #fff;
+    background: var(--cur-surface);
     font-size: 0.85rem;
 }
 
@@ -706,7 +707,7 @@ a.curator-stat-card {
 
 /* ===== FORMS ===== */
 .curator-form-container {
-    background: #fff;
+    background: var(--cur-surface);
     border: 1px solid var(--cur-gray-200);
     border-radius: var(--cur-radius);
     padding: 1.5rem;
@@ -773,7 +774,7 @@ a.curator-stat-card {
 .curator-empty-state {
     text-align: center;
     padding: 4rem 2rem;
-    background: #fff;
+    background: var(--cur-surface);
     border: 1px solid var(--cur-gray-200);
     border-radius: var(--cur-radius);
     box-shadow: var(--cur-shadow);
@@ -817,7 +818,7 @@ a.curator-stat-card {
 
 /* ===== НАҚЫЛ СӨЗДЕР ===== */
 .curator-quote {
-    background: #fff;
+    background: var(--cur-surface);
     border: 1px solid var(--cur-gray-200);
     border-radius: var(--cur-radius);
     box-shadow: var(--cur-shadow);
@@ -861,7 +862,7 @@ a.curator-stat-card {
 }
 
 .curator-feed-card {
-    background: #fff;
+    background: var(--cur-surface);
     border: 1px solid var(--cur-gray-200);
     border-radius: var(--cur-radius);
     box-shadow: var(--cur-shadow);
@@ -1093,7 +1094,7 @@ a.curator-feed-item:hover {
     padding: 0.55rem 0.9rem;
     border: 1px solid var(--cur-gray-200);
     border-radius: 12px;
-    background: #fff;
+    background: var(--cur-surface);
     color: var(--cur-text);
     font-size: 0.9rem;
     font-weight: 500;
@@ -1111,7 +1112,7 @@ a.curator-feed-item:hover {
 
 .admin-select-toggle:hover {
     border-color: var(--cur-primary);
-    background: #fff;
+    background: var(--cur-surface);
 }
 
 .admin-select.is-open .admin-select-toggle,
@@ -1150,7 +1151,7 @@ a.curator-feed-item:hover {
     position: fixed;
     z-index: 2000;
     display: none;
-    background: #fff;
+    background: var(--cur-surface);
     border: 1px solid var(--cur-gray-200);
     border-radius: 14px;
     box-shadow: 0 16px 40px rgba(15, 23, 42, 0.14);
@@ -1167,7 +1168,7 @@ a.curator-feed-item:hover {
     position: sticky;
     top: 0;
     z-index: 1;
-    background: #fff;
+    background: var(--cur-surface);
     padding: 0.25rem 0.25rem 0.45rem;
 }
 
@@ -1183,7 +1184,7 @@ a.curator-feed-item:hover {
 .admin-select-search input:focus {
     outline: none;
     border-color: var(--cur-primary);
-    background: #fff;
+    background: var(--cur-surface);
     box-shadow: 0 0 0 3px rgba(44, 90, 242, 0.12);
 }
 

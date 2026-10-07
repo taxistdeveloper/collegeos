@@ -571,12 +571,14 @@ $page_subtitle = isset($student) ? trim(($student['last_name'] ?? '') . ' ' . ($
 <head>
     <meta charset="UTF-8">
     <?php appFaviconTags(); ?>
+    <?php appThemeInitScript(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Редактировать студента - <?php echo APP_NAME; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
     <link href="assets/css/curator-ui.css" rel="stylesheet">
+    <?php appThemeStylesheet(); ?>
     <style>
         .is-invalid {
             border-color: #dc3545 !important;
@@ -2044,6 +2046,7 @@ $page_subtitle = isset($student) ? trim(($student['last_name'] ?? '') . ' ' . ($
 </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <?php appThemeScript(); ?>
     <script src="../assets/js/main.js"></script>
     <script src="../assets/js/error-handler.js"></script>
     <script src="assets/js/curator-ui.js"></script>

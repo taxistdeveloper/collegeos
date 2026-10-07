@@ -13,7 +13,7 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
-    background: #fff;
+    background: var(--cur-surface, #fff);
     border: 1px solid var(--cur-gray-200, #e5e9f2);
     border-radius: 14px;
     padding: 1.15rem 1.35rem;
@@ -55,7 +55,7 @@
 .wizard-sidebar {
     position: sticky;
     top: 5.5rem;
-    background: #fff;
+    background: var(--cur-surface, #fff);
     border: 1px solid var(--cur-gray-200, #e5e9f2);
     border-radius: 14px;
     padding: 0.85rem;
@@ -156,7 +156,7 @@
 }
 
 .wizard-step-card {
-    background: #fff;
+    background: var(--cur-surface, #fff);
     border: 1px solid var(--cur-gray-200, #e5e9f2);
     border-radius: 14px;
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
@@ -211,8 +211,8 @@
 }
 
 .wizard-step-badge.complete {
-    background: #ecfdf5;
-    color: #059669;
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
 }
 
 .wizard-step-body {
@@ -325,7 +325,7 @@
 }
 
 .wizard-step-body .form-check:hover {
-    background: #fff;
+    background: var(--cur-surface, #fff);
 }
 
 .wizard-step-body .form-check-label {
@@ -336,7 +336,7 @@
 
 .wizard-step-body .form-switch {
     padding: 0.55rem 0.65rem;
-    background: #fff;
+    background: var(--cur-surface, #fff);
     border: 1px solid var(--cur-gray-200, #e5e9f2);
     border-radius: 10px;
 }
@@ -366,7 +366,7 @@
     gap: 0.75rem;
     margin-top: 1.25rem;
     padding: 0.85rem 1.1rem;
-    background: rgba(255, 255, 255, 0.96);
+    background: color-mix(in srgb, var(--cur-surface, #fff) 96%, transparent);
     backdrop-filter: blur(8px);
     border: 1px solid var(--cur-gray-200, #e5e9f2);
     border-radius: 14px;
@@ -653,7 +653,7 @@
     padding: 0.55rem 0.75rem;
     border: 1px solid var(--cur-gray-200, #e5e9f2);
     border-radius: 11px;
-    background: #fff;
+    background: var(--cur-surface, #fff);
     color: var(--cur-gray-700, #334155);
     font-size: 0.8rem;
     font-weight: 600;
@@ -722,7 +722,7 @@
     gap: 0.55rem;
     margin: 0;
     padding: 0.55rem 0.7rem;
-    background: #fff;
+    background: var(--cur-surface, #fff);
     border: 1px solid var(--cur-gray-200, #e5e9f2);
     border-radius: 10px;
     cursor: pointer;

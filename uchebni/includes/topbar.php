@@ -34,6 +34,7 @@ if ($initials === '') {
         </div>
     </div>
     <div class="curator-header-right">
+        <?php appThemeToggle(); ?>
         <div class="curator-header-avatar" title="<?php echo htmlspecialchars($current_user['name']); ?>">
             <?php echo htmlspecialchars($initials); ?>
         </div>
