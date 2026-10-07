@@ -23,19 +23,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     if ($action === 'issue' && $can_issue) {
-        $student_id = (int)($_POST['student_id'] ?? 0);
-        if (!$student_id) {
-            $error = 'Выберите студента из списка поиска';
+        $borrower_type = ($_POST['borrower_type'] ?? 'student') === 'teacher' ? 'teacher' : 'student';
+        $borrower_id = $borrower_type === 'teacher'
+            ? (int)($_POST['teacher_id'] ?? 0)
+            : (int)($_POST['student_id'] ?? 0);
+        $book_id = (int)($_POST['book_id'] ?? 0);
+        if (!$borrower_id) {
+            $error = $borrower_type === 'teacher'
+                ? 'Выберите преподавателя из списка поиска'
+                : 'Выберите студента из списка поиска';
+        } elseif (!$book_id) {
+            $error = 'Выберите книгу из списка поиска';
         } else {
             $result = $library->issueBook(
-                (int)$_POST['book_id'],
-                $student_id,
+                $book_id,
+                $borrower_id,
                 $current_user['id'],
                 !empty($_POST['due_date']) ? sanitize($_POST['due_date']) : null,
-                sanitize($_POST['note'] ?? '')
+                sanitize($_POST['note'] ?? ''),
+                $borrower_type
             );
             if ($result['success']) {
-                $message = 'Книга выдана студенту!';
+                $message = $borrower_type === 'teacher'
+                    ? 'Книга выдана преподавателю!'
+                    : 'Книга выдана студенту!';
             } else {
                 $error = $result['error'];
             }
@@ -75,7 +86,6 @@ if ($tab === 'returned') {
 }
 
 $loans = $library->getLoans($filters);
-$available_books = $library->getBooks(['status' => 'active', 'available_only' => true]);
 
 $page_title = 'Выдача / приём';
 $page_subtitle = count($loans) . ' записей · ' . date('d.m.Y');
@@ -116,7 +126,7 @@ require_once 'includes/header.php';
         <input type="hidden" name="tab" value="<?php echo htmlspecialchars($tab); ?>">
         <div class="curator-form-group">
             <label class="curator-form-label">Поиск</label>
-            <input type="text" name="search" id="librarySearchInput" class="curator-form-control" placeholder="ФИО студента, название книги..." value="<?php echo htmlspecialchars($filters['search']); ?>">
+            <input type="text" name="search" id="librarySearchInput" class="curator-form-control" placeholder="ФИО студента/преподавателя, название книги..." value="<?php echo htmlspecialchars($filters['search']); ?>">
         </div>
         <div class="curator-form-group">
             <label class="curator-form-label">&nbsp;</label>
@@ -130,7 +140,7 @@ require_once 'includes/header.php';
         <table class="table curator-table mb-0">
             <thead>
                 <tr>
-                    <th>Студент</th>
+                    <th>Читатель</th>
                     <th>Книга</th>
                     <th>Выдано</th>
                     <th>Срок</th>
@@ -144,13 +154,21 @@ require_once 'includes/header.php';
                 <?php else: ?>
                     <?php foreach ($loans as $loan): ?>
                         <?php
-                        $fio = Library::formatStudentFio($loan);
+                        $fio = Library::formatBorrowerFio($loan);
+                        $is_teacher = ($loan['borrower_type'] ?? 'student') === 'teacher';
                         $is_overdue = $loan['status'] === 'active' && $loan['due_date'] < date('Y-m-d');
                         ?>
                         <tr>
                             <td>
                                 <strong><?php echo htmlspecialchars($fio); ?></strong>
-                                <?php if ($loan['group_name']): ?><br><span class="curator-badge badge-primary"><?php echo htmlspecialchars($loan['group_name']); ?></span><?php endif; ?>
+                                <br>
+                                <?php if ($is_teacher): ?>
+                                    <span class="curator-badge badge-info">Преподаватель</span>
+                                <?php elseif ($loan['group_name']): ?>
+                                    <span class="curator-badge badge-primary"><?php echo htmlspecialchars($loan['group_name']); ?></span>
+                                <?php else: ?>
+                                    <span class="curator-badge badge-primary">Студент</span>
+                                <?php endif; ?>
                             </td>
                             <td>
                                 <?php echo htmlspecialchars($loan['title']); ?>
@@ -206,30 +224,53 @@ require_once 'includes/header.php';
 <?php if ($can_issue): ?>
 <div class="modal fade" id="issueModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <form method="post" class="modal-content">
+        <form method="post" class="modal-content" id="issueForm">
             <input type="hidden" name="action" value="issue">
             <input type="hidden" name="student_id" id="issue_student_id">
+            <input type="hidden" name="teacher_id" id="issue_teacher_id">
             <div class="modal-header">
-                <h5 class="modal-title">Выдать книгу студенту</h5>
+                <h5 class="modal-title">Выдать книгу</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3 library-student-search-wrap">
+                <div class="mb-3">
+                    <label class="curator-form-label">Кому выдать *</label>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <label class="form-check">
+                            <input class="form-check-input" type="radio" name="borrower_type" id="borrower_type_student" value="student" checked>
+                            <span class="form-check-label">Студенту</span>
+                        </label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="radio" name="borrower_type" id="borrower_type_teacher" value="teacher">
+                            <span class="form-check-label">Преподавателю</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3 library-student-search-wrap" id="issue_student_block">
                     <label class="curator-form-label">Студент (ФИО) *</label>
                     <input type="text" id="issue_student_search" class="curator-form-control" placeholder="Начните вводить фамилию, имя..." autocomplete="off">
                     <div id="issue_student_results" class="list-group library-student-search-results d-none"></div>
                     <div class="form-text">Выберите студента из списка результатов</div>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3 library-student-search-wrap d-none" id="issue_teacher_block">
+                    <label class="curator-form-label">Преподаватель (ФИО) *</label>
+                    <input type="text" id="issue_teacher_search" class="curator-form-control" placeholder="Начните вводить фамилию, имя..." autocomplete="off">
+                    <div id="issue_teacher_results" class="list-group library-student-search-results d-none"></div>
+                    <div class="form-text">Выберите преподавателя из списка результатов</div>
+                </div>
+                <div class="mb-3 library-student-search-wrap">
                     <label class="curator-form-label">Книга *</label>
-                    <select name="book_id" class="curator-form-select" required>
-                        <option value="">— выберите —</option>
-                        <?php foreach ($available_books as $b): ?>
-                            <option value="<?php echo (int)$b['id']; ?>">
-                                <?php echo htmlspecialchars($b['title'] . ' — ' . $b['author'] . ' (доступно: ' . $b['copies_available'] . ')'); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <input type="hidden" name="book_id" id="issue_book_id">
+                    <div class="library-book-search-field">
+                        <i class="bi bi-search library-book-search-icon" aria-hidden="true"></i>
+                        <input type="text" id="issue_book_search" class="curator-form-control library-book-search-input" placeholder="Название, автор или инв. номер..." autocomplete="off">
+                        <button type="button" class="library-book-clear" id="issue_book_clear" title="Очистить" aria-label="Очистить">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                    <div id="issue_book_results" class="list-group library-student-search-results d-none"></div>
+                    <div id="issue_book_selected" class="library-book-selected d-none"></div>
+                    <div class="form-text">Начните вводить — выберите книгу из доступных</div>
                 </div>
                 <div class="mb-3">
                     <label class="curator-form-label">Срок возврата</label>
@@ -250,6 +291,58 @@ require_once 'includes/header.php';
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     initStudentSearch('issue_student_search', 'issue_student_id', 'issue_student_results');
+    initTeacherSearch('issue_teacher_search', 'issue_teacher_id', 'issue_teacher_results');
+    initBookSearch({
+        inputId: 'issue_book_search',
+        hiddenId: 'issue_book_id',
+        resultsId: 'issue_book_results',
+        selectedId: 'issue_book_selected',
+        clearId: 'issue_book_clear'
+    });
+
+    const studentBlock = document.getElementById('issue_student_block');
+    const teacherBlock = document.getElementById('issue_teacher_block');
+    const studentId = document.getElementById('issue_student_id');
+    const teacherId = document.getElementById('issue_teacher_id');
+    const studentSearch = document.getElementById('issue_student_search');
+    const teacherSearch = document.getElementById('issue_teacher_search');
+    const radios = document.querySelectorAll('input[name="borrower_type"]');
+    const issueForm = document.getElementById('issueForm');
+
+    function syncBorrowerType() {
+        const isTeacher = document.getElementById('borrower_type_teacher').checked;
+        studentBlock.classList.toggle('d-none', isTeacher);
+        teacherBlock.classList.toggle('d-none', !isTeacher);
+        if (isTeacher) {
+            studentId.value = '';
+            studentSearch.value = '';
+        } else {
+            teacherId.value = '';
+            teacherSearch.value = '';
+        }
+    }
+
+    radios.forEach(function(radio) {
+        radio.addEventListener('change', syncBorrowerType);
+    });
+    syncBorrowerType();
+
+    if (issueForm) {
+        issueForm.addEventListener('submit', function(e) {
+            const isTeacher = document.getElementById('borrower_type_teacher').checked;
+            const personOk = isTeacher ? !!teacherId.value : !!studentId.value;
+            const bookOk = !!document.getElementById('issue_book_id').value;
+            if (!personOk) {
+                e.preventDefault();
+                alert(isTeacher ? 'Выберите преподавателя из списка' : 'Выберите студента из списка');
+                return;
+            }
+            if (!bookOk) {
+                e.preventDefault();
+                alert('Выберите книгу из списка поиска');
+            }
+        });
+    }
 });
 </script>
 <?php endif; ?>

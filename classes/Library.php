@@ -79,6 +79,16 @@ class Library
         return trim(($student['last_name'] ?? '') . ' ' . ($student['first_name'] ?? '') . ' ' . ($student['middle_name'] ?? ''));
     }
 
+    public static function formatBorrowerFio($row)
+    {
+        return self::formatStudentFio($row);
+    }
+
+    public static function borrowerTypeLabel($type)
+    {
+        return $type === 'teacher' ? 'Преподаватель' : 'Студент';
+    }
+
     public static function ensureTablesExist()
     {
         $db = getDB();
@@ -145,7 +155,9 @@ class Library
         $db->query("CREATE TABLE IF NOT EXISTS library_loans (
             id INT AUTO_INCREMENT PRIMARY KEY,
             book_id INT NOT NULL,
-            student_id INT NOT NULL,
+            borrower_type ENUM('student', 'teacher') NOT NULL DEFAULT 'student',
+            student_id INT NULL,
+            teacher_id INT NULL,
             issued_at DATE NOT NULL,
             due_date DATE NOT NULL,
             returned_at DATE NULL,
@@ -158,8 +170,27 @@ class Library
             INDEX idx_loans_status (status),
             INDEX idx_loans_due (due_date),
             INDEX idx_loans_book (book_id),
-            INDEX idx_loans_student (student_id)
+            INDEX idx_loans_student (student_id),
+            INDEX idx_loans_teacher (teacher_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        // Миграция: поддержка выдачи преподавателям
+        $borrowerTypeCol = $db->query("SHOW COLUMNS FROM library_loans LIKE 'borrower_type'");
+        if ($borrowerTypeCol && $borrowerTypeCol->num_rows === 0) {
+            $db->query("ALTER TABLE library_loans
+                ADD COLUMN borrower_type ENUM('student', 'teacher') NOT NULL DEFAULT 'student' AFTER book_id");
+        }
+        $teacherIdCol = $db->query("SHOW COLUMNS FROM library_loans LIKE 'teacher_id'");
+        if ($teacherIdCol && $teacherIdCol->num_rows === 0) {
+            $db->query("ALTER TABLE library_loans ADD COLUMN teacher_id INT NULL AFTER student_id");
+            $db->query("ALTER TABLE library_loans ADD INDEX idx_loans_teacher (teacher_id)");
+        }
+        $studentIdCol = $db->query("SHOW COLUMNS FROM library_loans LIKE 'student_id'");
+        if ($studentIdCol && $row = $studentIdCol->fetch_assoc()) {
+            if (strtoupper((string)($row['Null'] ?? '')) === 'NO') {
+                $db->query("ALTER TABLE library_loans MODIFY student_id INT NULL");
+            }
+        }
 
         $db->query("CREATE TABLE IF NOT EXISTS library_reservations (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -256,6 +287,38 @@ class Library
         $p = '%' . $query . '%';
         $stmt = $this->db->prepare($sql);
         $stmt->bind_param('ssssi', $p, $p, $p, $p, $limit);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function searchTeachers($query, $limit = 20)
+    {
+        $query = trim($query);
+        if ($query === '') {
+            return [];
+        }
+
+        $tables = $this->db->query("SHOW TABLES LIKE 'uchebni_teachers'");
+        if (!$tables || $tables->num_rows === 0) {
+            return [];
+        }
+
+        $limit = max(1, min(50, (int)$limit));
+        $sql = "SELECT t.id, t.last_name, t.first_name, t.middle_name
+                FROM uchebni_teachers t
+                WHERE t.is_active = 1
+                  AND (
+                        t.last_name LIKE ?
+                     OR t.first_name LIKE ?
+                     OR t.middle_name LIKE ?
+                     OR CONCAT_WS(' ', t.last_name, t.first_name, t.middle_name) LIKE ?
+                     OR CONCAT_WS(' ', t.last_name, t.first_name) LIKE ?
+                  )
+                ORDER BY t.last_name, t.first_name, t.middle_name
+                LIMIT ?";
+        $p = '%' . $query . '%';
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('sssssi', $p, $p, $p, $p, $p, $limit);
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
@@ -567,13 +630,17 @@ class Library
     public function getLoans($filters = [])
     {
         $sql = "SELECT l.*, b.title, b.author, b.inventory_number,
-                s.last_name, s.first_name, s.middle_name, s.iin,
+                COALESCE(s.last_name, t.last_name) AS last_name,
+                COALESCE(s.first_name, t.first_name) AS first_name,
+                COALESCE(s.middle_name, t.middle_name) AS middle_name,
+                s.iin,
                 g.name as group_name,
                 iu.last_name as issuer_last, iu.first_name as issuer_first
                 FROM library_loans l
                 JOIN library_books b ON l.book_id = b.id
-                JOIN students s ON l.student_id = s.id
+                LEFT JOIN students s ON l.student_id = s.id
                 LEFT JOIN `groups` g ON s.group_id = g.id
+                LEFT JOIN uchebni_teachers t ON l.teacher_id = t.id
                 LEFT JOIN users iu ON l.issued_by = iu.id
                 WHERE 1=1";
         $params = [];
@@ -585,10 +652,14 @@ class Library
             $types .= 's';
         }
         if (!empty($filters['search'])) {
-            $sql .= " AND (s.last_name LIKE ? OR s.first_name LIKE ? OR s.middle_name LIKE ? OR b.title LIKE ? OR b.author LIKE ?)";
+            $sql .= " AND (
+                s.last_name LIKE ? OR s.first_name LIKE ? OR s.middle_name LIKE ?
+                OR t.last_name LIKE ? OR t.first_name LIKE ? OR t.middle_name LIKE ?
+                OR b.title LIKE ? OR b.author LIKE ?
+            )";
             $p = '%' . $filters['search'] . '%';
-            $params = array_merge($params, [$p, $p, $p, $p, $p]);
-            $types .= 'sssss';
+            $params = array_merge($params, [$p, $p, $p, $p, $p, $p, $p, $p]);
+            $types .= 'ssssssss';
         }
         if (!empty($filters['overdue_only'])) {
             $sql .= " AND l.status = 'active' AND l.due_date < CURDATE()";
@@ -606,22 +677,41 @@ class Library
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
 
-    public function issueBook($book_id, $student_id, $issued_by, $due_date = null, $note = null)
+    public function issueBook($book_id, $borrower_id, $issued_by, $due_date = null, $note = null, $borrower_type = 'student')
     {
         $book = $this->getBookById($book_id);
         if (!$book || $book['status'] !== 'active' || (int)$book['copies_available'] < 1) {
             return ['success' => false, 'error' => 'Книга недоступна для выдачи'];
         }
 
-        $stmt = $this->db->prepare("SELECT id, graduation_date, course_end_date FROM students WHERE id = ?");
-        $stmt->bind_param('i', $student_id);
-        $stmt->execute();
-        $student = $stmt->get_result()->fetch_assoc();
-        if (!$student) {
-            return ['success' => false, 'error' => 'Студент не найден'];
-        }
-        if (isStudentGraduated($student)) {
-            return ['success' => false, 'error' => 'Студент уже выпустился — выдача недоступна'];
+        $borrower_type = $borrower_type === 'teacher' ? 'teacher' : 'student';
+        $student_id = null;
+        $teacher_id = null;
+
+        if ($borrower_type === 'teacher') {
+            $teacher_id = (int)$borrower_id;
+            $tables = $this->db->query("SHOW TABLES LIKE 'uchebni_teachers'");
+            if (!$tables || $tables->num_rows === 0) {
+                return ['success' => false, 'error' => 'Справочник преподавателей недоступен'];
+            }
+            $stmt = $this->db->prepare("SELECT id FROM uchebni_teachers WHERE id = ? AND is_active = 1");
+            $stmt->bind_param('i', $teacher_id);
+            $stmt->execute();
+            if (!$stmt->get_result()->fetch_assoc()) {
+                return ['success' => false, 'error' => 'Преподаватель не найден'];
+            }
+        } else {
+            $student_id = (int)$borrower_id;
+            $stmt = $this->db->prepare("SELECT id, graduation_date, course_end_date FROM students WHERE id = ?");
+            $stmt->bind_param('i', $student_id);
+            $stmt->execute();
+            $student = $stmt->get_result()->fetch_assoc();
+            if (!$student) {
+                return ['success' => false, 'error' => 'Студент не найден'];
+            }
+            if (isStudentGraduated($student)) {
+                return ['success' => false, 'error' => 'Студент уже выпустился — выдача недоступна'];
+            }
         }
 
         $issued_at = date('Y-m-d');
@@ -629,9 +719,15 @@ class Library
 
         $this->db->begin_transaction();
         try {
-            $stmt = $this->db->prepare("INSERT INTO library_loans (book_id, student_id, issued_at, due_date, issued_by, note)
-                VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param('iissis', $book_id, $student_id, $issued_at, $due_date, $issued_by, $note);
+            if ($borrower_type === 'teacher') {
+                $stmt = $this->db->prepare("INSERT INTO library_loans (book_id, borrower_type, student_id, teacher_id, issued_at, due_date, issued_by, note)
+                    VALUES (?, 'teacher', NULL, ?, ?, ?, ?, ?)");
+                $stmt->bind_param('iissis', $book_id, $teacher_id, $issued_at, $due_date, $issued_by, $note);
+            } else {
+                $stmt = $this->db->prepare("INSERT INTO library_loans (book_id, borrower_type, student_id, teacher_id, issued_at, due_date, issued_by, note)
+                    VALUES (?, 'student', ?, NULL, ?, ?, ?, ?)");
+                $stmt->bind_param('iissis', $book_id, $student_id, $issued_at, $due_date, $issued_by, $note);
+            }
             if (!$stmt->execute()) {
                 throw new Exception('Ошибка создания выдачи');
             }
@@ -644,7 +740,9 @@ class Library
                 throw new Exception('Нет доступных экземпляров');
             }
 
-            $this->fulfillReservationForStudent($book_id, $student_id);
+            if ($borrower_type === 'student' && $student_id) {
+                $this->fulfillReservationForStudent($book_id, $student_id);
+            }
 
             $this->db->commit();
             return ['success' => true, 'loan_id' => $loan_id];
