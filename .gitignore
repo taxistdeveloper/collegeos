@@ -27,6 +27,8 @@ deploy.sh
 *.sql
 *.sql.gz
 *.dump
+# Сидеры библиотеки можно пушить в GitHub
+!database/seeders/*.sql
 
 # ===== Archives / backups =====
 *.zip

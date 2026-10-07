@@ -28,4 +28,9 @@ if (!isset($library_nav)) {
             <i class="bi bi-bookmark me-1"></i>Бронирование
         </a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link <?php echo $library_nav === 'seed' ? 'active' : ''; ?>" href="seed_library.php">
+            <i class="bi bi-database-up me-1"></i>Сидер
+        </a>
+    </li>
 </ul>
