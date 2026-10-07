@@ -79,3 +79,282 @@
     border-radius: var(--cur-radius-sm);
     font-weight: 600;
 }
+
+.library-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin: 0 0 1rem;
+    padding: 0.85rem 1rem;
+    background: var(--cur-surface);
+    border: 1px solid var(--cur-gray-200);
+    border-radius: var(--cur-radius);
+    box-shadow: var(--cur-shadow);
+}
+
+.library-pagination-info {
+    font-size: 0.875rem;
+    color: var(--cur-text-muted);
+    font-weight: 600;
+}
+
+.library-pagination-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.library-pagination-ellipsis {
+    color: var(--cur-text-muted);
+    padding: 0 0.2rem;
+    font-weight: 600;
+}
+
+.library-pagination .btn.disabled {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.library-fund-tabs {
+    flex-wrap: wrap;
+}
+
+.book-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.book-form-step {
+    background: var(--cur-surface, #fff);
+    border: 1px solid var(--cur-gray-200, #e5e7eb);
+    border-radius: var(--cur-radius, 12px);
+    padding: 1rem 1.1rem 1.15rem;
+}
+
+.book-form-step-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+}
+
+.book-form-step-num {
+    flex: 0 0 auto;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--cur-primary, #2563eb);
+    background: var(--cur-primary-light, #eff6ff);
+}
+
+.book-form-step-title {
+    font-size: 0.95rem;
+    font-weight: 750;
+    line-height: 1.2;
+    color: var(--cur-text, #111827);
+}
+
+.book-form-step-desc {
+    margin-top: 0.15rem;
+    font-size: 0.8rem;
+    color: var(--cur-text-muted, #6b7280);
+}
+
+.book-fund-picker {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.6rem;
+}
+
+.book-fund-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 4.5rem;
+    padding: 0.75rem 0.5rem;
+    border: 1.5px solid var(--cur-gray-200, #e5e7eb);
+    border-radius: var(--cur-radius-sm, 10px);
+    background: #fff;
+    color: var(--cur-text, #111827);
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.book-fund-option i {
+    font-size: 1.25rem;
+    color: var(--cur-text-muted, #6b7280);
+}
+
+.book-fund-option:hover {
+    border-color: var(--cur-primary, #2563eb);
+    background: var(--cur-primary-light, #eff6ff);
+}
+
+.book-fund-option.is-active {
+    border-color: var(--cur-primary, #2563eb);
+    background: var(--cur-primary-light, #eff6ff);
+    color: var(--cur-primary, #2563eb);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.book-fund-option.is-active i {
+    color: var(--cur-primary, #2563eb);
+}
+
+.book-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem 0.9rem;
+}
+
+.book-field--wide {
+    grid-column: 1 / -1;
+}
+
+.book-field--sm {
+    max-width: 100%;
+}
+
+.book-field .curator-form-label,
+.book-field .form-label {
+    margin-bottom: 0.35rem;
+}
+
+.book-field .curator-form-control,
+.book-field .curator-form-select,
+.book-field .form-control,
+.book-field .form-select {
+    width: 100%;
+}
+
+.book-form-panels[hidden],
+.book-form-empty[hidden] {
+    display: none !important;
+}
+
+.book-form-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.75rem 1rem;
+    border: 1px dashed var(--cur-gray-200, #e5e7eb);
+    border-radius: var(--cur-radius, 12px);
+    color: var(--cur-text-muted, #6b7280);
+    text-align: center;
+}
+
+.book-form-empty i {
+    font-size: 1.75rem;
+    opacity: 0.7;
+}
+
+.book-form-empty p {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.modal-book-form .modal-dialog {
+    max-width: 720px;
+}
+
+.modal-book-form .modal-header {
+    border-bottom: 1px solid var(--cur-gray-200, #e5e7eb);
+    background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+}
+
+.modal-book-form .modal-title {
+    font-weight: 750;
+}
+
+.modal-book-form .modal-body {
+    max-height: min(72vh, 680px);
+    overflow-y: auto;
+    background: #f8fafc;
+    padding: 1rem 1.1rem;
+}
+
+.modal-book-form .modal-footer {
+    border-top: 1px solid var(--cur-gray-200, #e5e7eb);
+    background: #fff;
+}
+
+@media (max-width: 768px) {
+    .book-fund-picker,
+    .book-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .book-fund-option {
+        flex-direction: row;
+        justify-content: flex-start;
+        min-height: 0;
+        padding: 0.8rem 0.9rem;
+    }
+}
+
+.library-fund-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.library-fund-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: var(--cur-surface);
+    border: 1px solid var(--cur-gray-200);
+    border-radius: var(--cur-radius);
+    box-shadow: var(--cur-shadow);
+    padding: 1.15rem 1.25rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.library-fund-card:hover {
+    border-color: var(--cur-primary);
+    box-shadow: var(--cur-shadow-lg);
+    transform: translateY(-1px);
+    color: inherit;
+}
+
+.library-fund-card-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--cur-text-muted);
+    margin-bottom: 0.35rem;
+}
+
+.library-fund-card-number {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--cur-primary);
+}
+
+.library-fund-card-meta {
+    margin-top: 0.35rem;
+    font-size: 0.8125rem;
+    color: var(--cur-text-muted);
+}
+
+@media (max-width: 768px) {
+    .library-fund-cards {
+        grid-template-columns: 1fr;
+    }
+}

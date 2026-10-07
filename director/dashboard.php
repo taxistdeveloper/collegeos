@@ -167,6 +167,25 @@ $course_filter_options = array_values(array_unique(array_filter(array_map(
     $groups_stats
 ))));
 sort($course_filter_options, SORT_NATURAL);
+
+$nakyl_sozder = [
+    ['kk' => 'Еңбек түбі — береке.', 'ru' => 'В основе труда — достаток.'],
+    ['kk' => 'Білімді мыңды жығады.', 'ru' => 'Знающий одолеет тысячу.'],
+    ['kk' => 'Отан отбасынан басталады.', 'ru' => 'Родина начинается с семьи.'],
+    ['kk' => 'Жақсы сөз — жарым ырыс.', 'ru' => 'Доброе слово — половина счастья.'],
+    ['kk' => 'Сабыр түбі — сары алтын.', 'ru' => 'Терпение в итоге — чистое золото.'],
+    ['kk' => 'Бірлік бар жерде — тірлік бар.', 'ru' => 'Где есть единство, там есть жизнь.'],
+    ['kk' => 'Ақыл — тозбас тон, білім — таусылмас кен.', 'ru' => 'Ум не износится, знание не иссякнет.'],
+    ['kk' => 'Ұяда не көрсе, ұшқанда соны іледі.', 'ru' => 'Что видит в гнезде, то и несёт в полёт.'],
+    ['kk' => 'Тәрбие — тал бесіктен.', 'ru' => 'Воспитание начинается с колыбели.'],
+    ['kk' => 'Жігітке жеті өнер де аз.', 'ru' => 'Джигиту и семи ремёсел мало.'],
+    ['kk' => 'Оқу — инемен құдық қазғандай.', 'ru' => 'Учёба похожа на колодец, выкопанный иглой.'],
+    ['kk' => 'Елдің ертеңі — жастар.', 'ru' => 'Будущее народа — молодёжь.'],
+    ['kk' => 'Адал еңбек абырой әкеледі.', 'ru' => 'Честный труд приносит честь.'],
+    ['kk' => 'Батыр бір рет өледі, қорқақ мың өледі.', 'ru' => 'Храбрец умирает один раз, трус — тысячу.'],
+    ['kk' => 'Көп түкірсе — көл.', 'ru' => 'Много малых усилий складываются в большое дело.'],
+];
+$nakyl_index = random_int(0, count($nakyl_sozder) - 1);
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -650,6 +669,52 @@ sort($course_filter_options, SORT_NATURAL);
             min-height: 1.25rem;
         }
 
+        .dir-quote {
+            background: var(--dir-surface);
+            border: 1px solid var(--dir-border);
+            border-radius: var(--dir-radius);
+            box-shadow: var(--dir-shadow);
+            padding: 1.25rem 1.35rem 1.15rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .dir-quote-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .dir-quote-title {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .dir-quote-count {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--dir-muted);
+        }
+
+        .dir-quote-text {
+            margin: 0 0 0.65rem;
+            font-size: 1.35rem;
+            font-weight: 800;
+            line-height: 1.45;
+            letter-spacing: -0.02em;
+            color: var(--dir-text);
+        }
+
+        .dir-quote-meaning {
+            margin: 0 0 1rem;
+            font-size: 0.95rem;
+            color: var(--dir-muted);
+            font-weight: 600;
+        }
+
         @media (max-width: 1100px) {
             .kpi-grid,
             .social-grid {
@@ -806,6 +871,18 @@ sort($course_filter_options, SORT_NATURAL);
                 </div>
             </div>
         </div>
+
+        <section class="dir-quote" aria-labelledby="nakylTitle">
+            <div class="dir-quote-head">
+                <h2 class="dir-quote-title" id="nakylTitle">Нақыл сөздер</h2>
+                <span class="dir-quote-count" id="nakylCount"></span>
+            </div>
+            <blockquote class="dir-quote-text" id="nakylText"></blockquote>
+            <p class="dir-quote-meaning" id="nakylMeaning"></p>
+            <button type="button" class="btn btn-soft btn-sm" id="nakylNext">
+                Келесі
+            </button>
+        </section>
 
         <ul class="nav dir-tabs" id="dirTabs" role="tablist">
             <li class="nav-item" role="presentation">
@@ -1279,6 +1356,34 @@ sort($course_filter_options, SORT_NATURAL);
                 }
             }
         });
+
+        const nakylSozder = <?php echo json_encode($nakyl_sozder, JSON_UNESCAPED_UNICODE); ?>;
+        let nakylIndex = <?php echo (int)$nakyl_index; ?>;
+        let lastNakylIndex = nakylIndex;
+
+        function randomNakylIndex() {
+            if (nakylSozder.length < 2) return 0;
+            let next = Math.floor(Math.random() * nakylSozder.length);
+            while (next === lastNakylIndex) {
+                next = Math.floor(Math.random() * nakylSozder.length);
+            }
+            return next;
+        }
+
+        function showNakyl() {
+            const item = nakylSozder[nakylIndex];
+            lastNakylIndex = nakylIndex;
+            document.getElementById('nakylText').textContent = item.kk;
+            document.getElementById('nakylMeaning').textContent = item.ru;
+            document.getElementById('nakylCount').textContent = 'кездейсоқ';
+        }
+
+        document.getElementById('nakylNext').addEventListener('click', function () {
+            nakylIndex = randomNakylIndex();
+            showNakyl();
+        });
+
+        showNakyl();
     </script>
 </body>
 

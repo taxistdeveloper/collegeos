@@ -15,6 +15,26 @@ $library->expireOldReservations();
 
 $stats = $library->getStats();
 $current_user = getCurrentUser();
+
+$nakyl_sozder = [
+    ['kk' => 'Еңбек түбі — береке.', 'ru' => 'В основе труда — достаток.'],
+    ['kk' => 'Білімді мыңды жығады.', 'ru' => 'Знающий одолеет тысячу.'],
+    ['kk' => 'Отан отбасынан басталады.', 'ru' => 'Родина начинается с семьи.'],
+    ['kk' => 'Жақсы сөз — жарым ырыс.', 'ru' => 'Доброе слово — половина счастья.'],
+    ['kk' => 'Сабыр түбі — сары алтын.', 'ru' => 'Терпение в итоге — чистое золото.'],
+    ['kk' => 'Бірлік бар жерде — тірлік бар.', 'ru' => 'Где есть единство, там есть жизнь.'],
+    ['kk' => 'Ақыл — тозбас тон, білім — таусылмас кен.', 'ru' => 'Ум не износится, знание не иссякнет.'],
+    ['kk' => 'Ұяда не көрсе, ұшқанда соны іледі.', 'ru' => 'Что видит в гнезде, то и несёт в полёт.'],
+    ['kk' => 'Тәрбие — тал бесіктен.', 'ru' => 'Воспитание начинается с колыбели.'],
+    ['kk' => 'Жігітке жеті өнер де аз.', 'ru' => 'Джигиту и семи ремёсел мало.'],
+    ['kk' => 'Оқу — инемен құдық қазғандай.', 'ru' => 'Учёба похожа на колодец, выкопанный иглой.'],
+    ['kk' => 'Елдің ертеңі — жастар.', 'ru' => 'Будущее народа — молодёжь.'],
+    ['kk' => 'Адал еңбек абырой әкеледі.', 'ru' => 'Честный труд приносит честь.'],
+    ['kk' => 'Батыр бір рет өледі, қорқақ мың өледі.', 'ru' => 'Храбрец умирает один раз, трус — тысячу.'],
+    ['kk' => 'Көп түкірсе — көл.', 'ru' => 'Много малых усилий складываются в большое дело.'],
+];
+$nakyl_index = random_int(0, count($nakyl_sozder) - 1);
+
 $page_title = 'Главная';
 $page_subtitle = 'Обзор библиотеки · ' . date('d.m.Y');
 require_once 'includes/header.php';
@@ -46,6 +66,28 @@ require_once 'includes/header.php';
     </div>
 </div>
 
+<div class="library-fund-cards mb-4">
+    <?php foreach (($stats['by_fund'] ?? []) as $fundKey => $fundStat): ?>
+        <a href="books.php?fund=<?php echo urlencode($fundKey); ?>" class="library-fund-card">
+            <div class="library-fund-card-label"><?php echo htmlspecialchars($fundStat['label']); ?> фонд</div>
+            <div class="library-fund-card-number"><?php echo (int)$fundStat['total']; ?></div>
+            <div class="library-fund-card-meta"><?php echo (int)$fundStat['titles']; ?> названий</div>
+        </a>
+    <?php endforeach; ?>
+</div>
+
+<section class="curator-quote mb-4" aria-labelledby="nakylTitle">
+    <div class="curator-quote-head">
+        <h2 class="curator-section-title" id="nakylTitle">Нақыл сөздер</h2>
+        <span class="curator-quote-count" id="nakylCount"></span>
+    </div>
+    <blockquote class="curator-quote-text" id="nakylText"></blockquote>
+    <p class="curator-quote-meaning" id="nakylMeaning"></p>
+    <button type="button" class="btn btn-outline-primary btn-sm" id="nakylNext">
+        Келесі
+    </button>
+</section>
+
 <div class="card library-welcome-card mb-0">
     <div class="card-body p-4 p-md-5">
         <h2 class="h4 mb-2"><i class="bi bi-book-half me-2"></i>Цифровая библиотека</h2>
@@ -59,5 +101,35 @@ require_once 'includes/header.php';
         </div>
     </div>
 </div>
+
+<script>
+    const nakylSozder = <?php echo json_encode($nakyl_sozder, JSON_UNESCAPED_UNICODE); ?>;
+    let nakylIndex = <?php echo (int)$nakyl_index; ?>;
+    let lastNakylIndex = nakylIndex;
+
+    function randomNakylIndex() {
+        if (nakylSozder.length < 2) return 0;
+        let next = Math.floor(Math.random() * nakylSozder.length);
+        while (next === lastNakylIndex) {
+            next = Math.floor(Math.random() * nakylSozder.length);
+        }
+        return next;
+    }
+
+    function showNakyl() {
+        const item = nakylSozder[nakylIndex];
+        lastNakylIndex = nakylIndex;
+        document.getElementById('nakylText').textContent = item.kk;
+        document.getElementById('nakylMeaning').textContent = item.ru;
+        document.getElementById('nakylCount').textContent = 'кездейсоқ';
+    }
+
+    document.getElementById('nakylNext').addEventListener('click', function () {
+        nakylIndex = randomNakylIndex();
+        showNakyl();
+    });
+
+    showNakyl();
+</script>
 
 <?php require_once 'includes/footer.php'; ?>

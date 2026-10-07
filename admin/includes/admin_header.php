@@ -6,7 +6,7 @@
  * Переменные для передачи:
  * $page_title - заголовок страницы
  * $page_subtitle - подзаголовок (опционально)
- * $active_page - активный пункт меню (dashboard, users, groups, students, roles, fields, notifications)
+ * $active_page - активный пункт меню (dashboard, users, groups, students, library, roles, fields, notifications)
  */
 
 if (!isset($page_title)) $page_title = 'Админ-панель';
@@ -104,6 +104,12 @@ $menu_stats = $GLOBALS['admin_menu_stats'];
                         <a href="students.php" class="nav-link <?php echo $active_page === 'students' ? 'active' : ''; ?>">
                             <i class="bi bi-person-badge-fill"></i>
                             <span>Студенты</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="library.php" class="nav-link <?php echo $active_page === 'library' ? 'active' : ''; ?>">
+                            <i class="bi bi-journal-bookmark-fill"></i>
+                            <span>Библиотека</span>
                         </a>
                     </li>
                     <li class="nav-item">

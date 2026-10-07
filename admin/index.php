@@ -223,6 +223,13 @@ $first_name = explode(' ', $admin_name)[0];
                             <span class="quick-action-text">Управление студентами</span>
                         </a>
 
+                        <a href="library.php" class="quick-action-btn">
+                            <div class="quick-action-icon" style="background: rgba(14, 165, 233, 0.12); color: var(--info);">
+                                <i class="bi bi-journal-bookmark-fill"></i>
+                            </div>
+                            <span class="quick-action-text">Библиотека</span>
+                        </a>
+
                         <button type="button" class="quick-action-btn" onclick="openImportModal()">
                             <div class="quick-action-icon" style="background: rgba(6, 182, 212, 0.12); color: var(--info);">
                                 <i class="bi bi-cloud-upload-fill"></i>
