@@ -1,0 +1,99 @@
+.diploma-editor-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 920px;
+}
+
+.diploma-editor-table th,
+.diploma-editor-table td {
+    padding: 0.4rem 0.35rem;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+    font-size: 0.8125rem;
+}
+
+.diploma-editor-table th {
+    text-align: left;
+    color: var(--text-secondary);
+    font-weight: 600;
+    background: var(--gray-50);
+    white-space: nowrap;
+}
+
+.diploma-order {
+    width: 2rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.diploma-editor-table .diploma-num {
+    width: 4.5rem;
+    text-align: center;
+}
+
+.diploma-actions {
+    white-space: nowrap;
+    width: 7rem;
+}
+
+.diploma-actions .btn {
+    margin-right: 0.15rem;
+}
+
+.diploma-empty {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 1.5rem !important;
+}
+
+.diploma-row-section {
+    background: rgba(44, 90, 242, 0.04);
+}
+
+.student-search {
+    position: relative;
+}
+
+.student-suggest {
+    position: absolute;
+    z-index: 30;
+    left: 0;
+    right: 0;
+    top: calc(100% + 4px);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    max-height: 260px;
+    overflow: auto;
+}
+
+.student-suggest button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    padding: 0.55rem 0.75rem;
+    color: var(--text-primary);
+}
+
+.student-suggest button:hover {
+    background: var(--gray-50);
+}
+
+.student-suggest small {
+    display: block;
+    color: var(--text-secondary);
+}
+
+.diploma-selected {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--gray-50);
+}
