@@ -14,11 +14,13 @@ define('APP_VERSION', '1.0.0');
 define('APP_LOGO', 'assets/img/kvki-logo.png');
 define('APP_LOGO_ALT', 'Қарағанды жоғары инжиниринг колледжі');
 
-$host = preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost');
-if (strpos($host, 'app.kvki.kz') !== false || strpos($host, 'kvki.kz') !== false) {
+$host = strtolower(preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost'));
+if ($host === 'dev-app.kvki.kz') {
+    define('BASE_URL', 'https://dev-app.kvki.kz/');
+} elseif ($host === 'app.kvki.kz' || $host === 'kvki.kz' || $host === 'www.kvki.kz') {
     define('BASE_URL', 'https://app.kvki.kz/');
 } else {
-    define('BASE_URL', 'http://localhost/portal/');
+    define('BASE_URL', 'http://localhost/collegeos/');
 }
 
 function startSessionSafely()

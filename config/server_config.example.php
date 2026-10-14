@@ -20,7 +20,19 @@ function detectServerConfig()
         || preg_match('/^10\.\d+\.\d+\.\d+$/', $hostOnly)
         || preg_match('/^172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+$/', $hostOnly);
 
-    if (strpos($hostOnly, 'app.kvki.kz') !== false || strpos($hostOnly, 'kvki.kz') !== false) {
+    $hostOnly = strtolower($hostOnly);
+
+    if ($hostOnly === 'dev-app.kvki.kz') {
+        // ===== DEV dev-app.kvki.kz — отдельная база, не продакшн =====
+        $config = [
+            'host' => 'localhost',
+            'username' => 'YOUR_DEV_DB_USER',
+            'password' => 'YOUR_DEV_DB_PASSWORD',
+            'database' => 'YOUR_DEV_DB_NAME',
+            'charset' => 'utf8mb4',
+            'environment' => 'dev'
+        ];
+    } elseif ($hostOnly === 'app.kvki.kz' || $hostOnly === 'kvki.kz' || $hostOnly === 'www.kvki.kz') {
         // ===== ПРОДАКШН app.kvki.kz — замените на свои данные =====
         $config = [
             'host' => 'localhost',
