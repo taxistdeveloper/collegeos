@@ -3,6 +3,7 @@ require_once '../config/config.php';
 require_once '../classes/User.php';
 require_once '../classes/Group.php';
 require_once '../includes/student_status.php';
+require_once 'includes/bulk_delete.php';
 
 if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: login.php');
@@ -12,6 +13,49 @@ if (!isset($_SESSION['admin_logged_in'])) {
 $user = new User();
 $group = new Group();
 $db = getDB();
+$message = '';
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete_selected') {
+    $ids = adminPostedIds();
+    if (!$ids) {
+        $error = 'Выберите студентов для удаления';
+    } else {
+        $deleted = 0;
+        $failed = 0;
+        $groupIds = [];
+        $selectStmt = $db->prepare('SELECT group_id FROM students WHERE id = ?');
+        $deleteStmt = $db->prepare('DELETE FROM students WHERE id = ?');
+        foreach ($ids as $id) {
+            $selectStmt->bind_param('i', $id);
+            $selectStmt->execute();
+            $row = $selectStmt->get_result()->fetch_assoc();
+            if (!$row) {
+                $failed++;
+                continue;
+            }
+            $gid = (int)($row['group_id'] ?? 0);
+            $deleteStmt->bind_param('i', $id);
+            if ($deleteStmt->execute() && $deleteStmt->affected_rows > 0) {
+                $deleted++;
+                if ($gid > 0) {
+                    $groupIds[$gid] = $gid;
+                }
+            } else {
+                $failed++;
+            }
+        }
+        foreach ($groupIds as $gid) {
+            $group->updateStudentCount($gid);
+        }
+        if ($deleted > 0) {
+            $message = 'Удалено студентов: ' . $deleted;
+        }
+        if ($failed > 0) {
+            $error = 'Не удалось удалить: ' . $failed;
+        }
+    }
+}
 
 if (!function_exists('adminCurrentAcademicYear')) {
     function adminCurrentAcademicYear()
@@ -272,6 +316,19 @@ include 'includes/admin_header.php';
     </div>
 </div>
 
+<?php if ($message): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius);">
+        <i class="bi bi-check-circle-fill me-2"></i><?php echo htmlspecialchars($message); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<?php endif; ?>
+<?php if ($error): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: var(--radius);">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><?php echo htmlspecialchars($error); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<?php endif; ?>
+
 <!-- Stats Grid -->
 <div class="stat-grid">
     <div class="stat-card">
@@ -421,7 +478,8 @@ include 'includes/admin_header.php';
 </div>
 
     <!-- Students Table -->
-    <div class="card">
+    <?php adminBulkDeleteForm('Удалить выбранных студентов'); ?>
+    <div class="card" id="bulkDeleteRoot">
         <div class="card-header">
             <h2 class="card-title">
                 <i class="bi bi-list"></i>
@@ -430,13 +488,17 @@ include 'includes/admin_header.php';
                     <span class="badge badge-primary" style="margin-left: 0.35rem; text-transform: none; letter-spacing: 0;"><?php echo htmlspecialchars($year_label); ?></span>
                 <?php endif; ?>
             </h2>
-            <span class="badge badge-primary"><?php echo $total_filtered; ?></span>
+            <div class="d-flex align-items-center gap-2">
+                <?php adminBulkDeleteButton(); ?>
+                <span class="badge badge-primary"><?php echo $total_filtered; ?></span>
+            </div>
         </div>
         <div class="card-body" style="padding: 0;">
             <div class="table-wrapper">
                 <table class="data-table">
                     <thead>
                         <tr>
+                            <?php adminBulkSelectAll(!empty($students_page), 'Выбрать все на странице'); ?>
                             <th>ФИО</th>
                             <th>ИИН</th>
                             <th>Группа</th>
@@ -458,6 +520,7 @@ include 'includes/admin_header.php';
                             $initials = mb_substr($student['last_name'] ?? $student['first_name'] ?? '', 0, 1) . mb_substr($student['first_name'] ?? $student['middle_name'] ?? '', 0, 1);
                         ?>
                             <tr>
+                                <?php adminBulkRowCheck((int)$student['id']); ?>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="list-avatar" style="width: 32px; height: 32px; font-size: 0.75rem;">
@@ -529,7 +592,7 @@ include 'includes/admin_header.php';
                         <?php endforeach; ?>
                         <?php if (empty($students)): ?>
                             <tr>
-                                <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                                <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                                     <i class="bi bi-people fs-1 d-block mb-2"></i>
                                     <?php
                                     $year_only_empty = $year_filter !== 'all'

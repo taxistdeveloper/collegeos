@@ -5,6 +5,7 @@
     <?php appThemeScript(); ?>
     <script src="../assets/js/tooltips.js"></script>
     <script src="assets/js/admin-select.js"></script>
+    <script src="assets/js/admin-bulk.js"></script>
     <script>
         // Sidebar Toggle
         function toggleSidebar() {

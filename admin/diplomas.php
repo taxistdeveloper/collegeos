@@ -1,6 +1,7 @@
 <?php
 require_once '../config/config.php';
 require_once '../classes/DiplomaSupplement.php';
+require_once 'includes/bulk_delete.php';
 
 if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: login.php');
@@ -18,6 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
     } else {
         $error = 'Не удалось удалить приложение';
     }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete_selected') {
+    [$message, $error] = adminBulkDeleteMessages(adminApplyBulkDelete(function ($id) use ($diploma) {
+        return (bool)$diploma->deleteSupplement($id);
+    }));
 }
 
 $search = isset($_GET['search']) ? trim((string)$_GET['search']) : '';
@@ -78,16 +85,21 @@ include 'includes/admin_header.php';
     </div>
 </div>
 
-<div class="card">
+<?php adminBulkDeleteForm('Удалить выбранные приложения'); ?>
+<div class="card" id="bulkDeleteRoot">
     <div class="card-header">
         <h2 class="card-title"><i class="bi bi-award"></i> Выданные приложения</h2>
-        <span class="badge badge-primary"><?php echo count($items); ?></span>
+        <div class="d-flex align-items-center gap-2">
+            <?php adminBulkDeleteButton(); ?>
+            <span class="badge badge-primary"><?php echo count($items); ?></span>
+        </div>
     </div>
     <div class="card-body" style="padding: 0;">
         <div class="table-wrapper">
             <table class="data-table">
                 <thead>
                     <tr>
+                        <?php adminBulkSelectAll(!empty($items)); ?>
                         <th>Студент</th>
                         <th>ТКБ №</th>
                         <th>Годы</th>
@@ -99,6 +111,7 @@ include 'includes/admin_header.php';
                 <tbody>
                     <?php foreach ($items as $item): ?>
                         <tr>
+                            <?php adminBulkRowCheck((int)$item['id']); ?>
                             <td>
                                 <strong><?php echo htmlspecialchars($item['display_name']); ?></strong>
                                 <div style="font-size: 0.8125rem; color: var(--text-secondary);">
@@ -141,7 +154,7 @@ include 'includes/admin_header.php';
                     <?php endforeach; ?>
                     <?php if (empty($items)): ?>
                         <tr>
-                            <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                 Приложений пока нет
                             </td>

@@ -3,6 +3,7 @@ require_once '../config/config.php';
 require_once '../classes/User.php';
 require_once '../classes/ActivityLog.php';
 require_once '../classes/Department.php';
+require_once 'includes/bulk_delete.php';
 
 // Проверка авторизации
 if (!isset($_SESSION['admin_logged_in'])) {
@@ -146,6 +147,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $error = 'Ошибка при удалении пользователя';
             }
+            break;
+
+        case 'delete_selected':
+            [$message, $error] = adminBulkDeleteMessages(adminApplyBulkDelete(function ($id) use ($user) {
+                return (bool)$user->deleteUser($id);
+            }));
             break;
             
         case 'change_password':
@@ -296,7 +303,8 @@ include 'includes/admin_header.php';
 </div>
 
 <!-- Users Table -->
-<div class="card">
+<?php adminBulkDeleteForm('Удалить выбранных пользователей'); ?>
+<div class="card" id="bulkDeleteRoot">
     <div class="card-header">
         <h2 class="card-title">
             <i class="bi bi-people"></i>
@@ -306,13 +314,17 @@ include 'includes/admin_header.php';
                 Список пользователей
             <?php endif; ?>
         </h2>
-        <span class="badge badge-primary"><?php echo count($users); ?></span>
+        <div class="d-flex align-items-center gap-2">
+            <?php adminBulkDeleteButton(); ?>
+            <span class="badge badge-primary"><?php echo count($users); ?></span>
+        </div>
     </div>
     <div class="card-body" style="padding: 0;">
         <div class="table-wrapper">
             <table class="data-table">
                 <thead>
                     <tr>
+                        <?php adminBulkSelectAll(!empty($users)); ?>
                         <th>Пользователь</th>
                         <th>Логин</th>
                         <th>Роль</th>
@@ -326,6 +338,7 @@ include 'includes/admin_header.php';
                 <tbody>
                     <?php foreach ($users as $user_item): ?>
                         <tr>
+                            <?php adminBulkRowCheck((int)$user_item['id']); ?>
                             <td>
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="list-avatar" style="width: 36px; height: 36px; font-size: 0.875rem;">
@@ -424,7 +437,7 @@ include 'includes/admin_header.php';
                     <?php endforeach; ?>
                     <?php if (empty($users)): ?>
                         <tr>
-                            <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <td colspan="10" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                 Пользователи не найдены
                             </td>

@@ -1,6 +1,7 @@
 <?php
 require_once '../config/config.php';
 require_once '../classes/Library.php';
+require_once 'includes/bulk_delete.php';
 
 if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: login.php');
@@ -81,6 +82,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $error = $result['error'] ?? 'Не удалось удалить книгу';
         }
+    }
+
+    if ($action === 'delete_selected') {
+        [$message, $error] = adminBulkDeleteMessages(adminApplyBulkDelete(function ($id) use ($library) {
+            $result = $library->deleteBook($id);
+            return !empty($result['success']);
+        }));
     }
 }
 
@@ -193,16 +201,21 @@ include 'includes/admin_header.php';
     </div>
 </div>
 
-<div class="card">
+<?php adminBulkDeleteForm('Удалить выбранные книги'); ?>
+<div class="card" id="bulkDeleteRoot">
     <div class="card-header">
         <h2 class="card-title"><i class="bi bi-journal-bookmark"></i> Список книг</h2>
-        <span class="badge badge-primary"><?php echo $total_books; ?></span>
+        <div class="d-flex align-items-center gap-2">
+            <?php adminBulkDeleteButton(); ?>
+            <span class="badge badge-primary"><?php echo $total_books; ?></span>
+        </div>
     </div>
     <div class="card-body" style="padding: 0;">
         <div class="table-wrapper">
             <table class="data-table">
                 <thead>
                     <tr>
+                        <?php adminBulkSelectAll(!empty($books), 'Выбрать все на странице'); ?>
                         <?php if ($is_edu_view): ?>
                             <th>Рег. №</th>
                             <th>Наименование</th>
@@ -226,7 +239,7 @@ include 'includes/admin_header.php';
                 <tbody>
                     <?php if (empty($books)): ?>
                         <tr>
-                            <td colspan="<?php echo $is_edu_view ? 10 : 7; ?>" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <td colspan="<?php echo $is_edu_view ? 11 : 8; ?>" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                 Книги не найдены
                             </td>
@@ -234,6 +247,7 @@ include 'includes/admin_header.php';
                     <?php else: ?>
                         <?php foreach ($books as $book): ?>
                             <tr>
+                                <?php adminBulkRowCheck((int)$book['id']); ?>
                                 <?php if ($is_edu_view): ?>
                                     <td>
                                         <code style="background: var(--content-bg); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8125rem;">

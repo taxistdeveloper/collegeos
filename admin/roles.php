@@ -1,6 +1,7 @@
 <?php
 require_once '../config/config.php';
 require_once '../classes/Role.php';
+require_once 'includes/bulk_delete.php';
 
 // Проверка авторизации
 if (!isset($_SESSION['admin_logged_in'])) {
@@ -68,6 +69,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $error = 'Ошибка при удалении роли. Возможно, есть пользователи с этой ролью.';
             }
+            break;
+
+        case 'delete_selected':
+            [$message, $error] = adminBulkDeleteMessages(adminApplyBulkDelete(function ($id) use ($role) {
+                return (bool)$role->deleteRole($id);
+            }));
             break;
     }
 }
@@ -149,19 +156,24 @@ include 'includes/admin_header.php';
 <?php endif; ?>
 
 <!-- Roles Table -->
-<div class="card">
+<?php adminBulkDeleteForm('Удалить выбранные роли'); ?>
+<div class="card" id="bulkDeleteRoot">
     <div class="card-header">
         <h2 class="card-title">
             <i class="bi bi-shield-lock"></i>
             Список ролей
         </h2>
-        <span class="badge badge-primary"><?php echo count($roles); ?></span>
+        <div class="d-flex align-items-center gap-2">
+            <?php adminBulkDeleteButton(); ?>
+            <span class="badge badge-primary"><?php echo count($roles); ?></span>
+        </div>
     </div>
     <div class="card-body" style="padding: 0;">
         <div class="table-wrapper">
             <table class="data-table">
                 <thead>
                     <tr>
+                        <?php adminBulkSelectAll(!empty($roles)); ?>
                         <th>Название</th>
                         <th>Описание</th>
                         <th>Права доступа</th>
@@ -176,6 +188,7 @@ include 'includes/admin_header.php';
                         $permission_count = count($permissions);
                         ?>
                         <tr>
+                            <?php adminBulkRowCheck((int)$role_item['id']); ?>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="list-avatar" style="width: 32px; height: 32px; background: rgba(139, 92, 246, 0.1); color: var(--purple);">
@@ -214,7 +227,7 @@ include 'includes/admin_header.php';
                     <?php endforeach; ?>
                     <?php if (empty($roles)): ?>
                         <tr>
-                            <td colspan="5" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                 Роли не найдены
                             </td>

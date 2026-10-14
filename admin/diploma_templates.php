@@ -1,6 +1,7 @@
 <?php
 require_once '../config/config.php';
 require_once '../classes/DiplomaSupplement.php';
+require_once 'includes/bulk_delete.php';
 
 if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: login.php');
@@ -18,6 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
     } else {
         $error = 'Не удалось удалить шаблон';
     }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete_selected') {
+    [$message, $error] = adminBulkDeleteMessages(adminApplyBulkDelete(function ($id) use ($diploma) {
+        return (bool)$diploma->deleteTemplate($id);
+    }));
 }
 
 $items = $diploma->listTemplates();
@@ -58,16 +65,21 @@ include 'includes/admin_header.php';
     </div>
 <?php endif; ?>
 
-<div class="card">
+<?php adminBulkDeleteForm('Удалить выбранные шаблоны'); ?>
+<div class="card" id="bulkDeleteRoot">
     <div class="card-header">
         <h2 class="card-title"><i class="bi bi-collection"></i> Шаблоны</h2>
-        <span class="badge badge-primary"><?php echo count($items); ?></span>
+        <div class="d-flex align-items-center gap-2">
+            <?php adminBulkDeleteButton(); ?>
+            <span class="badge badge-primary"><?php echo count($items); ?></span>
+        </div>
     </div>
     <div class="card-body" style="padding: 0;">
         <div class="table-wrapper">
             <table class="data-table">
                 <thead>
                     <tr>
+                        <?php adminBulkSelectAll(!empty($items)); ?>
                         <th>Название</th>
                         <th>Специальность</th>
                         <th>Квалификация</th>
@@ -78,6 +90,7 @@ include 'includes/admin_header.php';
                 <tbody>
                     <?php foreach ($items as $item): ?>
                         <tr>
+                            <?php adminBulkRowCheck((int)$item['id']); ?>
                             <td><strong><?php echo htmlspecialchars($item['title']); ?></strong></td>
                             <td><?php echo htmlspecialchars(DiplomaSupplement::formatSpecialtyLine($item['specialty_code'], $item['specialty_name']) ?: '—'); ?></td>
                             <td><?php echo htmlspecialchars(trim($item['qualification_code'] . ' ' . $item['qualification_name']) ?: '—'); ?></td>
@@ -100,7 +113,7 @@ include 'includes/admin_header.php';
                     <?php endforeach; ?>
                     <?php if (empty($items)): ?>
                         <tr>
-                            <td colspan="5" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                 Шаблонов пока нет. Создайте план специальностей один раз и подставляйте его в приложения.
                             </td>
