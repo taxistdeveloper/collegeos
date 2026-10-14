@@ -9,7 +9,7 @@ checkRole(['department_head']);
 $departmentService = new Department();
 $uchebni = new Uchebni();
 $current_user = getCurrentUser();
-$dept = $departmentService->getDepartmentByHead((int)$current_user['id']);
+$dept = $departmentService->getDepartmentForPortal((int)$current_user['id']);
 $message = '';
 $error = '';
 
@@ -76,7 +76,10 @@ if ($dept && $groupId > 0 && $subjectId > 0 && $selectedSubject) {
     $students = $departmentService->getGroupStudents($groupId);
     $gradesMap = $sheet ? $departmentService->getStudentGradesMap((int)$sheet['id']) : [];
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_grades' && $sheet) {
+    $tourViewOnly = platformTourBorrowBlock($dept, (int)$current_user['id']);
+    if ($tourViewOnly && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        $error = 'В режиме показа это отделение только для просмотра';
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_grades' && $sheet) {
         $posted = $_POST['grades'] ?? [];
         $rows = [];
         $studentIds = [];

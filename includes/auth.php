@@ -202,6 +202,7 @@ function checkRole($required_roles = [])
         }
 
         $_SESSION['user_roles'] = $role_names;
+        markPlatformTourIfNeeded($role_names);
 
         $currentRole = $_SESSION['user_role'] ?? '';
         if (!empty($_SESSION['user_role_explicit']) && in_array($currentRole, $role_names, true)) {
@@ -333,6 +334,7 @@ function finalizePortalLogin(array $userData, string $selectedRole, User $user)
     $_SESSION['user_roles'] = $roleNames;
     $_SESSION['user_role'] = $selectedRole;
     $_SESSION['user_role_explicit'] = true;
+    markPlatformTourIfNeeded($roleNames);
 
     if ($selectedRole === 'admin') {
         $_SESSION['admin_logged_in'] = true;
@@ -552,4 +554,104 @@ function requirePermission($permission, $redirect_url = null)
         header('Location: ' . $redirect_url);
         exit;
     }
+}
+
+/**
+ * Учётка со всеми кабинетами: для показа платформы целиком.
+ */
+function markPlatformTourIfNeeded(array $roleNames): void
+{
+    $needed = ['admin', 'director', 'manager', 'methodist', 'department_head', 'curator', 'teacher', 'cos', 'librarian'];
+    foreach ($needed as $name) {
+        if (!in_array($name, $roleNames, true)) {
+            unset($_SESSION['platform_tour']);
+            return;
+        }
+    }
+    $_SESSION['platform_tour'] = true;
+}
+
+function isPlatformTourSession(): bool
+{
+    return !empty($_SESSION['platform_tour']);
+}
+
+/**
+ * Сменить кабинет без повторного входа.
+ */
+function applyPortalRole(string $role): void
+{
+    $_SESSION['user_role'] = $role;
+    $_SESSION['user_role_explicit'] = true;
+
+    if ($role === 'admin') {
+        $_SESSION['admin_logged_in'] = true;
+        $_SESSION['admin_id'] = (int)($_SESSION['user_id'] ?? 0);
+        $_SESSION['admin_name'] = $_SESSION['user_name'] ?? '';
+        $_SESSION['admin_role'] = 'admin';
+    } else {
+        unset($_SESSION['admin_logged_in'], $_SESSION['admin_id'], $_SESSION['admin_name'], $_SESSION['admin_role']);
+    }
+}
+
+/**
+ * Чужое отделение в режиме показа только смотрим.
+ */
+function platformTourBorrowBlock($dept, $userId): bool
+{
+    return isPlatformTourSession()
+        && is_array($dept)
+        && (int)($dept['head_user_id'] ?? 0) !== (int)$userId;
+}
+
+/**
+ * Переключатель кабинетов. Показывается, если у пользователя больше одной роли.
+ */
+function renderPortalSwitcher(string $formAction = '../switch_role.php', string $extraClass = ''): void
+{
+    $roles = $_SESSION['user_roles'] ?? [];
+    if (!is_array($roles) || count($roles) < 2) {
+        return;
+    }
+
+    $labels = getPortalRoleLabels();
+    $current = $_SESSION['user_role'] ?? '';
+    $order = ['director', 'admin', 'manager', 'methodist', 'department_head', 'curator', 'teacher', 'cos', 'librarian'];
+    $sorted = [];
+    foreach ($order as $name) {
+        if (in_array($name, $roles, true)) {
+            $sorted[] = $name;
+        }
+    }
+    foreach ($roles as $name) {
+        if (!in_array($name, $sorted, true)) {
+            $sorted[] = $name;
+        }
+    }
+
+    static $cssPrinted = false;
+    if (!$cssPrinted) {
+        $cssPrinted = true;
+        echo '<style>
+.portal-switch{margin:0 0 .7rem}
+.portal-switch label{display:block;font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;opacity:.72;margin-bottom:.25rem}
+.portal-switch select{width:100%;font-size:.85rem;padding:.35rem .45rem;border-radius:8px;border:1px solid rgba(148,163,184,.5);background:#fff;color:#0f172a}
+.portal-switch--nav{display:inline-block;margin:0 .75rem 0 0;min-width:190px;vertical-align:middle}
+.portal-switch--nav label{color:rgba(255,255,255,.85)}
+</style>';
+    }
+
+    static $switchIndex = 0;
+    $switchIndex++;
+    $fieldId = 'portal-role-switch-' . $switchIndex;
+    $class = 'portal-switch' . ($extraClass !== '' ? ' ' . $extraClass : '');
+    echo '<form method="post" action="' . htmlspecialchars($formAction) . '" class="' . htmlspecialchars($class) . '">';
+    echo '<label for="' . $fieldId . '">Кабинет</label>';
+    echo '<select id="' . $fieldId . '" name="role" onchange="this.form.submit()" aria-label="Кабинет">';
+    foreach ($sorted as $name) {
+        $selected = $name === $current ? ' selected' : '';
+        $label = $labels[$name] ?? $name;
+        echo '<option value="' . htmlspecialchars($name) . '"' . $selected . '>' . htmlspecialchars($label) . '</option>';
+    }
+    echo '</select></form>';
 }

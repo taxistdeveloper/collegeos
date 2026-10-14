@@ -9,7 +9,7 @@ checkRole(['department_head']);
 $departmentService = new Department();
 $userService = new User();
 $current_user = getCurrentUser();
-$dept = $departmentService->getDepartmentByHead((int)$current_user['id']);
+$dept = $departmentService->getDepartmentForPortal((int)$current_user['id']);
 $message = '';
 $error = '';
 
@@ -21,7 +21,11 @@ foreach ($roles as $role) {
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $dept) {
+$tourViewOnly = platformTourBorrowBlock($dept, (int)$current_user['id']);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tourViewOnly) {
+    $error = 'В режиме показа это отделение только для просмотра';
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $dept) {
     $action = $_POST['action'] ?? '';
 
     if ($action === 'add_existing') {

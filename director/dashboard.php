@@ -794,6 +794,7 @@ $nakyl_index = random_int(0, count($nakyl_sozder) - 1);
                         <?php echo mb_strtoupper(mb_substr($user_name !== '' ? $user_name : 'Д', 0, 1)); ?>
                     </div>
                 </div>
+                <?php renderPortalSwitcher('../switch_role.php', 'portal-switch--nav'); ?>
                 <?php appThemeToggle(); ?>
                 <a class="btn btn-logout" href="../logout.php">
                     <i class="bi bi-box-arrow-right me-1"></i>Выход

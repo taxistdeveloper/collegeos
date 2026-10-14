@@ -463,6 +463,16 @@ class Group
      */
     public function getGroupsByCurator($curator_id, $active_only = true)
     {
+        if (function_exists('isPlatformTourSession') && isPlatformTourSession()) {
+            $sql = "SELECT * FROM `groups`";
+            if ($active_only) {
+                $sql .= " WHERE is_active = 1";
+            }
+            $sql .= " ORDER BY is_active DESC, name";
+            $result = $this->db->query($sql);
+            return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        }
+
         $sql = "SELECT * FROM `groups` WHERE curator_id = ?";
         if ($active_only) {
             $sql .= " AND is_active = 1";
@@ -476,9 +486,9 @@ class Group
     }
 
     /**
-     * Проверить, принадлежит ли группа куратору
+     * Группа закреплена за этим куратором.
      */
-    public function isCuratorGroup($group_id, $curator_id)
+    public function curatorOwnsGroup($group_id, $curator_id)
     {
         $sql = "SELECT COUNT(*) as count FROM `groups` WHERE id = ? AND curator_id = ?";
         $stmt = $this->db->prepare($sql);
@@ -490,12 +500,35 @@ class Group
     }
 
     /**
+     * Проверить, принадлежит ли группа куратору.
+     * В режиме показа можно открыть любую группу для просмотра.
+     */
+    public function isCuratorGroup($group_id, $curator_id)
+    {
+        if ($this->curatorOwnsGroup($group_id, $curator_id)) {
+            return true;
+        }
+        if (function_exists('isPlatformTourSession') && isPlatformTourSession()) {
+            $sql = "SELECT COUNT(*) as count FROM `groups` WHERE id = ?";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bind_param("i", $group_id);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+            return (int)$row['count'] > 0;
+        }
+        return false;
+    }
+
+    /**
      * Перевести группу в выпускники: проставить дату выпуска и архивировать группу
      */
     public function graduateGroup($group_id, $curator_id)
     {
-        if (!$this->isCuratorGroup($group_id, $curator_id)) {
-            return ['success' => false, 'message' => 'Группа не найдена или не принадлежит вам'];
+        if (!$this->curatorOwnsGroup($group_id, $curator_id)) {
+            $message = (function_exists('isPlatformTourSession') && isPlatformTourSession())
+                ? 'В режиме показа выпуск группы недоступен'
+                : 'Группа не найдена или не принадлежит вам';
+            return ['success' => false, 'message' => $message];
         }
 
         require_once __DIR__ . '/../includes/student_status.php';

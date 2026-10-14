@@ -56,6 +56,7 @@ $active_page = $active_pages[$current_page] ?? $current_page;
             ?>
             <div class="curator-sidebar-card-title"><?php echo htmlspecialchars($sidebar_user_name); ?></div>
             <div class="curator-sidebar-card-text">Куратор</div>
+            <?php renderPortalSwitcher(); ?>
             <a href="../logout.php" class="btn btn-primary btn-sm">
                 <i class="bi bi-box-arrow-right me-1"></i>Выход
             </a>
