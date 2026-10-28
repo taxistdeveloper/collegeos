@@ -1,5 +1,5 @@
 -- ========================================================================
--- Быстрое исправление роли «Практикант» и AUTO_INCREMENT
+-- Быстрое исправление роли «Практикант», таблицы users и AUTO_INCREMENT
 -- Вставьте этот SQL в phpMyAdmin (вкладка SQL) и нажмите «Вперёд» (Go)
 -- ========================================================================
 
@@ -29,11 +29,20 @@ ON DUPLICATE KEY UPDATE
 UPDATE `users` SET `role_id` = 10 WHERE `role_id` = 0;
 UPDATE `user_roles` SET `role_id` = 10 WHERE `role_id` = 0;
 
--- 4. Удаляем мусорные записи с id = 0 (если остались)
+-- 4. Удаляем мусорные записи в roles с id = 0 (если остались)
 DELETE FROM `roles` WHERE `id` = 0;
 
--- 5. Включаем AUTO_INCREMENT
+-- 5. Включаем AUTO_INCREMENT на таблице roles
 ALTER TABLE `roles` MODIFY COLUMN `id` INT(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `roles` AUTO_INCREMENT = 11;
+
+-- 6. Исправляем таблицу users: переносим запись с id = 0 на новый свободный ID
+SET @max_user_id = (SELECT COALESCE(MAX(id), 0) + 1 FROM `users` WHERE `id` > 0);
+UPDATE `users` SET `id` = @max_user_id WHERE `id` = 0;
+UPDATE `user_roles` SET `user_id` = @max_user_id WHERE `user_id` = 0;
+UPDATE `teachers` SET `user_id` = @max_user_id WHERE `user_id` = 0;
+
+-- 7. Включаем AUTO_INCREMENT на таблице users, чтобы новые пользователи получали ID автоматически
+ALTER TABLE `users` MODIFY COLUMN `id` INT(11) NOT NULL AUTO_INCREMENT;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -32,9 +32,16 @@ DELETE FROM `roles` WHERE `id` = 0;
 ALTER TABLE `roles` MODIFY COLUMN `id` INT(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `roles` AUTO_INCREMENT = 11;
 
+-- 3. Исправление таблицы users: перенос id = 0 и гарантия AUTO_INCREMENT
+SET @max_user_id = (SELECT COALESCE(MAX(id), 0) + 1 FROM `users` WHERE `id` > 0);
+UPDATE `users` SET `id` = @max_user_id WHERE `id` = 0;
+UPDATE `user_roles` SET `user_id` = @max_user_id WHERE `user_id` = 0;
+UPDATE `teachers` SET `user_id` = @max_user_id WHERE `user_id` = 0;
+ALTER TABLE `users` MODIFY COLUMN `id` INT(11) NOT NULL AUTO_INCREMENT;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
--- 3. Таблица преподавателей практики (связка с users)
+-- 4. Таблица преподавателей практики (связка с users)
 CREATE TABLE IF NOT EXISTS `teachers` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT(11) NOT NULL UNIQUE,
@@ -44,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `teachers` (
   CONSTRAINT `fk_teachers_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 4. Таблица нагрузок практики (модули, группы, часы, дедлайн, статус, json графика)
+-- 5. Таблица нагрузок практики (модули, группы, часы, дедлайн, статус, json графика)
 CREATE TABLE IF NOT EXISTS `workloads` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `teacher_id` INT UNSIGNED NOT NULL,
@@ -70,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `workloads` (
   CONSTRAINT `fk_workload_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 5. Таблица версий графика (история изменений)
+-- 6. Таблица версий графика (история изменений)
 CREATE TABLE IF NOT EXISTS `workload_versions` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `workload_id` INT UNSIGNED NOT NULL,
@@ -86,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `workload_versions` (
   CONSTRAINT `fk_wv_user` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 6. Заполнение таблицы teachers существующими преподавателями из uchebni_teachers
+-- 7. Заполнение таблицы teachers существующими преподавателями из uchebni_teachers
 INSERT IGNORE INTO `teachers` (`user_id`, `department`)
 SELECT `user_id`, COALESCE(`specialization`, 'Преподаватель колледжа')
 FROM `uchebni_teachers`

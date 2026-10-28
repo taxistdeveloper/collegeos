@@ -59,6 +59,28 @@ class User {
         // 3. Миграция существующих role_id
         $this->db->query("INSERT IGNORE INTO user_roles (user_id, role_id)
             SELECT u.id, u.role_id FROM users u WHERE u.role_id IS NOT NULL AND u.role_id > 0 AND NOT EXISTS (SELECT 1 FROM user_roles ur WHERE ur.user_id = u.id AND ur.role_id = u.role_id)");
+
+        // 4. Автоисправление пользователей с id = 0 и гарантия AUTO_INCREMENT на таблице users
+        $zeroUser = $this->db->query("SELECT id FROM users WHERE id = 0 LIMIT 1");
+        if ($zeroUser && $zeroUser->num_rows > 0) {
+            $maxRes = $this->db->query("SELECT COALESCE(MAX(id), 0) as max_id FROM users WHERE id > 0");
+            $maxRow = $maxRes ? $maxRes->fetch_assoc() : null;
+            $nextUserId = ((int)($maxRow['max_id'] ?? 0)) + 1;
+            $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
+            $this->db->query("UPDATE users SET id = {$nextUserId} WHERE id = 0");
+            $this->db->query("UPDATE user_roles SET user_id = {$nextUserId} WHERE user_id = 0");
+            $this->db->query("UPDATE teachers SET user_id = {$nextUserId} WHERE user_id = 0");
+            $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
+        }
+
+        $userAiCheck = $this->db->query("SHOW COLUMNS FROM users LIKE 'id'");
+        if ($userAiCheck && ($col = $userAiCheck->fetch_assoc())) {
+            if (stripos($col['Extra'] ?? '', 'auto_increment') === false) {
+                $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
+                @$this->db->query("ALTER TABLE users MODIFY id INT(11) NOT NULL AUTO_INCREMENT");
+                $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
+            }
+        }
     }
 
     /**
