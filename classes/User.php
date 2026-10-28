@@ -27,7 +27,31 @@ class User {
             PRIMARY KEY (user_id, role_id),
             KEY idx_user_roles_role (role_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-        // Миграция существующих role_id
+
+        // 1. Автоисправление ролей с id = 0 или NULL (например, если роль practicant была создана без автоинкремента)
+        $zeroRes = $this->db->query("SELECT id, name FROM roles WHERE id = 0 OR id IS NULL");
+        if ($zeroRes && $zeroRes->num_rows > 0) {
+            $maxRes = $this->db->query("SELECT COALESCE(MAX(id), 0) as max_id FROM roles WHERE id > 0");
+            $maxRow = $maxRes ? $maxRes->fetch_assoc() : null;
+            $nextId = max(10, ((int)($maxRow['max_id'] ?? 0)) + 1);
+            while ($zRow = $zeroRes->fetch_assoc()) {
+                $rName = $this->db->real_escape_string($zRow['name']);
+                $this->db->query("UPDATE roles SET id = {$nextId} WHERE name = '{$rName}' AND (id = 0 OR id IS NULL)");
+                $this->db->query("UPDATE users SET role_id = {$nextId} WHERE role_id = 0");
+                $this->db->query("UPDATE user_roles SET role_id = {$nextId} WHERE role_id = 0");
+                $nextId++;
+            }
+        }
+
+        // 2. Гарантия AUTO_INCREMENT на таблице roles
+        $aiCheck = $this->db->query("SHOW COLUMNS FROM roles LIKE 'id'");
+        if ($aiCheck && ($col = $aiCheck->fetch_assoc())) {
+            if (stripos($col['Extra'] ?? '', 'auto_increment') === false) {
+                @$this->db->query("ALTER TABLE roles MODIFY id INT(11) NOT NULL AUTO_INCREMENT");
+            }
+        }
+
+        // 3. Миграция существующих role_id
         $this->db->query("INSERT IGNORE INTO user_roles (user_id, role_id)
             SELECT u.id, u.role_id FROM users u WHERE u.role_id IS NOT NULL AND u.role_id > 0 AND NOT EXISTS (SELECT 1 FROM user_roles ur WHERE ur.user_id = u.id AND ur.role_id = u.role_id)");
     }
@@ -40,10 +64,48 @@ class User {
             $roleIds = [$roleIds];
         }
         $ids = [];
-        foreach ($roleIds as $id) {
-            $id = (int)$id;
-            if ($id > 0) {
-                $ids[$id] = $id;
+        foreach ($roleIds as $val) {
+            if (is_numeric($val)) {
+                $id = (int)$val;
+                if ($id > 0) {
+                    $ids[$id] = $id;
+                } elseif ($id === 0) {
+                    // Если передан 0, чиним роль с id = 0 на лету в базе данных
+                    $zeroRes = $this->db->query("SELECT id, name FROM roles WHERE id = 0 LIMIT 1");
+                    if ($zeroRes && ($zRow = $zeroRes->fetch_assoc())) {
+                        $maxRes = $this->db->query("SELECT COALESCE(MAX(id), 0) as max_id FROM roles WHERE id > 0");
+                        $maxRow = $maxRes ? $maxRes->fetch_assoc() : null;
+                        $fixedId = max(10, ((int)($maxRow['max_id'] ?? 0)) + 1);
+                        $rName = $this->db->real_escape_string($zRow['name']);
+                        $this->db->query("UPDATE roles SET id = {$fixedId} WHERE name = '{$rName}' AND id = 0");
+                        $this->db->query("UPDATE users SET role_id = {$fixedId} WHERE role_id = 0");
+                        $this->db->query("UPDATE user_roles SET role_id = {$fixedId} WHERE role_id = 0");
+                        $ids[$fixedId] = $fixedId;
+                    }
+                }
+            } elseif (is_string($val) && trim($val) !== '') {
+                // Если передан строковый слаг роли (например, 'practicant')
+                $slug = trim($val);
+                $stmt = $this->db->prepare("SELECT id FROM roles WHERE name = ? LIMIT 1");
+                if ($stmt) {
+                    $stmt->bind_param('s', $slug);
+                    $stmt->execute();
+                    $res = $stmt->get_result()->fetch_assoc();
+                    if ($res) {
+                        $rId = (int)$res['id'];
+                        if ($rId <= 0) {
+                            $maxRes = $this->db->query("SELECT COALESCE(MAX(id), 0) as max_id FROM roles WHERE id > 0");
+                            $maxRow = $maxRes ? $maxRes->fetch_assoc() : null;
+                            $rId = max(10, ((int)($maxRow['max_id'] ?? 0)) + 1);
+                            $this->db->query("UPDATE roles SET id = {$rId} WHERE name = '{$slug}'");
+                            $this->db->query("UPDATE users SET role_id = {$rId} WHERE role_id = 0");
+                            $this->db->query("UPDATE user_roles SET role_id = {$rId} WHERE role_id = 0");
+                        }
+                        if ($rId > 0) {
+                            $ids[$rId] = $rId;
+                        }
+                    }
+                }
             }
         }
         return array_values($ids);

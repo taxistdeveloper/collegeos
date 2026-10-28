@@ -490,13 +490,17 @@ include 'includes/admin_header.php';
                         <div class="col-12">
                             <label class="form-label">Роли <span class="text-danger">*</span></label>
                             <div class="d-flex flex-wrap gap-3" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--content-bg);">
-                                <?php foreach ($roles as $role): ?>
+                                <?php foreach ($roles as $role): 
+                                    $roleId = (int)$role['id'];
+                                    $roleVal = $roleId > 0 ? $roleId : htmlspecialchars($role['name']);
+                                    $roleDomId = $roleId > 0 ? (string)$roleId : preg_replace('/[^a-zA-Z0-9_-]/', '', $role['name']);
+                                ?>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="role_ids[]"
-                                               value="<?php echo (int)$role['id']; ?>"
-                                               id="add_role_<?php echo (int)$role['id']; ?>">
-                                        <label class="form-check-label" for="add_role_<?php echo (int)$role['id']; ?>">
-                                            <?php echo htmlspecialchars($role_labels[(int)$role['id']] ?? $role['name']); ?>
+                                               value="<?php echo $roleVal; ?>"
+                                               id="add_role_<?php echo $roleDomId; ?>">
+                                        <label class="form-check-label" for="add_role_<?php echo $roleDomId; ?>">
+                                            <?php echo htmlspecialchars($role_labels[$roleId] ?? ($role['description'] ?: $role['name'])); ?>
                                         </label>
                                     </div>
                                 <?php endforeach; ?>
@@ -543,14 +547,18 @@ include 'includes/admin_header.php';
                         <div class="col-12">
                             <label class="form-label">Роли <span class="text-danger">*</span></label>
                             <div class="d-flex flex-wrap gap-3" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--content-bg);">
-                                <?php foreach ($roles as $role): ?>
+                                <?php foreach ($roles as $role): 
+                                    $roleId = (int)$role['id'];
+                                    $roleVal = $roleId > 0 ? $roleId : htmlspecialchars($role['name']);
+                                    $roleDomId = $roleId > 0 ? (string)$roleId : preg_replace('/[^a-zA-Z0-9_-]/', '', $role['name']);
+                                ?>
                                     <div class="form-check">
                                         <input class="form-check-input edit-role-checkbox" type="checkbox" name="role_ids[]"
-                                               value="<?php echo (int)$role['id']; ?>"
-                                               id="edit_role_<?php echo (int)$role['id']; ?>"
+                                               value="<?php echo $roleVal; ?>"
+                                               id="edit_role_<?php echo $roleDomId; ?>"
                                                onchange="toggleCuratorFields()">
-                                        <label class="form-check-label" for="edit_role_<?php echo (int)$role['id']; ?>">
-                                            <?php echo htmlspecialchars($role_labels[(int)$role['id']] ?? $role['name']); ?>
+                                        <label class="form-check-label" for="edit_role_<?php echo $roleDomId; ?>">
+                                            <?php echo htmlspecialchars($role_labels[$roleId] ?? ($role['description'] ?: $role['name'])); ?>
                                         </label>
                                     </div>
                                 <?php endforeach; ?>

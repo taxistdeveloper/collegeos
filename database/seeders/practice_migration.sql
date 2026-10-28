@@ -3,7 +3,9 @@
 -- Платформа: Цифровой колледж (CollegeOS)
 -- ========================================================================
 
--- 1. Добавление роли «Практикант» в таблицу roles
+-- 1. Гарантия структуры таблицы roles и роли «Практикант»
+ALTER TABLE `roles` MODIFY COLUMN `id` INT(11) NOT NULL AUTO_INCREMENT;
+
 INSERT INTO `roles` (`name`, `description`, `permissions`, `created_at`, `updated_at`)
 VALUES (
   'practicant',
@@ -16,6 +18,11 @@ ON DUPLICATE KEY UPDATE
   `description` = VALUES(`description`),
   `permissions` = VALUES(`permissions`),
   `updated_at` = NOW();
+
+-- Исправление ID роли practicant, если на сервере она создалась с id = 0
+UPDATE `roles` SET `id` = 10 WHERE `name` = 'practicant' AND `id` = 0;
+UPDATE `users` SET `role_id` = 10 WHERE `role_id` = 0;
+UPDATE `user_roles` SET `role_id` = 10 WHERE `role_id` = 0;
 
 -- 2. Таблица преподавателей практики (связка с users)
 CREATE TABLE IF NOT EXISTS `teachers` (
@@ -74,4 +81,3 @@ INSERT IGNORE INTO `teachers` (`user_id`, `department`)
 SELECT `user_id`, COALESCE(`specialization`, 'Преподаватель колледжа')
 FROM `uchebni_teachers`
 WHERE `user_id` IS NOT NULL AND `user_id` > 0;
-
