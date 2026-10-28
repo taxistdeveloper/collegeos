@@ -362,36 +362,45 @@ function finalizePortalLogin(array $userData, string $selectedRole, User $user)
 // Функция для перенаправления по роли
 function redirectByRole($role)
 {
+    $prefix = '';
+    $current_dir = dirname($_SERVER['PHP_SELF'] ?? '');
+    if (strpos($current_dir, '/curator') !== false || strpos($current_dir, '/admin') !== false || strpos($current_dir, '/manager') !== false || strpos($current_dir, '/director') !== false || strpos($current_dir, '/cos') !== false || strpos($current_dir, '/library') !== false || strpos($current_dir, '/uchebni') !== false || strpos($current_dir, '/department') !== false || strpos($current_dir, '/practics') !== false) {
+        $prefix = '../';
+    }
+
     switch ($role) {
         case 'admin':
-            header('Location: admin/index.php');
+            header('Location: ' . $prefix . 'admin/index.php');
             break;
         case 'director':
-            header('Location: director/dashboard.php');
+            header('Location: ' . $prefix . 'director/dashboard.php');
             break;
         case 'manager':
-            header('Location: manager/dashboard.php');
+            header('Location: ' . $prefix . 'manager/dashboard.php');
             break;
         case 'curator':
-            header('Location: curator/dashboard.php');
+            header('Location: ' . $prefix . 'curator/dashboard.php');
             break;
         case 'cos':
-            header('Location: cos/dashboard.php');
+            header('Location: ' . $prefix . 'cos/dashboard.php');
             break;
         case 'librarian':
-            header('Location: library/dashboard.php');
+            header('Location: ' . $prefix . 'library/dashboard.php');
             break;
         case 'methodist':
-            header('Location: uchebni/dashboard.php');
+            header('Location: ' . $prefix . 'uchebni/dashboard.php');
             break;
         case 'teacher':
-            header('Location: uchebni/dashboard.php');
+            header('Location: ' . $prefix . 'uchebni/dashboard.php');
             break;
         case 'department_head':
-            header('Location: department/dashboard.php');
+            header('Location: ' . $prefix . 'department/dashboard.php');
+            break;
+        case 'practicant':
+            header('Location: ' . $prefix . 'practics/index.php');
             break;
         default:
-            header('Location: index.php');
+            header('Location: ' . $prefix . 'index.php');
     }
     exit;
 }
