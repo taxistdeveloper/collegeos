@@ -7,7 +7,7 @@ class User {
 
     /** Порядок основной роли для редиректа при нескольких ролях */
     private static $rolePriority = [
-        'admin', 'director', 'manager', 'methodist', 'department_head', 'curator', 'teacher', 'cos', 'librarian'
+        'admin', 'director', 'manager', 'methodist', 'department_head', 'practicant', 'curator', 'teacher', 'cos', 'librarian'
     ];
     
     public function __construct() {

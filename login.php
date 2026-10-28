@@ -168,6 +168,7 @@ $rolePickerIcons = [
     'teacher' => 'person-workspace',
     'cos' => 'file-earmark-text-fill',
     'librarian' => 'book-fill',
+    'practicant' => 'calendar-check-fill',
 ];
 ?>
 <!DOCTYPE html>

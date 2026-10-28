@@ -63,6 +63,23 @@ require_once 'includes/header.php';
     <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
 <?php endif; ?>
 
+    <div class="card mb-4 border-primary shadow-sm bg-primary-subtle">
+        <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h5 class="card-title text-primary mb-1">
+                    <i class="bi bi-calendar3-week me-2"></i>Графики практики и нагрузка преподавателей
+                </h5>
+                <p class="card-text text-muted mb-0 small">
+                    Интерактивное заполнение графиков практики, распределение часов по модулям и группам, контроль сдачи и экспорт в Word.
+                </p>
+            </div>
+            <a href="../practics/" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                <i class="bi bi-box-arrow-up-right"></i>
+                <span>Открыть модуль практики</span>
+            </a>
+        </div>
+    </div>
+
 <?php if (!$period): ?>
     <div class="alert alert-warning">Нет активного учебного периода</div>
 <?php else: ?>

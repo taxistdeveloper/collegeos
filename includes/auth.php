@@ -98,7 +98,7 @@ function checkAuth()
     if (!isset($_SESSION['user_logged_in'])) {
         // Определяем правильный путь к login.php в зависимости от текущей директории
         $current_dir = dirname($_SERVER['PHP_SELF']);
-        if (strpos($current_dir, '/curator') !== false || strpos($current_dir, '/admin') !== false || strpos($current_dir, '/manager') !== false || strpos($current_dir, '/director') !== false || strpos($current_dir, '/cos') !== false || strpos($current_dir, '/library') !== false || strpos($current_dir, '/uchebni') !== false || strpos($current_dir, '/department') !== false) {
+        if (strpos($current_dir, '/curator') !== false || strpos($current_dir, '/admin') !== false || strpos($current_dir, '/manager') !== false || strpos($current_dir, '/director') !== false || strpos($current_dir, '/cos') !== false || strpos($current_dir, '/library') !== false || strpos($current_dir, '/uchebni') !== false || strpos($current_dir, '/department') !== false || strpos($current_dir, '/practics') !== false) {
             $login_url = '../login.php';
         } else {
             $login_url = 'login.php';
@@ -127,7 +127,7 @@ function checkAuth()
                 $login_url = (strpos($current_dir, '/admin') !== false)
                     ? 'login.php?error=blocked'
                     : '../admin/login.php?error=blocked';
-            } elseif (strpos($current_dir, '/curator') !== false || strpos($current_dir, '/manager') !== false || strpos($current_dir, '/director') !== false || strpos($current_dir, '/cos') !== false || strpos($current_dir, '/library') !== false || strpos($current_dir, '/uchebni') !== false || strpos($current_dir, '/department') !== false) {
+            } elseif (strpos($current_dir, '/curator') !== false || strpos($current_dir, '/manager') !== false || strpos($current_dir, '/director') !== false || strpos($current_dir, '/cos') !== false || strpos($current_dir, '/library') !== false || strpos($current_dir, '/uchebni') !== false || strpos($current_dir, '/department') !== false || strpos($current_dir, '/practics') !== false) {
                 $login_url = '../login.php?error=blocked';
             } else {
                 $login_url = 'login.php?error=blocked';
@@ -167,7 +167,7 @@ function checkRole($required_roles = [])
             session_destroy();
             // Определяем правильный путь к login.php
             $current_dir = dirname($_SERVER['PHP_SELF']);
-            if (strpos($current_dir, '/curator') !== false || strpos($current_dir, '/admin') !== false || strpos($current_dir, '/manager') !== false || strpos($current_dir, '/director') !== false || strpos($current_dir, '/cos') !== false || strpos($current_dir, '/library') !== false || strpos($current_dir, '/uchebni') !== false || strpos($current_dir, '/department') !== false) {
+            if (strpos($current_dir, '/curator') !== false || strpos($current_dir, '/admin') !== false || strpos($current_dir, '/manager') !== false || strpos($current_dir, '/director') !== false || strpos($current_dir, '/cos') !== false || strpos($current_dir, '/library') !== false || strpos($current_dir, '/uchebni') !== false || strpos($current_dir, '/department') !== false || strpos($current_dir, '/practics') !== false) {
                 $login_url = '../login.php?error=blocked';
             } else {
                 $login_url = 'login.php?error=blocked';
@@ -208,7 +208,7 @@ function checkRole($required_roles = [])
         if (!empty($_SESSION['user_role_explicit']) && in_array($currentRole, $role_names, true)) {
             // Сохраняем роль, выбранную пользователем при входе
         } else {
-            $priority = ['admin', 'director', 'manager', 'methodist', 'department_head', 'curator', 'teacher', 'cos', 'librarian'];
+            $priority = ['admin', 'director', 'manager', 'methodist', 'department_head', 'practicant', 'curator', 'teacher', 'cos', 'librarian'];
             $primary = $role_names[0] ?? '';
             foreach ($priority as $p) {
                 if (in_array($p, $role_names, true)) {
@@ -236,7 +236,7 @@ function checkRole($required_roles = [])
         if (!$ok) {
             // Определяем правильный путь к unauthorized.php в зависимости от текущей директории
             $current_dir = dirname($_SERVER['PHP_SELF']);
-            if (strpos($current_dir, '/curator') !== false || strpos($current_dir, '/admin') !== false || strpos($current_dir, '/manager') !== false || strpos($current_dir, '/director') !== false || strpos($current_dir, '/cos') !== false || strpos($current_dir, '/library') !== false || strpos($current_dir, '/uchebni') !== false || strpos($current_dir, '/department') !== false) {
+            if (strpos($current_dir, '/curator') !== false || strpos($current_dir, '/admin') !== false || strpos($current_dir, '/manager') !== false || strpos($current_dir, '/director') !== false || strpos($current_dir, '/cos') !== false || strpos($current_dir, '/library') !== false || strpos($current_dir, '/uchebni') !== false || strpos($current_dir, '/department') !== false || strpos($current_dir, '/practics') !== false) {
                 $redirect_url = '../unauthorized.php';
             } else {
                 $redirect_url = 'unauthorized.php';
@@ -276,6 +276,7 @@ function getPortalRoleLabels()
         'teacher' => 'Преподаватель',
         'cos' => 'ЦОС',
         'librarian' => 'Библиотека',
+        'practicant' => 'Практикант',
     ];
 }
 
@@ -448,7 +449,8 @@ function getMenuByRole($role)
             ['name' => 'Вх. замены', 'url' => 'covers.php', 'icon' => 'person-plus'],
             ['name' => 'Занятость', 'url' => 'occupancy.php', 'icon' => 'grid-3x3-gap'],
             ['name' => 'Часы', 'url' => 'hours.php', 'icon' => 'clock-history'],
-            ['name' => 'Практика', 'url' => 'practice.php', 'icon' => 'briefcase'],
+            ['name' => 'Практика (периоды)', 'url' => 'practice.php', 'icon' => 'briefcase'],
+            ['name' => 'Графики практики', 'url' => '../practics/', 'icon' => 'calendar-check'],
             ['name' => 'Аудитории', 'url' => 'classrooms.php', 'icon' => 'door-open'],
             ['name' => 'Сводная ведомость', 'url' => 'journal.php', 'icon' => 'table'],
             ['name' => 'Аналитика', 'url' => 'analytics.php', 'icon' => 'bar-chart-fill']
@@ -461,8 +463,16 @@ function getMenuByRole($role)
             ['name' => 'Расписание', 'url' => 'schedule.php', 'icon' => 'calendar-week'],
             ['name' => 'Часы', 'url' => 'hours.php?view=mine', 'icon' => 'clock-history'],
             ['name' => 'Вх. замены', 'url' => 'covers.php', 'icon' => 'person-plus'],
-            ['name' => 'Практика', 'url' => 'practice.php', 'icon' => 'briefcase'],
+            ['name' => 'Практика (периоды)', 'url' => 'practice.php', 'icon' => 'briefcase'],
+            ['name' => 'Графики практики', 'url' => '../practics/', 'icon' => 'calendar-check'],
             ['name' => 'Сводная ведомость', 'url' => 'journal.php', 'icon' => 'table']
+        ],
+        'practicant' => [
+            ['name' => 'Обзор', 'url' => 'index.php', 'icon' => 'grid-1x2-fill'],
+            ['name' => 'Нагрузки', 'url' => 'workloads.php', 'icon' => 'journal-bookmark'],
+            ['name' => 'Сданные графики', 'url' => 'submissions.php', 'icon' => 'check2-square'],
+            ['name' => 'Отчеты', 'url' => 'reports.php', 'icon' => 'calendar-event'],
+            ['name' => 'Преподаватели', 'url' => 'teachers.php', 'icon' => 'people'],
         ],
         'department_head' => [
             ['name' => 'Главная', 'url' => 'dashboard.php', 'icon' => 'house-fill'],
@@ -545,7 +555,7 @@ function requirePermission($permission, $redirect_url = null)
         // Определяем правильный путь к unauthorized.php в зависимости от текущей директории
         if ($redirect_url === null) {
             $current_dir = dirname($_SERVER['PHP_SELF']);
-            if (strpos($current_dir, '/curator') !== false || strpos($current_dir, '/admin') !== false || strpos($current_dir, '/manager') !== false || strpos($current_dir, '/director') !== false || strpos($current_dir, '/cos') !== false || strpos($current_dir, '/library') !== false || strpos($current_dir, '/uchebni') !== false || strpos($current_dir, '/department') !== false) {
+            if (strpos($current_dir, '/curator') !== false || strpos($current_dir, '/admin') !== false || strpos($current_dir, '/manager') !== false || strpos($current_dir, '/director') !== false || strpos($current_dir, '/cos') !== false || strpos($current_dir, '/library') !== false || strpos($current_dir, '/uchebni') !== false || strpos($current_dir, '/department') !== false || strpos($current_dir, '/practics') !== false) {
                 $redirect_url = '../unauthorized.php';
             } else {
                 $redirect_url = 'unauthorized.php';
@@ -616,7 +626,7 @@ function renderPortalSwitcher(string $formAction = '../switch_role.php', string 
 
     $labels = getPortalRoleLabels();
     $current = $_SESSION['user_role'] ?? '';
-    $order = ['director', 'admin', 'manager', 'methodist', 'department_head', 'curator', 'teacher', 'cos', 'librarian'];
+    $order = ['director', 'admin', 'manager', 'methodist', 'department_head', 'practicant', 'curator', 'teacher', 'cos', 'librarian'];
     $sorted = [];
     foreach ($order as $name) {
         if (in_array($name, $roles, true)) {

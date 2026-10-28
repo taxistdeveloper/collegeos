@@ -117,6 +117,12 @@ $menu_stats = $GLOBALS['admin_menu_stats'];
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="../practics/" class="nav-link <?php echo $active_page === 'practics' ? 'active' : ''; ?>">
+                            <i class="bi bi-briefcase-fill"></i>
+                            <span>Практика</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="spravki.php" class="nav-link <?php echo $active_page === 'spravki' ? 'active' : ''; ?>">
                             <i class="bi bi-file-earmark-text-fill"></i>
                             <span>Справки</span>
