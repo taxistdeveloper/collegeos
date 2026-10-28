@@ -3,23 +3,13 @@
 -- Вставьте этот SQL в phpMyAdmin (вкладка SQL) и нажмите «Вперёд» (Go)
 -- ========================================================================
 
+SET FOREIGN_KEY_CHECKS = 0;
 SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
 
--- 1. Сначала обновляем ID роли practicant с 0 на 10
+-- 1. Сначала меняем ID роли practicant на 10
 UPDATE `roles` SET `id` = 10 WHERE `name` = 'practicant';
 
--- 2. Если в таблицах пользователей были записи с role_id = 0, привязываем их к роли 10
-UPDATE `users` SET `role_id` = 10 WHERE `role_id` = 0;
-UPDATE `user_roles` SET `role_id` = 10 WHERE `role_id` = 0;
-
--- 3. Если вдруг осталась пустая запись с id = 0, удаляем её
-DELETE FROM `roles` WHERE `id` = 0;
-
--- 4. Теперь, когда записей с id = 0 нет, безопасно включаем AUTO_INCREMENT
-ALTER TABLE `roles` MODIFY COLUMN `id` INT(11) NOT NULL AUTO_INCREMENT;
-ALTER TABLE `roles` AUTO_INCREMENT = 11;
-
--- 5. Проверяем, что роль создана (если её вообще не было)
+-- 2. Если роли practicant еще не было, вставляем её с id = 10
 INSERT INTO `roles` (`id`, `name`, `description`, `permissions`, `created_at`, `updated_at`)
 VALUES (
   10,
@@ -30,6 +20,20 @@ VALUES (
   NOW()
 )
 ON DUPLICATE KEY UPDATE
+  `id` = 10,
   `description` = VALUES(`description`),
   `permissions` = VALUES(`permissions`),
   `updated_at` = NOW();
+
+-- 3. Если были пользователи или роли с role_id = 0, переводим их на 10
+UPDATE `users` SET `role_id` = 10 WHERE `role_id` = 0;
+UPDATE `user_roles` SET `role_id` = 10 WHERE `role_id` = 0;
+
+-- 4. Удаляем мусорные записи с id = 0 (если остались)
+DELETE FROM `roles` WHERE `id` = 0;
+
+-- 5. Включаем AUTO_INCREMENT
+ALTER TABLE `roles` MODIFY COLUMN `id` INT(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `roles` AUTO_INCREMENT = 11;
+
+SET FOREIGN_KEY_CHECKS = 1;

@@ -4,6 +4,11 @@
  */
 class User {
     private $db;
+    public $lastError = '';
+
+    public function getLastError() {
+        return $this->lastError;
+    }
 
     /** Порядок основной роли для редиректа при нескольких ролях */
     private static $rolePriority = [
@@ -186,23 +191,37 @@ class User {
         $userId = (int)$userId;
         $roleIds = $this->normalizeRoleIds($roleIds);
         if (empty($roleIds) || $userId <= 0) {
+            $this->lastError = 'Некорректный ID пользователя или пустой список ролей';
             return false;
         }
         $primary = $this->pickPrimaryRoleId($roleIds);
 
         $del = $this->db->prepare("DELETE FROM user_roles WHERE user_id = ?");
-        $del->bind_param('i', $userId);
-        $del->execute();
+        if ($del) {
+            $del->bind_param('i', $userId);
+            $del->execute();
+        }
 
         $ins = $this->db->prepare("INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)");
+        if (!$ins) {
+            $conn = method_exists($this->db, 'getConnection') ? $this->db->getConnection() : null;
+            $this->lastError = 'Ошибка подготовки вставки в user_roles: ' . ($conn ? $conn->error : 'unknown');
+            return false;
+        }
         foreach ($roleIds as $rid) {
             $ins->bind_param('ii', $userId, $rid);
-            $ins->execute();
+            if (!$ins->execute()) {
+                $this->lastError = 'Ошибка добавления роли в user_roles: ' . $ins->error;
+                return false;
+            }
         }
 
         $upd = $this->db->prepare("UPDATE users SET role_id = ? WHERE id = ?");
-        $upd->bind_param('ii', $primary, $userId);
-        return $upd->execute();
+        if ($upd) {
+            $upd->bind_param('ii', $primary, $userId);
+            $upd->execute();
+        }
+        return true;
     }
 
     private function attachRolesToUser(?array $user) {
@@ -400,38 +419,68 @@ class User {
      * Создать нового пользователя
      */
     public function createUser($data) {
+        $this->lastError = '';
         $roleIds = $this->normalizeRoleIds($data['role_ids'] ?? ($data['role_id'] ?? []));
         if (empty($roleIds)) {
+            $this->lastError = 'Список ролей пуст после нормализации';
             return false;
         }
         $primary = $this->pickPrimaryRoleId($roleIds);
 
-        $sql = "INSERT INTO users (first_name, last_name, middle_name, login, password, email, phone, role_id) 
+        $sql = "INSERT INTO `users` (`first_name`, `last_name`, `middle_name`, `login`, `password`, `email`, `phone`, `role_id`) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
         $stmt = $this->db->prepare($sql);
-        
+        if (!$stmt) {
+            $conn = method_exists($this->db, 'getConnection') ? $this->db->getConnection() : null;
+            $this->lastError = 'Ошибка подготовки INSERT: ' . ($conn ? $conn->error : 'unknown');
+            return false;
+        }
+
         $hashed_password = password_hash($data['password'], PASSWORD_DEFAULT);
         $email = trim((string)($data['email'] ?? ''));
         $phone = trim((string)($data['phone'] ?? ''));
         $email = $email !== '' ? $email : null;
         $phone = $phone !== '' ? $phone : null;
-        
+        $middleName = trim((string)($data['middle_name'] ?? ''));
+
         $stmt->bind_param("sssssssi", 
             $data['first_name'], 
             $data['last_name'], 
-            $data['middle_name'], 
+            $middleName, 
             $data['login'], 
             $hashed_password, 
             $email, 
             $phone, 
             $primary
         );
-        
+
         if (!$stmt->execute()) {
+            $this->lastError = 'Ошибка выполнения INSERT в users: ' . $stmt->error;
             return false;
         }
-        $newId = (int)$this->db->getLastInsertId();
-        return $this->setUserRoles($newId, $roleIds);
+
+        $newId = (int)$stmt->insert_id;
+        if ($newId <= 0) {
+            $newId = (int)$this->db->getLastInsertId();
+        }
+        if ($newId <= 0) {
+            $u = $this->getUserByLogin($data['login']);
+            if ($u && !empty($u['id'])) {
+                $newId = (int)$u['id'];
+            }
+        }
+
+        if ($newId <= 0) {
+            $this->lastError = 'Не удалось определить ID созданного пользователя';
+            return false;
+        }
+
+        if (!$this->setUserRoles($newId, $roleIds)) {
+            $this->lastError = 'Ошибка привязки ролей: ' . ($this->lastError ?: 'неизвестно');
+            return false;
+        }
+        return true;
     }
     
     /**

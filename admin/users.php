@@ -83,10 +83,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($user->createUser($data)) {
                         $message = 'Пользователь успешно создан!';
                     } else {
-                        $error = 'Ошибка при создании пользователя';
+                        $detail = method_exists($user, 'getLastError') ? $user->getLastError() : '';
+                        $error = 'Ошибка при создании пользователя' . ($detail ? ': ' . $detail : '');
                     }
                 } catch (Throwable $e) {
-                    $error = 'Ошибка при создании пользователя';
+                    $error = 'Ошибка при создании пользователя: ' . $e->getMessage();
                 }
             } else {
                 $error = 'Пользователь с таким логином уже существует';
