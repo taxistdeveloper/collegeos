@@ -1,19 +1,25 @@
 -- ========================================================================
--- Быстрое исправление роли «Практикант» (если она получила id = 0 на сервере)
+-- Быстрое исправление роли «Практикант» и AUTO_INCREMENT
 -- Вставьте этот SQL в phpMyAdmin (вкладка SQL) и нажмите «Вперёд» (Go)
 -- ========================================================================
 
--- 1. Гарантируем автоинкремент первичного ключа
-ALTER TABLE `roles` MODIFY COLUMN `id` INT(11) NOT NULL AUTO_INCREMENT;
+SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
 
--- 2. Если роль practicant имела id = 0, исправляем её на id = 10
-UPDATE `roles` SET `id` = 10 WHERE `name` = 'practicant' AND `id` = 0;
+-- 1. Сначала обновляем ID роли practicant с 0 на 10
+UPDATE `roles` SET `id` = 10 WHERE `name` = 'practicant';
 
--- 3. Если в таблицах users или user_roles есть ссылки на id = 0, обновляем их на 10
+-- 2. Если в таблицах пользователей были записи с role_id = 0, привязываем их к роли 10
 UPDATE `users` SET `role_id` = 10 WHERE `role_id` = 0;
 UPDATE `user_roles` SET `role_id` = 10 WHERE `role_id` = 0;
 
--- 4. Если роли practicant еще не было, вставляем её с id = 10
+-- 3. Если вдруг осталась пустая запись с id = 0, удаляем её
+DELETE FROM `roles` WHERE `id` = 0;
+
+-- 4. Теперь, когда записей с id = 0 нет, безопасно включаем AUTO_INCREMENT
+ALTER TABLE `roles` MODIFY COLUMN `id` INT(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `roles` AUTO_INCREMENT = 11;
+
+-- 5. Проверяем, что роль создана (если её вообще не было)
 INSERT INTO `roles` (`id`, `name`, `description`, `permissions`, `created_at`, `updated_at`)
 VALUES (
   10,
@@ -27,4 +33,3 @@ ON DUPLICATE KEY UPDATE
   `description` = VALUES(`description`),
   `permissions` = VALUES(`permissions`),
   `updated_at` = NOW();
-

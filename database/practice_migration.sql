@@ -3,11 +3,22 @@
 -- Платформа: Цифровой колледж (CollegeOS)
 -- ========================================================================
 
--- 1. Гарантия структуры таблицы roles и роли «Практикант»
-ALTER TABLE `roles` MODIFY COLUMN `id` INT(11) NOT NULL AUTO_INCREMENT;
+SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
 
-INSERT INTO `roles` (`name`, `description`, `permissions`, `created_at`, `updated_at`)
+-- 1. Исправление ID роли practicant, если она создалась с id = 0
+UPDATE `roles` SET `id` = 10 WHERE `name` = 'practicant';
+UPDATE `users` SET `role_id` = 10 WHERE `role_id` = 0;
+UPDATE `user_roles` SET `role_id` = 10 WHERE `role_id` = 0;
+DELETE FROM `roles` WHERE `id` = 0;
+
+-- 2. Гарантия AUTO_INCREMENT на таблице roles
+ALTER TABLE `roles` MODIFY COLUMN `id` INT(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `roles` AUTO_INCREMENT = 11;
+
+-- 3. Добавление/обновление роли «Практикант»
+INSERT INTO `roles` (`id`, `name`, `description`, `permissions`, `created_at`, `updated_at`)
 VALUES (
+  10,
   'practicant',
   'Практикант — управление практикой, нагрузки и графики',
   '{"view_groups": true, "view_reports": true, "view_practics": true, "view_teachers": true, "export_reports": true, "view_workloads": true, "manage_practics": true, "manage_workloads": true, "view_submissions": true, "manage_submissions": true}',
@@ -19,12 +30,7 @@ ON DUPLICATE KEY UPDATE
   `permissions` = VALUES(`permissions`),
   `updated_at` = NOW();
 
--- Исправление ID роли practicant, если на сервере она создалась с id = 0
-UPDATE `roles` SET `id` = 10 WHERE `name` = 'practicant' AND `id` = 0;
-UPDATE `users` SET `role_id` = 10 WHERE `role_id` = 0;
-UPDATE `user_roles` SET `role_id` = 10 WHERE `role_id` = 0;
-
--- 2. Таблица преподавателей практики (связка с users)
+-- 4. Таблица преподавателей практики (связка с users)
 CREATE TABLE IF NOT EXISTS `teachers` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT(11) NOT NULL UNIQUE,
@@ -34,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `teachers` (
   CONSTRAINT `fk_teachers_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 3. Таблица нагрузок практики (модули, группы, часы, дедлайн, статус, json графика)
+-- 5. Таблица нагрузок практики (модули, группы, часы, дедлайн, статус, json графика)
 CREATE TABLE IF NOT EXISTS `workloads` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `teacher_id` INT UNSIGNED NOT NULL,
@@ -60,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `workloads` (
   CONSTRAINT `fk_workload_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 4. Таблица версий графика (история изменений)
+-- 6. Таблица версий графика (история изменений)
 CREATE TABLE IF NOT EXISTS `workload_versions` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `workload_id` INT UNSIGNED NOT NULL,
@@ -76,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `workload_versions` (
   CONSTRAINT `fk_wv_user` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 5. Заполнение таблицы teachers существующими преподавателями из uchebni_teachers
+-- 7. Заполнение таблицы teachers существующими преподавателями из uchebni_teachers
 INSERT IGNORE INTO `teachers` (`user_id`, `department`)
 SELECT `user_id`, COALESCE(`specialization`, 'Преподаватель колледжа')
 FROM `uchebni_teachers`
