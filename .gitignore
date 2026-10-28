@@ -29,6 +29,7 @@ deploy.sh
 *.dump
 # Сидеры библиотеки можно пушить в GitHub
 !database/seeders/*.sql
+!database/practice_migration.sql
 
 # ===== Archives / backups =====
 *.zip

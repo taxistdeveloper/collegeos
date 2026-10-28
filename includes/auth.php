@@ -179,7 +179,7 @@ function checkRole($required_roles = [])
         // Актуальные роли из user_roles (+ fallback на role_id)
         $role_names = [];
         $ur = $db->prepare(
-            "SELECT r.name FROM user_roles ur
+            "SELECT DISTINCT r.name FROM user_roles ur
              JOIN roles r ON r.id = ur.role_id
              WHERE ur.user_id = ?"
         );
@@ -201,7 +201,7 @@ function checkRole($required_roles = [])
             }
         }
 
-        $_SESSION['user_roles'] = $role_names;
+        $_SESSION['user_roles'] = array_values(array_unique($role_names));
         markPlatformTourIfNeeded($role_names);
 
         $currentRole = $_SESSION['user_role'] ?? '';

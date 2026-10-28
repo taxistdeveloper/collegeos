@@ -29,7 +29,7 @@ class User {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
         // Миграция существующих role_id
         $this->db->query("INSERT IGNORE INTO user_roles (user_id, role_id)
-            SELECT id, role_id FROM users WHERE role_id IS NOT NULL AND role_id > 0");
+            SELECT u.id, u.role_id FROM users u WHERE u.role_id IS NOT NULL AND u.role_id > 0 AND NOT EXISTS (SELECT 1 FROM user_roles ur WHERE ur.user_id = u.id AND ur.role_id = u.role_id)");
     }
 
     /**
@@ -77,7 +77,7 @@ class User {
 
     public function getUserRoleIds($userId) {
         $userId = (int)$userId;
-        $stmt = $this->db->prepare("SELECT role_id FROM user_roles WHERE user_id = ? ORDER BY role_id");
+        $stmt = $this->db->prepare("SELECT DISTINCT role_id FROM user_roles WHERE user_id = ? ORDER BY role_id");
         $stmt->bind_param('i', $userId);
         $stmt->execute();
         $ids = [];
@@ -95,7 +95,7 @@ class User {
                 $ids[] = (int)$u['role_id'];
             }
         }
-        return $ids;
+        return array_values(array_unique($ids));
     }
 
     public function getUserRoleNames($userId) {
@@ -113,7 +113,7 @@ class User {
         while ($row = $res->fetch_assoc()) {
             $names[] = $row['name'];
         }
-        return $names;
+        return array_values(array_unique($names));
     }
 
     public function userHasRoleName($userId, $roleName) {
