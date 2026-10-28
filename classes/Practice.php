@@ -409,7 +409,7 @@ class Practice
      */
     public function getGroups()
     {
-        $res = $this->db->query("SELECT id, name FROM groups WHERE is_active = 1 ORDER BY name ASC");
+        $res = $this->db->query("SELECT id, name FROM `groups` WHERE is_active = 1 ORDER BY name ASC");
         $list = [];
         if ($res) {
             while ($r = $res->fetch_assoc()) {
