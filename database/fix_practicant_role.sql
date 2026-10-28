@@ -27,3 +27,4 @@ ON DUPLICATE KEY UPDATE
   `description` = VALUES(`description`),
   `permissions` = VALUES(`permissions`),
   `updated_at` = NOW();
+
