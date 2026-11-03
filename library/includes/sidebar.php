@@ -38,6 +38,7 @@ $active_page = $current_page;
         <div class="curator-sidebar-card">
             <div class="curator-sidebar-card-title"><?php echo htmlspecialchars($current_user['name']); ?></div>
             <div class="curator-sidebar-card-text">Библиотекарь · <?php echo date('d.m.Y'); ?></div>
+            <?php renderPortalSwitcher(); ?>
             <a href="../logout.php" class="btn btn-primary btn-sm">
                 <i class="bi bi-box-arrow-right me-1"></i>Выход
             </a>

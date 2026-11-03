@@ -50,6 +50,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </nav>
         <div class="dept-sidebar-footer">
             <div class="dept-user"><?php echo htmlspecialchars($current_user['name']); ?></div>
+            <?php renderPortalSwitcher(); ?>
             <a href="../logout.php" class="btn btn-sm btn-outline-light w-100">
                 <i class="bi bi-box-arrow-right me-1"></i>Выход
             </a>

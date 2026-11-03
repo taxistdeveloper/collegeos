@@ -45,6 +45,7 @@ $page_title = $page_title ?? 'ЦОС';
                 <span class="navbar-text text-white me-3 d-none d-md-inline">
                     <i class="bi bi-person-circle me-1"></i><?php echo htmlspecialchars($current_user['name']); ?>
                 </span>
+                <?php renderPortalSwitcher('../switch_role.php', 'portal-switch--nav'); ?>
                 <span class="me-2"><?php appThemeToggle('theme-toggle--light'); ?></span>
                 <a class="btn btn-outline-light btn-sm" href="../logout.php">Выход</a>
             </div>

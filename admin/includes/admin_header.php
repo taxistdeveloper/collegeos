@@ -9,6 +9,10 @@
  * $active_page - активный пункт меню (dashboard, users, groups, students, library, diplomas, roles, fields, notifications)
  */
 
+if (!function_exists('renderPortalSwitcher')) {
+    require_once dirname(__DIR__, 2) . '/includes/auth.php';
+}
+
 if (!isset($page_title)) $page_title = 'Админ-панель';
 if (!isset($page_subtitle)) $page_subtitle = '';
 if (!isset($active_page)) $active_page = '';
@@ -110,6 +114,12 @@ $menu_stats = $GLOBALS['admin_menu_stats'];
                         <a href="library.php" class="nav-link <?php echo $active_page === 'library' ? 'active' : ''; ?>">
                             <i class="bi bi-journal-bookmark-fill"></i>
                             <span>Библиотека</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="../practics/" class="nav-link <?php echo $active_page === 'practics' ? 'active' : ''; ?>">
+                            <i class="bi bi-briefcase-fill"></i>
+                            <span>Практика</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -226,6 +236,7 @@ $menu_stats = $GLOBALS['admin_menu_stats'];
                         <div class="sidebar-user-role"><?php echo htmlspecialchars($_SESSION['admin_role'] ?? 'admin'); ?></div>
                     </div>
                 </div>
+                <?php renderPortalSwitcher(); ?>
                 <a href="logout.php" class="sidebar-logout">
                     <i class="bi bi-box-arrow-right"></i>
                     Выход

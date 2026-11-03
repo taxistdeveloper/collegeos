@@ -583,6 +583,31 @@ class Department
         return $stmt->get_result()->fetch_assoc();
     }
 
+    /**
+     * Отделение для кабинета заведующего.
+     * В режиме показа, если своего нет, открываем первое существующее только для просмотра.
+     */
+    public function getDepartmentForPortal($userId)
+    {
+        $own = $this->getDepartmentByHead($userId);
+        if ($own) {
+            return $own;
+        }
+        if (!function_exists('isPlatformTourSession') || !isPlatformTourSession()) {
+            return null;
+        }
+        $sql = "SELECT d.*,
+                       u.first_name AS head_first_name,
+                       u.last_name AS head_last_name,
+                       u.middle_name AS head_middle_name
+                FROM departments d
+                LEFT JOIN users u ON u.id = d.head_user_id
+                ORDER BY d.is_active DESC, d.id
+                LIMIT 1";
+        $result = $this->db->query($sql);
+        return $result ? $result->fetch_assoc() : null;
+    }
+
     public function createDepartment($data)
     {
         $headId = (int)($data['head_user_id'] ?? 0);

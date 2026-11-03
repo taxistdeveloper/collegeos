@@ -2,6 +2,7 @@
 require_once '../config/config.php';
 require_once '../classes/Department.php';
 require_once '../classes/User.php';
+require_once 'includes/bulk_delete.php';
 
 if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: login.php');
@@ -80,6 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Не удалось удалить отделение';
             }
             break;
+
+        case 'delete_selected':
+            [$message, $error] = adminBulkDeleteMessages(adminApplyBulkDelete(function ($id) use ($department) {
+                return (bool)$department->deleteDepartment($id);
+            }));
+            break;
     }
 }
 
@@ -125,16 +132,21 @@ include 'includes/admin_header.php';
     </div>
 <?php endif; ?>
 
-<div class="card">
+<?php adminBulkDeleteForm('Удалить выбранные отделения'); ?>
+<div class="card" id="bulkDeleteRoot">
     <div class="card-header">
         <h2 class="card-title"><i class="bi bi-building"></i> Список отделений</h2>
-        <span class="badge badge-primary"><?php echo count($departments); ?></span>
+        <div class="d-flex align-items-center gap-2">
+            <?php adminBulkDeleteButton(); ?>
+            <span class="badge badge-primary"><?php echo count($departments); ?></span>
+        </div>
     </div>
     <div class="card-body" style="padding: 0;">
         <div class="table-wrapper">
             <table class="data-table">
                 <thead>
                     <tr>
+                        <?php adminBulkSelectAll(!empty($departments)); ?>
                         <th>Отделение</th>
                         <th>Код</th>
                         <th>Заведующий</th>
@@ -147,6 +159,7 @@ include 'includes/admin_header.php';
                 <tbody>
                     <?php foreach ($departments as $item): ?>
                         <tr>
+                            <?php adminBulkRowCheck((int)$item['id']); ?>
                             <td>
                                 <strong><?php echo htmlspecialchars($item['name']); ?></strong>
                                 <?php if (!empty($item['description'])): ?>
@@ -198,7 +211,7 @@ include 'includes/admin_header.php';
                     <?php endforeach; ?>
                     <?php if (empty($departments)): ?>
                         <tr>
-                            <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                 Отделения ещё не созданы
                             </td>

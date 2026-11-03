@@ -4,10 +4,15 @@
  */
 class User {
     private $db;
+    public $lastError = '';
+
+    public function getLastError() {
+        return $this->lastError;
+    }
 
     /** Порядок основной роли для редиректа при нескольких ролях */
     private static $rolePriority = [
-        'admin', 'director', 'manager', 'methodist', 'department_head', 'curator', 'teacher', 'cos', 'librarian'
+        'admin', 'director', 'manager', 'methodist', 'department_head', 'practicant', 'curator', 'teacher', 'cos', 'librarian'
     ];
     
     public function __construct() {
@@ -27,9 +32,55 @@ class User {
             PRIMARY KEY (user_id, role_id),
             KEY idx_user_roles_role (role_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-        // Миграция существующих role_id
+
+        // 1. Автоисправление ролей с id = 0 или NULL (например, если роль practicant была создана без автоинкремента)
+        $zeroRes = $this->db->query("SELECT id, name FROM roles WHERE id = 0 OR id IS NULL");
+        if ($zeroRes && $zeroRes->num_rows > 0) {
+            $maxRes = $this->db->query("SELECT COALESCE(MAX(id), 0) as max_id FROM roles WHERE id > 0");
+            $maxRow = $maxRes ? $maxRes->fetch_assoc() : null;
+            $nextId = max(10, ((int)($maxRow['max_id'] ?? 0)) + 1);
+            while ($zRow = $zeroRes->fetch_assoc()) {
+                $rName = $this->db->real_escape_string($zRow['name']);
+                $this->db->query("UPDATE roles SET id = {$nextId} WHERE name = '{$rName}' AND (id = 0 OR id IS NULL)");
+                $this->db->query("UPDATE users SET role_id = {$nextId} WHERE role_id = 0");
+                $this->db->query("UPDATE user_roles SET role_id = {$nextId} WHERE role_id = 0");
+                $nextId++;
+            }
+        }
+
+        // 2. Гарантия AUTO_INCREMENT на таблице roles
+        $aiCheck = $this->db->query("SHOW COLUMNS FROM roles LIKE 'id'");
+        if ($aiCheck && ($col = $aiCheck->fetch_assoc())) {
+            if (stripos($col['Extra'] ?? '', 'auto_increment') === false) {
+                @$this->db->query("ALTER TABLE roles MODIFY id INT(11) NOT NULL AUTO_INCREMENT");
+            }
+        }
+
+        // 3. Миграция существующих role_id
         $this->db->query("INSERT IGNORE INTO user_roles (user_id, role_id)
-            SELECT id, role_id FROM users WHERE role_id IS NOT NULL AND role_id > 0");
+            SELECT u.id, u.role_id FROM users u WHERE u.role_id IS NOT NULL AND u.role_id > 0 AND NOT EXISTS (SELECT 1 FROM user_roles ur WHERE ur.user_id = u.id AND ur.role_id = u.role_id)");
+
+        // 4. Автоисправление пользователей с id = 0 и гарантия AUTO_INCREMENT на таблице users
+        $zeroUser = $this->db->query("SELECT id FROM users WHERE id = 0 LIMIT 1");
+        if ($zeroUser && $zeroUser->num_rows > 0) {
+            $maxRes = $this->db->query("SELECT COALESCE(MAX(id), 0) as max_id FROM users WHERE id > 0");
+            $maxRow = $maxRes ? $maxRes->fetch_assoc() : null;
+            $nextUserId = ((int)($maxRow['max_id'] ?? 0)) + 1;
+            $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
+            $this->db->query("UPDATE users SET id = {$nextUserId} WHERE id = 0");
+            $this->db->query("UPDATE user_roles SET user_id = {$nextUserId} WHERE user_id = 0");
+            $this->db->query("UPDATE teachers SET user_id = {$nextUserId} WHERE user_id = 0");
+            $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
+        }
+
+        $userAiCheck = $this->db->query("SHOW COLUMNS FROM users LIKE 'id'");
+        if ($userAiCheck && ($col = $userAiCheck->fetch_assoc())) {
+            if (stripos($col['Extra'] ?? '', 'auto_increment') === false) {
+                $this->db->query("SET FOREIGN_KEY_CHECKS = 0");
+                @$this->db->query("ALTER TABLE users MODIFY id INT(11) NOT NULL AUTO_INCREMENT");
+                $this->db->query("SET FOREIGN_KEY_CHECKS = 1");
+            }
+        }
     }
 
     /**
@@ -40,10 +91,48 @@ class User {
             $roleIds = [$roleIds];
         }
         $ids = [];
-        foreach ($roleIds as $id) {
-            $id = (int)$id;
-            if ($id > 0) {
-                $ids[$id] = $id;
+        foreach ($roleIds as $val) {
+            if (is_numeric($val)) {
+                $id = (int)$val;
+                if ($id > 0) {
+                    $ids[$id] = $id;
+                } elseif ($id === 0) {
+                    // Если передан 0, чиним роль с id = 0 на лету в базе данных
+                    $zeroRes = $this->db->query("SELECT id, name FROM roles WHERE id = 0 LIMIT 1");
+                    if ($zeroRes && ($zRow = $zeroRes->fetch_assoc())) {
+                        $maxRes = $this->db->query("SELECT COALESCE(MAX(id), 0) as max_id FROM roles WHERE id > 0");
+                        $maxRow = $maxRes ? $maxRes->fetch_assoc() : null;
+                        $fixedId = max(10, ((int)($maxRow['max_id'] ?? 0)) + 1);
+                        $rName = $this->db->real_escape_string($zRow['name']);
+                        $this->db->query("UPDATE roles SET id = {$fixedId} WHERE name = '{$rName}' AND id = 0");
+                        $this->db->query("UPDATE users SET role_id = {$fixedId} WHERE role_id = 0");
+                        $this->db->query("UPDATE user_roles SET role_id = {$fixedId} WHERE role_id = 0");
+                        $ids[$fixedId] = $fixedId;
+                    }
+                }
+            } elseif (is_string($val) && trim($val) !== '') {
+                // Если передан строковый слаг роли (например, 'practicant')
+                $slug = trim($val);
+                $stmt = $this->db->prepare("SELECT id FROM roles WHERE name = ? LIMIT 1");
+                if ($stmt) {
+                    $stmt->bind_param('s', $slug);
+                    $stmt->execute();
+                    $res = $stmt->get_result()->fetch_assoc();
+                    if ($res) {
+                        $rId = (int)$res['id'];
+                        if ($rId <= 0) {
+                            $maxRes = $this->db->query("SELECT COALESCE(MAX(id), 0) as max_id FROM roles WHERE id > 0");
+                            $maxRow = $maxRes ? $maxRes->fetch_assoc() : null;
+                            $rId = max(10, ((int)($maxRow['max_id'] ?? 0)) + 1);
+                            $this->db->query("UPDATE roles SET id = {$rId} WHERE name = '{$slug}'");
+                            $this->db->query("UPDATE users SET role_id = {$rId} WHERE role_id = 0");
+                            $this->db->query("UPDATE user_roles SET role_id = {$rId} WHERE role_id = 0");
+                        }
+                        if ($rId > 0) {
+                            $ids[$rId] = $rId;
+                        }
+                    }
+                }
             }
         }
         return array_values($ids);
@@ -77,7 +166,7 @@ class User {
 
     public function getUserRoleIds($userId) {
         $userId = (int)$userId;
-        $stmt = $this->db->prepare("SELECT role_id FROM user_roles WHERE user_id = ? ORDER BY role_id");
+        $stmt = $this->db->prepare("SELECT DISTINCT role_id FROM user_roles WHERE user_id = ? ORDER BY role_id");
         $stmt->bind_param('i', $userId);
         $stmt->execute();
         $ids = [];
@@ -95,7 +184,7 @@ class User {
                 $ids[] = (int)$u['role_id'];
             }
         }
-        return $ids;
+        return array_values(array_unique($ids));
     }
 
     public function getUserRoleNames($userId) {
@@ -113,7 +202,7 @@ class User {
         while ($row = $res->fetch_assoc()) {
             $names[] = $row['name'];
         }
-        return $names;
+        return array_values(array_unique($names));
     }
 
     public function userHasRoleName($userId, $roleName) {
@@ -124,23 +213,37 @@ class User {
         $userId = (int)$userId;
         $roleIds = $this->normalizeRoleIds($roleIds);
         if (empty($roleIds) || $userId <= 0) {
+            $this->lastError = 'Некорректный ID пользователя или пустой список ролей';
             return false;
         }
         $primary = $this->pickPrimaryRoleId($roleIds);
 
         $del = $this->db->prepare("DELETE FROM user_roles WHERE user_id = ?");
-        $del->bind_param('i', $userId);
-        $del->execute();
+        if ($del) {
+            $del->bind_param('i', $userId);
+            $del->execute();
+        }
 
         $ins = $this->db->prepare("INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)");
+        if (!$ins) {
+            $conn = method_exists($this->db, 'getConnection') ? $this->db->getConnection() : null;
+            $this->lastError = 'Ошибка подготовки вставки в user_roles: ' . ($conn ? $conn->error : 'unknown');
+            return false;
+        }
         foreach ($roleIds as $rid) {
             $ins->bind_param('ii', $userId, $rid);
-            $ins->execute();
+            if (!$ins->execute()) {
+                $this->lastError = 'Ошибка добавления роли в user_roles: ' . $ins->error;
+                return false;
+            }
         }
 
         $upd = $this->db->prepare("UPDATE users SET role_id = ? WHERE id = ?");
-        $upd->bind_param('ii', $primary, $userId);
-        return $upd->execute();
+        if ($upd) {
+            $upd->bind_param('ii', $primary, $userId);
+            $upd->execute();
+        }
+        return true;
     }
 
     private function attachRolesToUser(?array $user) {
@@ -338,38 +441,68 @@ class User {
      * Создать нового пользователя
      */
     public function createUser($data) {
+        $this->lastError = '';
         $roleIds = $this->normalizeRoleIds($data['role_ids'] ?? ($data['role_id'] ?? []));
         if (empty($roleIds)) {
+            $this->lastError = 'Список ролей пуст после нормализации';
             return false;
         }
         $primary = $this->pickPrimaryRoleId($roleIds);
 
-        $sql = "INSERT INTO users (first_name, last_name, middle_name, login, password, email, phone, role_id) 
+        $sql = "INSERT INTO `users` (`first_name`, `last_name`, `middle_name`, `login`, `password`, `email`, `phone`, `role_id`) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
         $stmt = $this->db->prepare($sql);
-        
+        if (!$stmt) {
+            $conn = method_exists($this->db, 'getConnection') ? $this->db->getConnection() : null;
+            $this->lastError = 'Ошибка подготовки INSERT: ' . ($conn ? $conn->error : 'unknown');
+            return false;
+        }
+
         $hashed_password = password_hash($data['password'], PASSWORD_DEFAULT);
         $email = trim((string)($data['email'] ?? ''));
         $phone = trim((string)($data['phone'] ?? ''));
         $email = $email !== '' ? $email : null;
         $phone = $phone !== '' ? $phone : null;
-        
+        $middleName = trim((string)($data['middle_name'] ?? ''));
+
         $stmt->bind_param("sssssssi", 
             $data['first_name'], 
             $data['last_name'], 
-            $data['middle_name'], 
+            $middleName, 
             $data['login'], 
             $hashed_password, 
             $email, 
             $phone, 
             $primary
         );
-        
+
         if (!$stmt->execute()) {
+            $this->lastError = 'Ошибка выполнения INSERT в users: ' . $stmt->error;
             return false;
         }
-        $newId = (int)$this->db->getLastInsertId();
-        return $this->setUserRoles($newId, $roleIds);
+
+        $newId = (int)$stmt->insert_id;
+        if ($newId <= 0) {
+            $newId = (int)$this->db->getLastInsertId();
+        }
+        if ($newId <= 0) {
+            $u = $this->getUserByLogin($data['login']);
+            if ($u && !empty($u['id'])) {
+                $newId = (int)$u['id'];
+            }
+        }
+
+        if ($newId <= 0) {
+            $this->lastError = 'Не удалось определить ID созданного пользователя';
+            return false;
+        }
+
+        if (!$this->setUserRoles($newId, $roleIds)) {
+            $this->lastError = 'Ошибка привязки ролей: ' . ($this->lastError ?: 'неизвестно');
+            return false;
+        }
+        return true;
     }
     
     /**

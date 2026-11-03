@@ -1,6 +1,7 @@
 <?php
 require_once '../config/config.php';
 require_once '../classes/SpravkaTemplate.php';
+require_once 'includes/bulk_delete.php';
 
 // Проверка авторизации
 if (!isset($_SESSION['admin_logged_in'])) {
@@ -59,6 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $error = 'Ошибка при удалении шаблона';
             }
+            break;
+
+        case 'delete_selected':
+            [$message, $error] = adminBulkDeleteMessages(adminApplyBulkDelete(function ($id) use ($template) {
+                return (bool)$template->delete($id);
+            }));
             break;
     }
 }
@@ -139,19 +146,24 @@ include 'includes/admin_header.php';
 </div>
 
 <!-- Templates Table -->
-<div class="card">
+<?php adminBulkDeleteForm('Удалить выбранные шаблоны'); ?>
+<div class="card" id="bulkDeleteRoot">
     <div class="card-header">
         <h2 class="card-title">
             <i class="bi bi-file-earmark-code"></i>
             Список шаблонов
         </h2>
-        <span class="badge badge-primary"><?php echo count($templates); ?></span>
+        <div class="d-flex align-items-center gap-2">
+            <?php adminBulkDeleteButton(); ?>
+            <span class="badge badge-primary"><?php echo count($templates); ?></span>
+        </div>
     </div>
     <div class="card-body" style="padding: 0;">
         <div class="table-wrapper">
             <table class="data-table">
                 <thead>
                     <tr>
+                        <?php adminBulkSelectAll(!empty($templates)); ?>
                         <th>Название</th>
                         <th>Тип</th>
                         <th>Описание</th>
@@ -163,6 +175,7 @@ include 'includes/admin_header.php';
                 <tbody>
                     <?php foreach ($templates as $row): ?>
                         <tr>
+                            <?php adminBulkRowCheck((int)$row['id']); ?>
                             <td>
                                 <div style="font-weight: 500;">
                                     <?php echo htmlspecialchars($row['name']); ?>
@@ -207,7 +220,7 @@ include 'includes/admin_header.php';
                     <?php endforeach; ?>
                     <?php if (empty($templates)): ?>
                         <tr>
-                            <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                 Шаблоны не найдены
                             </td>

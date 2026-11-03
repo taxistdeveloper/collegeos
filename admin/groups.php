@@ -4,6 +4,7 @@ require_once '../classes/Group.php';
 require_once '../classes/User.php';
 require_once '../classes/Department.php';
 require_once '../includes/student_status.php';
+require_once 'includes/bulk_delete.php';
 
 // Проверка авторизации
 if (!isset($_SESSION['admin_logged_in'])) {
@@ -138,6 +139,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     AdminLog::info('group_delete', 'Удалена группа ID ' . $id, ['id' => $id]);
                 } else {
                     $error = 'Ошибка при удалении группы: ' . ($group->getLastError() ?: 'неизвестная ошибка');
+                }
+                break;
+
+            case 'delete_selected':
+                $bulk = adminApplyBulkDelete(function ($id) use ($group) {
+                    $ok = (bool)$group->deleteGroup($id);
+                    if ($ok) {
+                        AdminLog::info('group_delete', 'Удалена группа ID ' . $id, ['id' => $id]);
+                    }
+                    return $ok;
+                });
+                [$message, $error] = adminBulkDeleteMessages($bulk);
+                if ($message !== '') {
+                    $message = 'Удалено групп: ' . (int)$bulk['deleted'];
                 }
                 break;
         }
@@ -433,7 +448,8 @@ include 'includes/admin_header.php';
 </div>
 
 <!-- Groups Table -->
-<div class="card">
+<?php adminBulkDeleteForm('Удалить выбранные группы'); ?>
+<div class="card" id="bulkDeleteRoot">
     <div class="card-header">
         <h2 class="card-title">
             <i class="bi bi-collection"></i>
@@ -442,13 +458,17 @@ include 'includes/admin_header.php';
                 <span class="badge badge-primary" style="margin-left: 0.35rem; text-transform: none; letter-spacing: 0;"><?php echo htmlspecialchars($year_label); ?></span>
             <?php endif; ?>
         </h2>
-        <span class="badge badge-success"><?php echo $total_filtered; ?></span>
+        <div class="d-flex align-items-center gap-2">
+            <?php adminBulkDeleteButton(); ?>
+            <span class="badge badge-success"><?php echo $total_filtered; ?></span>
+        </div>
     </div>
     <div class="card-body" style="padding: 0;">
         <div class="table-wrapper">
             <table class="data-table">
                 <thead>
                     <tr>
+                        <?php adminBulkSelectAll(!empty($groups_page), 'Выбрать все на странице'); ?>
                         <th>Группа</th>
                         <th>Отделение</th>
                         <th>Специальность</th>
@@ -462,6 +482,7 @@ include 'includes/admin_header.php';
                 <tbody>
                     <?php foreach ($groups_page as $group_item): ?>
                         <tr>
+                            <?php adminBulkRowCheck((int)$group_item['id']); ?>
                             <td>
                                 <div>
                                     <div style="font-weight: 500;"><?php echo htmlspecialchars($group_item['name']); ?></div>
@@ -542,7 +563,7 @@ include 'includes/admin_header.php';
                     <?php endforeach; ?>
                     <?php if (empty($groups)): ?>
                         <tr>
-                            <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                 <?php
                                 $year_only_empty = $year_filter !== 'all'

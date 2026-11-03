@@ -7,7 +7,7 @@ checkRole(['department_head']);
 
 $departmentService = new Department();
 $current_user = getCurrentUser();
-$dept = $departmentService->getDepartmentByHead((int)$current_user['id']);
+$dept = $departmentService->getDepartmentForPortal((int)$current_user['id']);
 $stats = $dept ? $departmentService->getStats((int)$dept['id']) : ['members' => 0, 'groups' => 0, 'students' => 0];
 
 $page_title = 'Кабинет заведующего';

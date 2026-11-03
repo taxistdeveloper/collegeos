@@ -4,6 +4,7 @@ require_once '../classes/User.php';
 require_once '../classes/Group.php';
 require_once '../classes/Spravka.php';
 require_once '../classes/SpravkaTemplate.php';
+require_once 'includes/bulk_delete.php';
 
 // Проверка авторизации
 if (!isset($_SESSION['admin_logged_in'])) {
@@ -66,6 +67,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $error = 'Ошибка при удалении справки';
             }
+            break;
+
+        case 'delete_selected':
+            [$message, $error] = adminBulkDeleteMessages(adminApplyBulkDelete(function ($id) use ($spravka) {
+                return (bool)$spravka->delete($id);
+            }));
             break;
     }
 }
@@ -188,19 +195,24 @@ include 'includes/admin_header.php';
 </div>
 
 <!-- Spravki Table -->
-<div class="card">
+<?php adminBulkDeleteForm('Удалить выбранные справки'); ?>
+<div class="card" id="bulkDeleteRoot">
     <div class="card-header">
         <h2 class="card-title">
             <i class="bi bi-file-earmark-text"></i>
             Список справок
         </h2>
-        <span class="badge badge-primary"><?php echo count($spravki); ?></span>
+        <div class="d-flex align-items-center gap-2">
+            <?php adminBulkDeleteButton(); ?>
+            <span class="badge badge-primary"><?php echo count($spravki); ?></span>
+        </div>
     </div>
     <div class="card-body" style="padding: 0;">
         <div class="table-wrapper">
             <table class="data-table">
                 <thead>
                     <tr>
+                        <?php adminBulkSelectAll(!empty($spravki)); ?>
                         <th>Студент</th>
                         <th>ИИН</th>
                         <th>Группа</th>
@@ -217,6 +229,7 @@ include 'includes/admin_header.php';
                         $issuer_name = trim(($row['issuer_first'] ?? '') . ' ' . ($row['issuer_last'] ?? ''));
                     ?>
                         <tr>
+                            <?php adminBulkRowCheck((int)$row['id']); ?>
                             <td>
                                 <div style="font-weight: 500;">
                                     <?php echo htmlspecialchars($fio); ?>
@@ -271,7 +284,7 @@ include 'includes/admin_header.php';
                     <?php endforeach; ?>
                     <?php if (empty($spravki)): ?>
                         <tr>
-                            <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                 Справки не найдены
                             </td>

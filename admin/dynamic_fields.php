@@ -2,6 +2,7 @@
 require_once '../config/config.php';
 require_once '../includes/auth.php';
 require_once '../classes/DynamicField.php';
+require_once 'includes/bulk_delete.php';
 
 if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: login.php');
@@ -100,6 +101,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete_selected') {
+    [$message, $error] = adminBulkDeleteMessages(adminApplyBulkDelete(function ($id) use ($dynamicField) {
+        $field = $dynamicField->getFieldById($id);
+        if (!$field || !empty($field['is_standard'])) {
+            return false;
+        }
+        return (bool)$dynamicField->deleteField($id);
+    }));
+}
+
 // Получение всех полей формы
 $fields = $dynamicField->getAllFormFields();
 
@@ -156,19 +167,32 @@ include 'includes/admin_header.php';
 </div>
 
 <!-- Fields Table -->
-<div class="card">
+<?php
+$deletable_fields = 0;
+foreach ($fields as $field_item) {
+    if (empty($field_item['is_standard'])) {
+        $deletable_fields++;
+    }
+}
+adminBulkDeleteForm('Удалить выбранные поля');
+?>
+<div class="card" id="bulkDeleteRoot">
     <div class="card-header">
         <h2 class="card-title">
             <i class="bi bi-sliders"></i>
             Список полей
         </h2>
-        <span class="badge badge-primary"><?php echo count($fields); ?></span>
+        <div class="d-flex align-items-center gap-2">
+            <?php adminBulkDeleteButton(); ?>
+            <span class="badge badge-primary"><?php echo count($fields); ?></span>
+        </div>
     </div>
     <div class="card-body" style="padding: 0;">
         <div class="table-wrapper">
             <table class="data-table">
                 <thead>
                     <tr>
+                        <?php adminBulkSelectAll($deletable_fields > 0); ?>
                         <th style="width: 60px;">Порядок</th>
                         <th>Название</th>
                         <th>Метка</th>
@@ -182,6 +206,7 @@ include 'includes/admin_header.php';
                 <tbody>
                     <?php foreach ($fields as $field): ?>
                         <tr>
+                            <?php adminBulkRowCheck(empty($field['is_standard']) ? (int)$field['id'] : 0); ?>
                             <td style="text-align: center;">
                                 <span class="badge badge-secondary"><?php echo $field['field_order']; ?></span>
                             </td>
@@ -238,7 +263,7 @@ include 'includes/admin_header.php';
                     <?php endforeach; ?>
                     <?php if (empty($fields)): ?>
                         <tr>
-                            <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                 Поля не найдены
                             </td>

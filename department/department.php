@@ -7,11 +7,15 @@ checkRole(['department_head']);
 
 $departmentService = new Department();
 $current_user = getCurrentUser();
-$dept = $departmentService->getDepartmentByHead((int)$current_user['id']);
+$dept = $departmentService->getDepartmentForPortal((int)$current_user['id']);
 $message = '';
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+$tourViewOnly = platformTourBorrowBlock($dept, (int)$current_user['id']);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tourViewOnly) {
+    $error = 'В режиме показа это отделение только для просмотра';
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     if ($action === 'create') {

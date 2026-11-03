@@ -3,6 +3,7 @@ require_once '../config/config.php';
 require_once '../classes/User.php';
 require_once '../classes/ActivityLog.php';
 require_once '../classes/Department.php';
+require_once 'includes/bulk_delete.php';
 
 // Проверка авторизации
 if (!isset($_SESSION['admin_logged_in'])) {
@@ -82,10 +83,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($user->createUser($data)) {
                         $message = 'Пользователь успешно создан!';
                     } else {
-                        $error = 'Ошибка при создании пользователя';
+                        $detail = method_exists($user, 'getLastError') ? $user->getLastError() : '';
+                        $error = 'Ошибка при создании пользователя' . ($detail ? ': ' . $detail : '');
                     }
                 } catch (Throwable $e) {
-                    $error = 'Ошибка при создании пользователя';
+                    $error = 'Ошибка при создании пользователя: ' . $e->getMessage();
                 }
             } else {
                 $error = 'Пользователь с таким логином уже существует';
@@ -146,6 +148,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $error = 'Ошибка при удалении пользователя';
             }
+            break;
+
+        case 'delete_selected':
+            [$message, $error] = adminBulkDeleteMessages(adminApplyBulkDelete(function ($id) use ($user) {
+                return (bool)$user->deleteUser($id);
+            }));
             break;
             
         case 'change_password':
@@ -296,7 +304,8 @@ include 'includes/admin_header.php';
 </div>
 
 <!-- Users Table -->
-<div class="card">
+<?php adminBulkDeleteForm('Удалить выбранных пользователей'); ?>
+<div class="card" id="bulkDeleteRoot">
     <div class="card-header">
         <h2 class="card-title">
             <i class="bi bi-people"></i>
@@ -306,13 +315,17 @@ include 'includes/admin_header.php';
                 Список пользователей
             <?php endif; ?>
         </h2>
-        <span class="badge badge-primary"><?php echo count($users); ?></span>
+        <div class="d-flex align-items-center gap-2">
+            <?php adminBulkDeleteButton(); ?>
+            <span class="badge badge-primary"><?php echo count($users); ?></span>
+        </div>
     </div>
     <div class="card-body" style="padding: 0;">
         <div class="table-wrapper">
             <table class="data-table">
                 <thead>
                     <tr>
+                        <?php adminBulkSelectAll(!empty($users)); ?>
                         <th>Пользователь</th>
                         <th>Логин</th>
                         <th>Роль</th>
@@ -326,6 +339,7 @@ include 'includes/admin_header.php';
                 <tbody>
                     <?php foreach ($users as $user_item): ?>
                         <tr>
+                            <?php adminBulkRowCheck((int)$user_item['id']); ?>
                             <td>
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="list-avatar" style="width: 36px; height: 36px; font-size: 0.875rem;">
@@ -424,7 +438,7 @@ include 'includes/admin_header.php';
                     <?php endforeach; ?>
                     <?php if (empty($users)): ?>
                         <tr>
-                            <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <td colspan="10" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                 Пользователи не найдены
                             </td>
@@ -477,13 +491,17 @@ include 'includes/admin_header.php';
                         <div class="col-12">
                             <label class="form-label">Роли <span class="text-danger">*</span></label>
                             <div class="d-flex flex-wrap gap-3" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--content-bg);">
-                                <?php foreach ($roles as $role): ?>
+                                <?php foreach ($roles as $role): 
+                                    $roleId = (int)$role['id'];
+                                    $roleVal = $roleId > 0 ? $roleId : htmlspecialchars($role['name']);
+                                    $roleDomId = $roleId > 0 ? (string)$roleId : preg_replace('/[^a-zA-Z0-9_-]/', '', $role['name']);
+                                ?>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="role_ids[]"
-                                               value="<?php echo (int)$role['id']; ?>"
-                                               id="add_role_<?php echo (int)$role['id']; ?>">
-                                        <label class="form-check-label" for="add_role_<?php echo (int)$role['id']; ?>">
-                                            <?php echo htmlspecialchars($role_labels[(int)$role['id']] ?? $role['name']); ?>
+                                               value="<?php echo $roleVal; ?>"
+                                               id="add_role_<?php echo $roleDomId; ?>">
+                                        <label class="form-check-label" for="add_role_<?php echo $roleDomId; ?>">
+                                            <?php echo htmlspecialchars($role_labels[$roleId] ?? ($role['description'] ?: $role['name'])); ?>
                                         </label>
                                     </div>
                                 <?php endforeach; ?>
@@ -530,14 +548,18 @@ include 'includes/admin_header.php';
                         <div class="col-12">
                             <label class="form-label">Роли <span class="text-danger">*</span></label>
                             <div class="d-flex flex-wrap gap-3" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--content-bg);">
-                                <?php foreach ($roles as $role): ?>
+                                <?php foreach ($roles as $role): 
+                                    $roleId = (int)$role['id'];
+                                    $roleVal = $roleId > 0 ? $roleId : htmlspecialchars($role['name']);
+                                    $roleDomId = $roleId > 0 ? (string)$roleId : preg_replace('/[^a-zA-Z0-9_-]/', '', $role['name']);
+                                ?>
                                     <div class="form-check">
                                         <input class="form-check-input edit-role-checkbox" type="checkbox" name="role_ids[]"
-                                               value="<?php echo (int)$role['id']; ?>"
-                                               id="edit_role_<?php echo (int)$role['id']; ?>"
+                                               value="<?php echo $roleVal; ?>"
+                                               id="edit_role_<?php echo $roleDomId; ?>"
                                                onchange="toggleCuratorFields()">
-                                        <label class="form-check-label" for="edit_role_<?php echo (int)$role['id']; ?>">
-                                            <?php echo htmlspecialchars($role_labels[(int)$role['id']] ?? $role['name']); ?>
+                                        <label class="form-check-label" for="edit_role_<?php echo $roleDomId; ?>">
+                                            <?php echo htmlspecialchars($role_labels[$roleId] ?? ($role['description'] ?: $role['name'])); ?>
                                         </label>
                                     </div>
                                 <?php endforeach; ?>

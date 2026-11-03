@@ -1,5 +1,5 @@
 <?php
 // Перенаправление на страницу входа
-header('Location: login.php');s
+header('Location: login.php');
 exit;
 ?>

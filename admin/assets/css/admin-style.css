@@ -1621,3 +1621,21 @@ body {
 .library-student-search-results .list-group-item:hover {
     background: var(--primary-light);
 }
+
+.data-table th.bulk-col,
+.data-table td.bulk-col {
+    width: 42px;
+    text-align: center;
+    padding-left: 0.75rem;
+    padding-right: 0.35rem;
+}
+
+.bulk-delete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.bulk-delete-btn:disabled {
+    opacity: 0.45;
+}
